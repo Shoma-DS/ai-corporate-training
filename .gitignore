@@ -11,6 +11,10 @@ private/
 exports/*
 !exports/README.md
 
+# Downloaded reference sources kept local to avoid rehosting third-party PDFs
+research/sources/*.pdf
+research/sources/**/*.pdf
+
 # Dependencies and caches
 node_modules/
 .venv/
