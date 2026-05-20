@@ -57,6 +57,46 @@
 - URL: https://support.google.com/gemini/answer/14959807
 - Retrieved: 2026-05-21
 
+- Title: Transcribe Google Meet meetings
+- Publisher: Google Workspace Individual Help
+- URL: https://support.google.com/google-workspace-individual/answer/12849897
+- Retrieved: 2026-05-21
+
+- Title: Turn meeting transcription on or off
+- Publisher: Google Workspace Admin Help
+- URL: https://support.google.com/a/answer/12076932
+- Retrieved: 2026-05-21
+
+- Title: Automatic meeting artifact settings
+- Publisher: Google Workspace Admin Help
+- URL: https://support.google.com/a/answer/15496523
+- Retrieved: 2026-05-21
+
+- Title: Work with artifacts
+- Publisher: Google for Developers
+- URL: https://developers.google.com/workspace/meet/api/guides/artifacts
+- Retrieved: 2026-05-21
+
+- Title: Meet API transcripts
+- Publisher: Google for Developers
+- URL: https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords.transcripts
+- Retrieved: 2026-05-21
+
+- Title: Meet API transcript entries
+- Publisher: Google for Developers
+- URL: https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords.transcripts.entries/list
+- Retrieved: 2026-05-21
+
+- Title: Drive Service
+- Publisher: Google for Developers
+- URL: https://developers.google.com/apps-script/reference/drive
+- Retrieved: 2026-05-21
+
+- Title: Advanced Google services
+- Publisher: Google for Developers
+- URL: https://developers.google.com/apps-script/guides/services/advanced
+- Retrieved: 2026-05-21
+
 - Title: Udemy講座ベンチマーク: Google Workspace・GAS・スプレッドシート・フォーム
 - Publisher: Internal research note
 - URL: ../../調査/Udemy-Google-Workspace-GAS-スプレッドシート-フォーム講座ベンチマーク-2026-05-20.md
@@ -105,6 +145,9 @@
 
 - Apps Scriptは、Google Workspaceと連携する業務アプリケーションをすばやく作るためのJavaScriptベースの開発プラットフォーム。
 - Apps Scriptは、Gmail、Calendar、DriveなどのGoogle Workspaceアプリ向け組み込みサービスを利用できる。
+- Google Meetの文字起こしは、利用できるWorkspaceエディションと管理者設定に依存する。講座では、使える場合は会議後にDriveへ保存される文字起こしDocsを扱い、使えない場合は配布済み文字起こしサンプルで代替する。
+- Meet文字起こしの自動生成・保存・開始権限は組織設定や会議設定に左右されるため、講座内のGAS演習では「Meet終了を直接トリガーにする」前提にせず、Drive上のDocs、手動配置したDocs、または配布テキストを入力元にする。
+- Meet REST APIには会議アーティファクトや文字起こしエントリを扱う機能があるが、OAuthスコープ、管理者設定、取得期限を考慮する必要があるため、標準演習では発展扱いにする。
 - Spreadsheet Serviceは、スプレッドシート、シート、範囲、セル、データ検証、フィルタ、チャートなどを扱える。
 - Forms Serviceは、Googleフォームの作成、編集、回答取得などに使える。
 - 自動実行は、時間主導、フォーム送信、スプレッドシート編集などのインストール型トリガーで設計できる。
@@ -112,11 +155,11 @@
 - Googleフォームの回答はスプレッドシートに保存できるため、受付、申請、日報、アンケートの台帳化に使いやすい。
 - Apps Scriptはカスタムメニュー、ダイアログ、サイドバーなどのUI拡張を使えるため、現場担当者が実行しやすい手動ボタンや確認画面の設計も扱える。
 - 課金や管理者設定が必要な高度機能は必須演習にしない。無料範囲で使えるGeminiアプリやGemは、分類、要約、返信案、GASコード読解、業務プロンプトの共有に使う。
-- GeminiのGoogle Workspace連携は、Gmail、Drive、Docs、Calendarなどの検索、要約、予定確認、予定整理に使える場合がある。ただし、アカウント種別、管理者設定、提供状況で利用可否が変わるため、必須演習はSheets、Forms、GAS、Gem、貼り付けデータで成立させる。
+- GeminiのGoogle Workspace連携は、Gmail、Drive、Docs、Calendar、Meet文字起こしなどの検索、要約、予定確認、議事録整理に使える場合がある。ただし、アカウント種別、管理者設定、提供状況で利用可否が変わるため、必須演習はSheets、Forms、GAS、Gem、貼り付けデータ、配布文字起こしサンプルで成立させる。
 
 ## Course Design Implication
 
-- 中小企業向けでは、Sheets中心のデータ整理、Forms受付、Gem/Geminiによる分類・要約、GeminiのGoogle Workspace連携によるGmail/Drive/Docs/Calendarの情報整理、Gmail通知、Drive保存、Docs帳票、Calendar期限管理を題材にすると実務転用しやすい。
+- 中小企業向けでは、Sheets中心のデータ整理、Forms受付、Gem/Geminiによる分類・要約、GeminiのGoogle Workspace連携によるGmail/Drive/Docs/Calendar/Meet文字起こしの情報整理、Gmail通知、Drive保存、Docs帳票、Calendar期限管理を題材にすると実務転用しやすい。
 - レベル3相当にする場合は、単なるコード写経ではなく、業務フローのAs-Is/To-Be、対象データ、権限、例外処理、運用担当、効果指標まで設計させる。
 - Excel的な表処理は、関数で済む処理、スプレッドシート機能で済む処理、GASで自動化する処理、Gem/Geminiで下書きする処理、人が確認する処理に分けると学習しやすい。
 - フォーム連携は、回答シートを原本、管理台帳を業務処理用として分けると、データ破損や上書きリスクを下げられる。
