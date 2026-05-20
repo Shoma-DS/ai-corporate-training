@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Workspace・GASで進めるAI業務効率化/DX実践講座。</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8e2ee;
+      --pale: #eaf4fb;
+      --blue: #2a76a8;
+      --navy: #123a5a;
+      --cyan: #2bbbd3;
+      --orange: #f4a261;
+      --soft-orange: #fff0e4;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eceff3;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 18px;
+      padding: 16mm 17mm 14mm;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(24, 39, 56, .16);
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .footer {
+      position: absolute;
+      left: 17mm;
+      right: 17mm;
+      bottom: 7mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #8390a0;
+      font-size: 8.5px;
+      border-top: 1px solid #e8eef5;
+      padding-top: 4px;
+    }
+
+    .hero {
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      border: 0;
+      background: #ffffff;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      color: var(--navy);
+      border-left: 5px solid var(--orange);
+      padding-left: 8px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      margin: 13px 0 6px;
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 10.2px;
+    }
+
+    .lead {
+      font-size: 11.2px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .logo-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .logo-item {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      min-height: 58px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-align: center;
+      font-size: 7.8px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .logo-item img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 10px;
+      min-height: 48px;
+    }
+
+    .box strong {
+      display: block;
+      color: var(--blue);
+      font-size: 10.5px;
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 6px 0 10px 18px;
+      padding: 0;
+      font-size: 9.8px;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px;
+      font-size: 8.8px;
+    }
+
+    th {
+      background: #cfe3f3;
+      color: #172033;
+      text-align: left;
+      font-weight: 800;
+      border: 1px solid #b9d2e4;
+      padding: 5px 6px;
+    }
+
+    td {
+      border: 1px solid #d9e1e8;
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    .num {
+      width: 35px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--navy);
+      background: #f7fbff;
+    }
+
+    .time {
+      width: 48px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      padding-bottom: 7px;
+      border-bottom: 3px solid #d8e8f5;
+      font-size: 18px;
+      color: var(--navy);
+    }
+
+    .photo-panel {
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      margin: 18px auto 10px;
+      border: 3px solid #f6b07b;
+      background: #f9fcff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-panel img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      margin: 10px 0 14px;
+    }
+
+    .flow div {
+      background: #f5f9fc;
+      border-top: 4px solid var(--cyan);
+      padding: 8px 6px;
+      min-height: 46px;
+      font-size: 8.5px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .kpi div {
+      background: var(--soft-orange);
+      border-left: 4px solid var(--orange);
+      padding: 8px;
+      min-height: 45px;
+    }
+
+    .kpi b {
+      display: block;
+      color: #bf672d;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .kpi span {
+      font-size: 8.5px;
+      color: var(--muted);
+    }
+
+    .checklist {
+      columns: 2;
+      column-gap: 18px;
+      font-size: 9px;
+    }
+
+    .page-mark {
+      color: #9aa6b4;
+      font-weight: 700;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="hero">
+      <img src="素材/表紙ヒーロー画像-gptimage2-logo参照.png" alt="Google Workspace・GASで進めるAI業務効率化/DX実践講座。の表紙ビジュアル">
+    </div>
+
+    <p class="lead">日々のExcel的な転記、集計、確認、通知、受付管理を題材に、Google Workspace、GAS、Gemini/Gem、GeminiのGoogle Workspace連携によるAI活用、運用設計、導入提案書作成までを一貫して学ぶ実践型講座です。</p>
+
+    <div class="logo-strip" aria-label="使用する主な公式サービス">
+      <div class="logo-item"><img src="素材/ロゴ/Google-Workspace公式プロダクトアイコン.svg" alt="Google Workspace">Google Workspace</div>
+      <div class="logo-item"><img src="素材/ロゴ/Google-Sheets公式アイコン.png" alt="Google Sheets">Sheets</div>
+      <div class="logo-item"><img src="素材/ロゴ/Google-Forms公式アイコン.png" alt="Google Forms">Forms</div>
+      <div class="logo-item"><img src="素材/ロゴ/Google-Apps-Script公式アイコン.png" alt="Google Apps Script">Apps Script</div>
+      <div class="logo-item"><img src="素材/ロゴ/Google-Gemini公式アイコン.png" alt="Google Gemini">Gemini / Gem</div>
+    </div>
+
+    <h2>研修の目的</h2>
+    <p>中小企業でよく発生する、Excelファイルの転記、スプレッドシート集計、フォーム受付、申請管理、日報回収、担当者通知、期限リマインド、帳票作成などの反復業務を題材に、Google WorkspaceとGASを使った業務改善を自走できる人材を育成します。</p>
+    <p>単なるツール操作ではなく、業務フローの整理、データ項目の設計、自動化範囲の切り分け、Gem/Geminiによる分類・要約・返信案作成、Gmail・Drive・Docs・CalendarなどのGeminiのGoogle Workspace連携活用、権限管理、ログ、例外対応、テスト、引き継ぎ、継続運用までを扱います。課金や管理者設定が必要な高度機能は必須演習から外し、無料範囲または利用環境に応じて説明できるAI活用を中心にします。</p>
+
+    <div class="two-col">
+      <div class="box">
+        <strong>対象者</strong>
+        <ul>
+          <li>中小企業の経営者、管理部門、営業事務、総務、経理、広報、現場管理者</li>
+          <li>GoogleスプレッドシートやExcelで、転記・集計・通知・報告を効率化したい方</li>
+          <li>Googleフォームで問い合わせ、申請、日報を受け付けたい方</li>
+        </ul>
+      </div>
+      <div class="box">
+        <strong>受講後にできること</strong>
+        <ul>
+          <li>自社業務のAs-Is/To-Beを整理し、自動化対象を切り分ける</li>
+          <li>Sheets、Forms、Gmail、Drive、Docs、Calendarをつなぐ業務フローを設計する</li>
+          <li>GASを使い、確認工程つきの小規模自動化を作る</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>研修の強み</h2>
+    <div class="flow">
+      <div>業務課題の<br>見える化</div>
+      <div>フォーム<br>台帳設計</div>
+      <div>GASによる<br>自動化</div>
+      <div>通知・帳票<br>連携</div>
+      <div>AI連携<br>活用</div>
+      <div>運用設計と<br>導入提案</div>
+    </div>
+
+    <ul>
+      <li>中小企業の日常業務に近い題材で、明日から使える自動化テンプレートを作成します。</li>
+      <li>Googleフォーム、スプレッドシート台帳、GAS、Gmail通知、Drive保存、Docs帳票、Calendar期限管理を一連の業務フローとして設計します。</li>
+      <li>GeminiのGoogle Workspace連携が使える場合と使えない場合の代替運用まで含め、最終成果物としてGASミニプロトタイプ、運用設計書、導入提案書を作成します。</li>
+    </ul>
+
+    <div class="footer">
+      <span>Google Workspace・GASで進めるAI業務効率化/DX実践講座。</span>
+      <span class="page-mark">1</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">1. 研修概要</h2>
+
+    <table>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+      <tr>
+        <td class="num">方式</td>
+        <td>eラーニング、オンラインワークショップ、またはハイブリッド。LMSによる受講状況、受講時間、課題提出、修了確認の記録を前提にします。</td>
+      </tr>
+      <tr>
+        <td class="num">時間</td>
+        <td>6回、各120分、合計約12時間。2か月以内を目安に、実務演習と課題作成を組み合わせて進めます。</td>
+      </tr>
+      <tr>
+        <td class="num">環境</td>
+        <td>Google Workspaceまたは検証用Googleアカウント、サンプルデータ、ダミー顧客情報を使用します。</td>
+      </tr>
+      <tr>
+        <td class="num">成果物</td>
+        <td>業務棚卸しシート、フォーム設計書、スプレッドシート台帳、Gem設計書、Gemini・Meet活用メモ、GASミニプロトタイプ、通知文テンプレート、運用設計書、リスクチェックリスト、導入提案書。</td>
+      </tr>
+    </table>
+
+    <h2>よくある悩み・導入背景</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>業務の分断</strong>
+        <p>Gmail、Sheets、Driveを個別に使うだけで、受付、管理、通知、保存が業務フローとしてつながっていない。</p>
+      </div>
+      <div class="box">
+        <strong>属人化と確認漏れ</strong>
+        <p>担当者ごとの手作業に依存し、転記ミス、確認漏れ、対応遅れが起きやすい。</p>
+      </div>
+      <div class="box">
+        <strong>フォーム活用の不足</strong>
+        <p>Googleフォームを使っていても、回答後の採番、通知、ステータス管理、保存が手作業になっている。</p>
+      </div>
+      <div class="box">
+        <strong>低コストで始めたい</strong>
+        <p>外部ツールを増やす前に、今あるGoogle WorkspaceとGemini/Gemで小さく業務改善を始めたい。</p>
+      </div>
+    </div>
+
+    <div class="photo-panel">
+      <img src="素材/中扉フロー画像-gptimage2-logo参照.png" alt="業務データ、通知、承認をひとつの運用フローへ">
+    </div>
+
+    <h2>レベル3相当の評価観点</h2>
+    <ul class="checklist">
+      <li>対象業務の課題、原因、改善目的を説明できる</li>
+      <li>自動化する処理と人が確認する処理を切り分けられる</li>
+      <li>対象データ、入力元、出力先、権限、更新頻度を整理できる</li>
+      <li>GASのサンプルコードを読み、業務に合わせて一部修正できる</li>
+      <li>ログ、エラー通知、手動復旧方法を設計できる</li>
+      <li>効果指標と導入ステップを含む改善提案を作成できる</li>
+    </ul>
+
+    <div class="footer">
+      <span>研修概要</span>
+      <span class="page-mark">2</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">2. カリキュラム</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>回</th>
+          <th>テーマ</th>
+          <th>主な内容</th>
+          <th>成果物</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td>業務DXの基礎とGoogle Workspace活用設計</td>
+          <td>中小企業のDX課題、Excel的な手作業、Google Workspace、AI/GASで置き換える範囲、As-Is/To-Be。</td>
+          <td>業務棚卸しシート、AI/GAS活用候補リスト</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>フォームとスプレッドシートの受付・台帳設計</td>
+          <td>Forms、Sheetsを使った受付・管理の設計、データ項目、入力ルール、権限。</td>
+          <td>受付フォーム、管理台帳、データ項目定義</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>GASでExcel的な処理を自動化する</td>
+          <td>GASの基本、SpreadsheetApp、行取得、条件抽出、転記、集計、重複チェック、ログ。</td>
+          <td>スプレッドシート自動処理スクリプト</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>Gem/Geminiを使った文書作成・分類・要約</td>
+          <td>Geminiアプリ、Gem作成、GeminiのGoogle Workspace連携、問い合わせ分類、返信案、日報要約、資料要約、GASコード読解。</td>
+          <td>Gem設計書、Gemini・Meet活用メモ、AI活用プロンプト</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>AI/GAS自動化の要件定義・運用設計</td>
+          <td>フォーム送信、通知、帳票、AI手動連携、GeminiのGoogle Workspace連携利用可否、例外処理、AI入力禁止、権限、ログ、復旧手順。</td>
+          <td>要件定義メモ、運用設計書、リスクチェックリスト</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td>AI業務効率化プロジェクト提案書の作成</td>
+          <td>KPI、削減時間試算、Gem/GAS/GeminiのGoogle Workspace連携活用、録画用作業風景、導入ロードマップ、改善サイクル。</td>
+          <td>AI/GASミニプロトタイプ、導入提案書</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>演習テーマ例</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>問い合わせ管理</strong>
+        <p>Google Formsで受け付けた問い合わせをSheetsに集約し、Gemで分類案と返信案を作る。</p>
+      </div>
+      <div class="box">
+        <strong>Excel的処理の自動化</strong>
+        <p>CSV貼り付けデータを整形し、重複を検出し、未対応行だけ別シートへ転記する。</p>
+      </div>
+      <div class="box">
+        <strong>週次レポート</strong>
+        <p>日報や作業報告をSheetsに集約し、部署別・担当者別・週別に集計し、Gemini/Gemで要約下書きを作る。</p>
+      </div>
+      <div class="box">
+        <strong>期限リマインド</strong>
+        <p>期限が近いタスクをCalendar/Gmail/Gmailでリマインドし、対応漏れを防ぐ。</p>
+      </div>
+      <div class="box">
+        <strong>Drive/Docs要約</strong>
+        <p>ダミー議事録や報告書をGeminiのGoogle Workspace連携またはGemへの貼り付けで要約する。</p>
+      </div>
+      <div class="box">
+        <strong>顧客フォロー</strong>
+        <p>架空フォロー台帳から次回提案、返信案、Calendar登録候補を作る。</p>
+      </div>
+    </div>
+
+    <h2>最終成果物</h2>
+    <div class="kpi">
+      <div><b>Prototype</b><span>AI/GASミニプロトタイプ</span></div>
+      <div><b>Operation</b><span>ログ・権限・復旧を含む運用設計書</span></div>
+      <div><b>Risk</b><span>AI入力禁止と通知・権限のチェックリスト</span></div>
+      <div><b>Proposal</b><span>KPIとロードマップを含む導入提案書</span></div>
+    </div>
+
+    <div class="footer">
+      <span>カリキュラム</span>
+      <span class="page-mark">3</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">3. 詳細カリキュラム</h2>
+
+    <h3>第1回: 業務DXの基礎とGoogle Workspace活用設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>中小企業の業務DX</td><td>Google Workspaceで始める小さなDX、Google Workspace、今回扱う範囲と扱わない範囲</td><td class="time">20分</td></tr>
+      <tr><td>業務課題の可視化</td><td>Excel的な手作業、転記、集計、確認漏れ、属人化の洗い出し</td><td class="time">30分</td></tr>
+      <tr><td>As-Is/To-Be設計</td><td>現状業務フロー、理想業務フロー、関数・GAS・AI・人の確認の切り分け</td><td class="time">30分</td></tr>
+      <tr><td>改善候補の選定</td><td>効果、頻度、難易度、リスクで優先順位をつける</td><td class="time">20分</td></tr>
+      <tr><td>演習</td><td>自社または共通ケースの業務棚卸しシートを作る</td><td class="time">20分</td></tr>
+    </table>
+
+    <h3>第2回: フォームとスプレッドシートの受付・台帳設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>受付業務の全体像</td><td>問い合わせ、申請、アンケート、日報をフォーム化する考え方</td><td class="time">20分</td></tr>
+      <tr><td>Sheets設計</td><td>受付番号、ステータス、担当者、期限、更新日時、入力規則、集計項目</td><td class="time">30分</td></tr>
+      <tr><td>Forms/Gmail連携</td><td>受付フォーム、回答先シート、確認メール、担当者通知の整理</td><td class="time">25分</td></tr>
+      <tr><td>Drive設計</td><td>フォルダ構成、命名規則、テンプレート、権限管理</td><td class="time">25分</td></tr>
+      <tr><td>演習</td><td>受付・管理シートと通知設計メモを作る</td><td class="time">20分</td></tr>
+    </table>
+
+    <h3>第3回: GASでExcel的な処理を自動化する</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>GASの基礎</td><td>Apps Scriptの役割、エディタ、実行、承認、ログ</td><td class="time">20分</td></tr>
+      <tr><td>Sheets自動化</td><td>データ取得、条件抽出、転記、集計、重複チェック、ステータス更新</td><td class="time">35分</td></tr>
+      <tr><td>カスタムメニュー</td><td>現場担当者が押せる実行ボタン、手動再実行</td><td class="time">20分</td></tr>
+      <tr><td>例外処理</td><td>空欄、重複、対象行なし、ログ、エラー通知</td><td class="time">25分</td></tr>
+      <tr><td>演習</td><td>未対応行抽出と転記のミニスクリプトを作る</td><td class="time">20分</td></tr>
+    </table>
+
+    <div class="footer">
+      <span>詳細カリキュラム 1</span>
+      <span class="page-mark">4</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">4. 詳細カリキュラム</h2>
+
+    <h3>第4回: Gem/Geminiを使った文書作成・分類・要約</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>AI活用の位置づけ</td><td>GASは処理、Gemini/Gemは分類・要約・下書き、人は確認</td><td class="time">20分</td></tr>
+      <tr><td>GeminiのGoogle Workspace連携</td><td>Gmail、Drive、Docs、Calendarの検索・要約・整理と代替手順</td><td class="time">25分</td></tr>
+      <tr><td>Gem設計</td><td>目的、役割、入力、出力形式、禁止事項、判断基準、参照範囲</td><td class="time">20分</td></tr>
+      <tr><td>業務ユースケース</td><td>問い合わせ分類、返信案、日報要約、Drive資料要約、GASコード読解</td><td class="time">30分</td></tr>
+      <tr><td>AI出力レビュー</td><td>事実、推測、要確認、利用不可、修正メモ</td><td class="time">25分</td></tr>
+      <tr><td>演習</td><td>業務用Gem設計書とAI活用プロンプトを作る</td><td class="time">20分</td></tr>
+    </table>
+
+    <h3>第5回: AI/GAS自動化の要件定義・運用設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>要件定義</td><td>対象業務、利用者、入力元、出力先、GAS処理、AI処理、GeminiのGoogle Workspace連携利用可否</td><td class="time">30分</td></tr>
+      <tr><td>フォーム通知・帳票</td><td>受付番号、確認メール、担当者通知、Drive保存、Docs差し込み</td><td class="time">25分</td></tr>
+      <tr><td>運用設計</td><td>AI入力禁止、ログ、出力レビュー、GeminiのGoogle Workspace連携不可時の代替、エラー通知、手動復旧</td><td class="time">30分</td></tr>
+      <tr><td>制限とリスク</td><td>GASの割り当て制限、大量処理、送信上限、停止時の対応</td><td class="time">20分</td></tr>
+      <tr><td>演習</td><td>要件定義メモとリスクチェックリストを作る</td><td class="time">15分</td></tr>
+    </table>
+
+    <h3>第6回: AI業務効率化プロジェクト提案書の作成</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>提案書の構成</td><td>背景、課題、対象業務、To-Be、AI/GAS/GeminiのGoogle Workspace連携構成、運用体制</td><td class="time">20分</td></tr>
+      <tr><td>KPIと効果試算</td><td>削減時間、対応速度、ミス削減、品質安定、費用対効果</td><td class="time">25分</td></tr>
+      <tr><td>ロードマップ</td><td>試行、本番化、教育、運用、改善の段階設計</td><td class="time">25分</td></tr>
+      <tr><td>発表・レビュー</td><td>作業風景、ミニプロトタイプ、運用設計、リスク、導入効果の説明</td><td class="time">40分</td></tr>
+      <tr><td>振り返り</td><td>自社導入に向けた次のアクション整理</td><td class="time">10分</td></tr>
+    </table>
+
+    <h2>注意事項</h2>
+    <ul>
+      <li>顧客情報、社員情報、契約情報などは演習で扱わず、ダミーデータまたは匿名化データを使います。</li>
+      <li>Gemini/GemとGeminiのGoogle Workspace連携は、無料範囲または利用環境に応じて説明できる業務AI活用として扱い、課金や管理者設定が必要な高度機能は必須演習にしません。</li>
+      <li>Gemini連携が使えない場合も、Sheets、Forms、GAS、Gemへの貼り付け、ダミーデータで同じ業務フローを再現します。</li>
+      <li>GASには実行時間やサービス利用回数などの制限があるため、大量処理や基幹業務の本番利用は別途設計・検証が必要です。</li>
+      <li>通知や帳票作成を自動化する場合も、重要な送信・承認には人の確認工程を入れます。</li>
+    </ul>
+
+    <div class="footer">
+      <span>詳細カリキュラム 2</span>
+      <span class="page-mark">5</span>
+    </div>
+  </section>
+</body>
+</html>
