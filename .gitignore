@@ -3,19 +3,20 @@
 .env.*
 !.env.example
 
-# Local/private working files
-private/
+# ローカル・非公開作業ファイル
+非公開/
 *.local.*
 
-# Generated outputs
-exports/*
-!exports/README.md
+# 書き出し成果物
+書き出し/*
+!書き出し/README.md
+!書き出し/.gitkeep
 
-# Downloaded reference sources kept local to avoid rehosting third-party PDFs
-research/sources/*.pdf
-research/sources/**/*.pdf
+# 再配布を避けるためローカルに保持する出典PDF
+調査/出典資料/*.pdf
+調査/出典資料/**/*.pdf
 
-# Dependencies and caches
+# 依存関係とキャッシュ
 node_modules/
 .venv/
 venv/
@@ -24,7 +25,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# Editor files
+# エディタ設定
 .idea/
 .vscode/
 .obsidian/

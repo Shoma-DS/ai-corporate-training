@@ -1,0 +1,69 @@
+templates:
+  - id: isometric-corporate-clean
+    name: Isometric Corporate Clean
+    source_file: スライド/テンプレート/アイソメトリック法人向けクリーン.md
+    style_tags:
+      - isometric
+      - corporate
+      - screenshot-compatible
+      - official-logo-compatible
+      - white-background
+      - navy-teal
+      - card-layout
+      - dx-ai-training
+    best_for:
+      - 法人研修の講座紹介資料
+      - DX、AX、生成AI、データ活用、業務効率化の研修資料
+      - 業務フロー、学習ロードマップ、運用設計、成果物を整理する資料
+      - 公式ロゴやスクリーンショットと図解を併用するサービス紹介資料
+      - 初心者から中級者までに向けた実務的で清潔な印象のスライド
+    avoid_for:
+      - 写真中心の事例紹介資料
+      - 強い情緒訴求やブランド広告色の強い資料
+      - 黒背景、派手なグラデーション、イベント告知風の資料
+      - 画像生成AIだけで実在ロゴや実在サービス画面を再現するスライド
+    default_slide_mapping:
+      title_and_tagline: scene-environment
+      training_purpose: hierarchy-pyramid
+      common_pain_points: network-relationship
+      solution_overview: process-flow
+      after_training_capabilities: module-block
+      training_strengths: module-block
+      audience_and_prerequisites: persona-audience
+      delivery_time_management: structure-layer
+      curriculum_table: roadmap-timeline
+      exercises_deliverables_takeaway: process-flow
+      cautions_application_operations: governance-risk
+    diagram_patterns:
+      - id: process-flow
+        name: プロセス・フロー型
+      - id: hierarchy-pyramid
+        name: 階層・ピラミッド型
+      - id: structure-layer
+        name: 構造・レイヤー型
+      - id: comparison-contrast
+        name: 比較・対比型
+      - id: network-relationship
+        name: ネットワーク・関係性型
+      - id: scene-environment
+        name: シーン・環境表現型
+      - id: data-insight
+        name: データ・インサイト型
+      - id: module-block
+        name: モジュール・ブロック型
+      - id: roadmap-timeline
+        name: ロードマップ・タイムライン型
+      - id: before-after-transformation
+        name: Before/After・変革型
+      - id: funnel-selection
+        name: ファネル・選定型
+      - id: matrix-classification
+        name: マトリクス・分類型
+      - id: continuous-operation-loop
+        name: ループ・継続運用型
+      - id: governance-risk
+        name: ガバナンス・リスク管理型
+      - id: persona-audience
+        name: ペルソナ・対象者型
+      - id: checklist-confirmation
+        name: チェックリスト・確認型
