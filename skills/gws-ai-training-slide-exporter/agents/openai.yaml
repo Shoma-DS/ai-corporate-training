@@ -1,0 +1,3 @@
+display_name: "GWS研修スライド書き出し"
+short_description: "AI法人研修の画像スライドと台本をGoogle Drive/Slidesへ自動保存する"
+default_prompt: "ローカルのAI法人研修セッションを確認し、gws CLIでDriveフォルダ、Googleスライド、スピーカーノート挿入まで実行してください。"

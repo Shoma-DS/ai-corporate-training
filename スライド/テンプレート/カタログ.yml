@@ -67,3 +67,68 @@ templates:
         name: ペルソナ・対象者型
       - id: checklist-confirmation
         name: チェックリスト・確認型
+  - id: soft-isometric-corporate-warm
+    name: Soft Isometric Corporate Warm
+    source_file: スライド/テンプレート/ソフトアイソメトリック法人向けウォーム.md
+    style_tags:
+      - soft-isometric
+      - corporate
+      - warm
+      - rounded-card-layout
+      - friendly-people
+      - screenshot-compatible
+      - official-logo-compatible
+      - white-background
+      - navy-blue
+      - risk-and-permission-training
+    best_for:
+      - 権限設計、共有範囲、共同編集、情報管理をやさしく説明する研修スライド
+      - Google Drive、フォーム、スプレッドシートなどの操作前後に、役割や注意点を整理する資料
+      - 初心者から中級者に向けて、硬い制度・ルール・リスク確認を読みやすく伝える資料
+      - 人物イラスト、角丸カード、表、チェックマーク、注意喚起を組み合わせる実務説明スライド
+      - 画面共有前の導入、演習レビュー、チェックリスト、持ち帰り確認
+    avoid_for:
+      - 高度なシステム構成、RAG設計、データ基盤アーキテクチャを厳密に説明する資料
+      - 写真中心の事例紹介資料
+      - 強いブランド広告色、イベント告知風、派手なグラデーション中心の資料
+      - 黒背景やサイバー感の強い資料
+      - 画像生成AIだけで実在ロゴや実在サービス画面を再現するスライド
+    default_slide_mapping:
+      title_and_tagline: summary-takeaway
+      training_purpose: soft-process-flow
+      common_pain_points: before-after-cards
+      solution_overview: soft-process-flow
+      after_training_capabilities: checklist-review
+      training_strengths: role-card-set
+      audience_and_prerequisites: role-card-set
+      delivery_time_management: checklist-review
+      curriculum_table: soft-process-flow
+      exercises_deliverables_takeaway: workshop-instruction
+      cautions_application_operations: caution-risk-check
+    diagram_patterns:
+      - id: permission-role-matrix
+        name: 権限・役割マトリクス型
+      - id: collaboration-scope-check
+        name: 共同編集・見せてよい範囲確認型
+      - id: soft-process-flow
+        name: ソフトプロセス・フロー型
+      - id: role-card-set
+        name: 役割カード型
+      - id: caution-risk-check
+        name: 注意喚起・リスク確認型
+      - id: ui-mockup-comparison
+        name: UIモック比較型
+      - id: data-table-checkpoints
+        name: データ表・確認観点型
+      - id: folder-structure
+        name: 保存場所・フォルダ構造型
+      - id: checklist-review
+        name: チェックリスト・レビュー型
+      - id: before-after-cards
+        name: Before/Afterカード型
+      - id: workshop-instruction
+        name: ワーク指示・演習導入型
+      - id: summary-takeaway
+        name: まとめ・持ち帰り型
+      - id: screen-share-transition
+        name: 画面共有案内型
