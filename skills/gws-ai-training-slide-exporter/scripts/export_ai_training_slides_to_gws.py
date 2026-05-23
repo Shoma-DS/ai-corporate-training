@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import html
 import json
+import mimetypes
 import os
 import re
 import shutil
@@ -77,8 +79,22 @@ def drive_literal(value: str) -> str:
     return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
 
 
-def find_folder(name: str, parent_id: str | None, *, dry_run: bool) -> dict[str, Any] | None:
-    q = f"name = {drive_literal(name)} and mimeType = {drive_literal(FOLDER_MIME)} and trashed = false"
+def dryrun_id(prefix: str, name: str) -> str:
+    digest = hashlib.sha1(f"{prefix}:{name}".encode("utf-8")).hexdigest()[:10]
+    return f"DRYRUN-{prefix}-{digest}"
+
+
+def find_files(
+    name: str,
+    parent_id: str | None,
+    *,
+    dry_run: bool,
+    mime_type: str | None = None,
+    page_size: int = 10,
+) -> list[dict[str, Any]]:
+    q = f"name = {drive_literal(name)} and trashed = false"
+    if mime_type:
+        q += f" and mimeType = {drive_literal(mime_type)}"
     if parent_id:
         q += f" and {drive_literal(parent_id)} in parents"
     result = gws(
@@ -87,14 +103,18 @@ def find_folder(name: str, parent_id: str | None, *, dry_run: bool) -> dict[str,
         "list",
         params={
             "q": q,
-            "fields": "files(id,name,webViewLink)",
-            "pageSize": 10,
+            "fields": "files(id,name,mimeType,webViewLink,modifiedTime)",
+            "pageSize": page_size,
             "supportsAllDrives": True,
             "includeItemsFromAllDrives": True,
         },
         dry_run=dry_run,
     )
-    files = result.get("files", [])
+    return result.get("files", [])
+
+
+def find_folder(name: str, parent_id: str | None, *, dry_run: bool) -> dict[str, Any] | None:
+    files = find_files(name, parent_id, dry_run=dry_run, mime_type=FOLDER_MIME)
     if len(files) > 1:
         raise ExportError(f"Drive folder name is duplicated: {name}. Use --root-folder-id or rename folders.")
     return files[0] if files else None
@@ -116,8 +136,152 @@ def ensure_folder(name: str, parent_id: str | None, *, dry_run: bool) -> dict[st
         dry_run=dry_run,
     )
     if dry_run:
-        created = {"id": "DRYRUN-" + re.sub(r"[^A-Za-z0-9_-]+", "-", name).strip("-"), "name": name}
+        created = {"id": dryrun_id("folder", name), "name": name}
     return {**created, "created": True}
+
+
+def find_existing_file(
+    name: str,
+    parent_id: str | None,
+    *,
+    dry_run: bool,
+    mime_type: str | None = None,
+) -> dict[str, Any] | None:
+    files = find_files(name, parent_id, dry_run=dry_run, mime_type=mime_type)
+    if not files:
+        return None
+    return {**files[0], "duplicateCount": len(files)}
+
+
+def upload_mime_type(path: Path) -> str:
+    explicit = {
+        ".csv": "text/csv",
+        ".md": "text/markdown",
+        ".markdown": "text/markdown",
+        ".txt": "text/plain",
+        ".json": "application/json",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".pptx": PPTX_MIME,
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".pdf": "application/pdf",
+    }
+    if path.suffix.lower() in explicit:
+        return explicit[path.suffix.lower()]
+    return mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+
+
+def public_safe_path(path: Path) -> None:
+    if "非公開" in path.resolve().parts:
+        raise ExportError(f"Refusing to export private file or folder: {path}")
+
+
+def upload_file_if_missing(
+    path: Path,
+    parent_id: str,
+    *,
+    dry_run: bool,
+    label: str,
+) -> dict[str, Any]:
+    public_safe_path(path)
+    existing = find_existing_file(path.name, parent_id, dry_run=dry_run)
+    if existing:
+        return {
+            "label": label,
+            "localPath": str(path),
+            "driveFile": existing,
+            "created": False,
+            "skipped": True,
+        }
+    created = gws(
+        "drive",
+        "files",
+        "create",
+        params={"fields": "id,name,mimeType,webViewLink,modifiedTime", "supportsAllDrives": True},
+        body={"name": path.name, "parents": [parent_id]},
+        upload=path,
+        upload_content_type=upload_mime_type(path),
+        dry_run=dry_run,
+    )
+    if dry_run:
+        created = {"id": dryrun_id("file", path.name), "name": path.name}
+    return {
+        "label": label,
+        "localPath": str(path),
+        "driveFile": created,
+        "created": True,
+        "skipped": False,
+    }
+
+
+def iter_uploadable_files(root: Path) -> list[Path]:
+    if not root.is_dir():
+        return []
+    public_safe_path(root)
+    files = [
+        p
+        for p in root.rglob("*")
+        if p.is_file() and not any(part.startswith(".") for part in p.relative_to(root).parts)
+    ]
+    return sorted(files, key=lambda p: p.relative_to(root).as_posix())
+
+
+def ensure_relative_drive_folder(base: dict[str, Any], base_local_dir: Path, file_path: Path, *, dry_run: bool) -> dict[str, Any]:
+    parent = base
+    rel_parent = file_path.parent.relative_to(base_local_dir)
+    for part in rel_parent.parts:
+        parent = ensure_folder(part, parent.get("id"), dry_run=dry_run)
+    return parent
+
+
+def upload_session_materials(session_dir: Path, session_folder: dict[str, Any], *, dry_run: bool) -> dict[str, Any]:
+    uploaded: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    session_folder_id = session_folder.get("id")
+    if not session_folder_id:
+        raise ExportError(f"Missing Drive session folder id for: {session_dir}")
+
+    for filename in ["講師台本.md", "スライド案.md"]:
+        path = session_dir / filename
+        if path.is_file():
+            uploaded.append(upload_file_if_missing(path, session_folder_id, dry_run=dry_run, label=filename))
+        else:
+            warnings.append(f"Missing session material: {path}")
+
+    exercise_dir = session_dir / "演習データ"
+    exercise_files = iter_uploadable_files(exercise_dir)
+    exercise_folder: dict[str, Any] | None = None
+    if exercise_files:
+        exercise_folder = ensure_folder("演習データ", session_folder_id, dry_run=dry_run)
+        for path in exercise_files:
+            parent = ensure_relative_drive_folder(exercise_folder, exercise_dir, path, dry_run=dry_run)
+            uploaded.append(
+                upload_file_if_missing(
+                    path,
+                    parent.get("id"),
+                    dry_run=dry_run,
+                    label="演習データ/" + path.relative_to(exercise_dir).as_posix(),
+                )
+            )
+    elif exercise_dir.is_dir():
+        warnings.append(f"No uploadable exercise data files found in: {exercise_dir}")
+    else:
+        warnings.append(f"Missing exercise data directory: {exercise_dir}")
+
+    return {
+        "exerciseFolder": exercise_folder,
+        "uploadedFiles": uploaded,
+        "warnings": warnings,
+    }
+
+
+def temp_parent_dir(value: str) -> Path:
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def natural_slide_key(path: Path) -> tuple[int, str]:
@@ -426,34 +590,51 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
             root = ensure_folder(args.root_folder_name, None, dry_run=args.dry_run)
     course_folder = ensure_folder(course_title(course_dir), root.get("id"), dry_run=args.dry_run)
     session_folder = ensure_folder(session_title(session_dir), course_folder.get("id"), dry_run=args.dry_run)
+    materials = upload_session_materials(session_dir, session_folder, dry_run=args.dry_run)
 
     deck_title = args.deck_title or session_title(session_dir)
-    with tempfile.TemporaryDirectory(prefix="ai-training-gws-") as tmp:
-        pptx_path = Path(tmp) / f"{deck_title}.pptx"
-        build_pptx(images, pptx_path, deck_title)
-        if args.keep_pptx:
-            keep_path = Path(args.keep_pptx).expanduser()
-            keep_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(pptx_path, keep_path)
-        created = gws(
-            "drive",
-            "files",
-            "create",
-            params={"fields": "id,name,webViewLink", "supportsAllDrives": True},
-            body={"name": deck_title, "parents": [session_folder.get("id")], "mimeType": GOOGLE_SLIDES_MIME},
-            upload=pptx_path,
-            upload_content_type=PPTX_MIME,
-            dry_run=args.dry_run,
-        )
     warnings = []
-    if created.get("id"):
-        warnings = insert_speaker_notes(created["id"], images, notes, dry_run=args.dry_run)
+    existing_deck = find_existing_file(
+        deck_title,
+        session_folder.get("id"),
+        dry_run=args.dry_run,
+        mime_type=GOOGLE_SLIDES_MIME,
+    )
+    if existing_deck:
+        if existing_deck.get("duplicateCount", 1) > 1:
+            warnings.append(f"Multiple Google Slides decks already exist for: {deck_title}")
+        presentation = {**existing_deck, "created": False, "skipped": True}
+    else:
+        with tempfile.TemporaryDirectory(prefix="ai-training-gws-", dir=temp_parent_dir(args.tmp_dir)) as tmp:
+            pptx_path = Path(tmp) / f"{deck_title}.pptx"
+            build_pptx(images, pptx_path, deck_title)
+            if args.keep_pptx:
+                keep_path = Path(args.keep_pptx).expanduser()
+                keep_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(pptx_path, keep_path)
+            presentation = gws(
+                "drive",
+                "files",
+                "create",
+                params={"fields": "id,name,mimeType,webViewLink,modifiedTime", "supportsAllDrives": True},
+                body={"name": deck_title, "parents": [session_folder.get("id")], "mimeType": GOOGLE_SLIDES_MIME},
+                upload=pptx_path,
+                upload_content_type=PPTX_MIME,
+                dry_run=args.dry_run,
+            )
+        if args.dry_run:
+            presentation = {"id": dryrun_id("slides", deck_title), "name": deck_title}
+        presentation = {**presentation, "created": True, "skipped": False}
+        if presentation.get("id") and not args.dry_run:
+            warnings = insert_speaker_notes(presentation["id"], images, notes, dry_run=args.dry_run)
+    warnings.extend(materials.get("warnings", []))
 
     result = {
         "rootFolder": root,
         "courseFolder": course_folder,
         "sessionFolder": session_folder,
-        "presentation": created,
+        "presentation": presentation,
+        "materials": materials,
         "slideImageCount": len(images),
         "speakerNoteBlockCount": len(notes),
         "warnings": warnings,
@@ -474,6 +655,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Print planned gws commands without changing Drive")
     parser.add_argument("--report-json", help="Write JSON report. Prefer 非公開/ for Drive links.")
     parser.add_argument("--keep-pptx", help="Keep the temporary PPTX at this path for debugging")
+    parser.add_argument(
+        "--tmp-dir",
+        default="書き出し/gws-ai-training-slide-exporter/tmp",
+        help=(
+            "Repository-local temp directory for PPTX upload files used by this gws-based exporter. "
+            "Some gws --upload calls in this environment reject files outside the current repository; "
+            "this does not apply to rclone Drive copies."
+        ),
+    )
     args = parser.parse_args()
     if args.all_sessions:
         if not args.course_dir:
