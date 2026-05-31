@@ -1,0 +1,16 @@
+# ダミーMCP設定例
+# 実トークン、認証キー、社内URLは書かない
+
+[mcp_servers.sample_docs]
+command = "node"
+args = ["./sample-mcp-server.js"]
+enabled = true
+startup_timeout_sec = 10
+tool_timeout_sec = 30
+enabled_tools = ["search_faq", "read_policy_summary"]
+default_tools_approval_mode = "prompt"
+
+[mcp_servers.sample_ticket]
+url = "https://example.invalid/mcp"
+enabled = false
+default_tools_approval_mode = "prompt"

@@ -1,0 +1,5 @@
+date,operation,input_ref,result,status,reviewer,next_action
+2026-05-10,FAQ検索,INQ-001,候補3件,success,担当者A,回答案確認
+2026-05-10,問い合わせ分類,INQ-002,優先度中,success,担当者B,台帳反映
+2026-05-11,問い合わせ分類,INQ-006,本文空欄,warning,担当者A,手動確認
+2026-05-11,チケット下書き作成,INQ-003,承認待ち,pending,承認者A,承認後に登録
