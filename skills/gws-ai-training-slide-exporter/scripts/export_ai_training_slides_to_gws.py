@@ -500,6 +500,23 @@ def build_pptx(images: list[Path], out_path: Path, title: str) -> None:
             zf.write(image, f"ppt/media/image{idx}.{ext}")
 
 
+def write_canva_bundle(
+    pptx_path: Path,
+    output_dir: str,
+    session_dir: Path,
+    *,
+    dry_run: bool,
+) -> Path:
+    target_dir = Path(output_dir).expanduser()
+    if not dry_run:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"{session_dir.name}.pptx"
+    if not dry_run:
+        shutil.copy2(pptx_path, target)
+    return target
+
+
+
 def presentation_from_drive(presentation_id: str, *, dry_run: bool) -> dict[str, Any]:
     last_error: Exception | None = None
     for _ in range(10):
@@ -593,6 +610,7 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
     materials = upload_session_materials(session_dir, session_folder, dry_run=args.dry_run)
 
     deck_title = args.deck_title or session_title(session_dir)
+    canva_bundle_path: Path | None = None
     warnings = []
     existing_deck = find_existing_file(
         deck_title,
@@ -601,6 +619,16 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
         mime_type=GOOGLE_SLIDES_MIME,
     )
     if existing_deck:
+        if args.canva_pptx_dir:
+            with tempfile.TemporaryDirectory(prefix="ai-training-gws-", dir=temp_parent_dir(args.tmp_dir)) as tmp:
+                pptx_path = Path(tmp) / f"{deck_title}.pptx"
+                build_pptx(images, pptx_path, deck_title)
+                canva_bundle_path = write_canva_bundle(
+                    pptx_path,
+                    args.canva_pptx_dir,
+                    session_dir,
+                    dry_run=args.dry_run,
+                )
         if existing_deck.get("duplicateCount", 1) > 1:
             warnings.append(f"Multiple Google Slides decks already exist for: {deck_title}")
         presentation = {**existing_deck, "created": False, "skipped": True}
@@ -622,6 +650,13 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
                 upload_content_type=PPTX_MIME,
                 dry_run=args.dry_run,
             )
+            if args.canva_pptx_dir:
+                canva_bundle_path = write_canva_bundle(
+                    pptx_path,
+                    args.canva_pptx_dir,
+                    session_dir,
+                    dry_run=args.dry_run,
+                )
         if args.dry_run:
             presentation = {"id": dryrun_id("slides", deck_title), "name": deck_title}
         presentation = {**presentation, "created": True, "skipped": False}
@@ -635,6 +670,7 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
         "sessionFolder": session_folder,
         "presentation": presentation,
         "materials": materials,
+        "canvaPptxPath": str(canva_bundle_path) if canva_bundle_path else "",
         "slideImageCount": len(images),
         "speakerNoteBlockCount": len(notes),
         "warnings": warnings,
@@ -652,6 +688,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--root-folder-id", help="Known Drive folder ID to use as root")
     parser.add_argument("--deck-title", help="Override Google Slides title for a single session")
     parser.add_argument("--allow-missing-notes", action="store_true", help="Continue even when Sxx image has no script block")
+    parser.add_argument(
+        "--canva-pptx-dir",
+        help="Write per-session PPTX bundle here for Canva single-presentation import workflows",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print planned gws commands without changing Drive")
     parser.add_argument("--report-json", help="Write JSON report. Prefer 非公開/ for Drive links.")
     parser.add_argument("--keep-pptx", help="Keep the temporary PPTX at this path for debugging")
