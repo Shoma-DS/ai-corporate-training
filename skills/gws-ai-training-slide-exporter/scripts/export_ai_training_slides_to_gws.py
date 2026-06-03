@@ -507,13 +507,39 @@ def write_canva_bundle(
     *,
     dry_run: bool,
 ) -> Path:
-    target_dir = Path(output_dir).expanduser()
+    target_dir = Path(output_dir).expanduser() / course_title(session_dir.parent)
     if not dry_run:
         target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{session_dir.name}.pptx"
     if not dry_run:
         shutil.copy2(pptx_path, target)
     return target
+
+
+def write_canva_course_bundle(
+    pptx_path: Path,
+    output_dir: str,
+    course_dir: Path,
+    *,
+    dry_run: bool,
+) -> Path:
+    course_name = course_title(course_dir)
+    target_dir = Path(output_dir).expanduser() / course_name
+    if not dry_run:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"{course_name}.pptx"
+    if not dry_run:
+        shutil.copy2(pptx_path, target)
+    return target
+
+
+def canva_bundle_target(output_dir: str, session_dir: Path) -> Path:
+    return Path(output_dir).expanduser() / course_title(session_dir.parent) / f"{session_dir.name}.pptx"
+
+
+def canva_course_bundle_target(output_dir: str, course_dir: Path) -> Path:
+    course_name = course_title(course_dir)
+    return Path(output_dir).expanduser() / course_name / f"{course_name}.pptx"
 
 
 
@@ -582,22 +608,99 @@ def numbered_sessions(course_dir: Path) -> list[Path]:
     return sorted([p for p in course_dir.iterdir() if p.is_dir() and re.match(r"\d{2}-", p.name)], key=lambda p: p.name)
 
 
+def export_course_canva_bundle(course_dir: Path, args: argparse.Namespace) -> dict[str, Any]:
+    course_dir = course_dir.resolve()
+    if "非公開" in course_dir.parts:
+        raise ExportError(f"Refusing to export private folder: {course_dir}")
+    if not args.canva_pptx_dir:
+        raise ExportError("--canva-course-pptx-only requires --canva-pptx-dir")
+
+    sessions = numbered_sessions(course_dir)
+    if not sessions:
+        raise ExportError(f"No numbered sessions found under: {course_dir}")
+    images: list[Path] = []
+    session_counts: dict[str, int] = {}
+    for session_dir in sessions:
+        session_images = collect_slide_images(session_dir)
+        session_counts[session_dir.name] = len(session_images)
+        images.extend(session_images)
+
+    title = course_title(course_dir)
+    print(f"Course: {course_dir}")
+    print(f"Sessions: {len(sessions)}")
+    print(f"Slide images: {len(images)}")
+    if args.dry_run:
+        print("Dry run: no local bundle changes will be made.")
+
+    if args.dry_run:
+        canva_bundle_path = canva_course_bundle_target(args.canva_pptx_dir, course_dir)
+    else:
+        with tempfile.TemporaryDirectory(prefix="ai-training-gws-", dir=temp_parent_dir(args.tmp_dir)) as tmp:
+            pptx_path = Path(tmp) / f"{title}.pptx"
+            build_pptx(images, pptx_path, title)
+            canva_bundle_path = write_canva_course_bundle(
+                pptx_path,
+                args.canva_pptx_dir,
+                course_dir,
+                dry_run=args.dry_run,
+            )
+
+    result = {
+        "course": str(course_dir),
+        "canvaPptxPath": str(canva_bundle_path),
+        "slideImageCount": len(images),
+        "sessionCounts": session_counts,
+        "dryRun": args.dry_run,
+        "mode": "canva-course-pptx-only",
+    }
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return result
+
+
 def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dict[str, Any] | None = None) -> dict[str, Any]:
     session_dir = session_dir.resolve()
     if "非公開" in session_dir.parts:
         raise ExportError(f"Refusing to export private folder: {session_dir}")
     course_dir = session_dir.parent
     images = collect_slide_images(session_dir)
+    notes: dict[str, str] = {}
+
+    print(f"Session: {session_dir}")
+    print(f"Slide images: {len(images)}")
+    if args.dry_run:
+        print("Dry run: no Drive, Slides, or local bundle changes will be made.")
+
+    deck_title = args.deck_title or session_title(session_dir)
+    if args.canva_pptx_only:
+        if not args.canva_pptx_dir:
+            raise ExportError("--canva-pptx-only requires --canva-pptx-dir")
+        if args.dry_run:
+            canva_bundle_path = canva_bundle_target(args.canva_pptx_dir, session_dir)
+        else:
+            with tempfile.TemporaryDirectory(prefix="ai-training-gws-", dir=temp_parent_dir(args.tmp_dir)) as tmp:
+                pptx_path = Path(tmp) / f"{deck_title}.pptx"
+                build_pptx(images, pptx_path, deck_title)
+                canva_bundle_path = write_canva_bundle(
+                    pptx_path,
+                    args.canva_pptx_dir,
+                    session_dir,
+                    dry_run=args.dry_run,
+                )
+        result = {
+            "session": str(session_dir),
+            "canvaPptxPath": str(canva_bundle_path),
+            "slideImageCount": len(images),
+            "dryRun": args.dry_run,
+            "mode": "canva-pptx-only",
+        }
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return result
+
     notes = parse_speaker_notes(session_dir / "講師台本.md")
     missing_notes = [p.stem.upper() for p in images if p.stem.upper() not in notes]
     if missing_notes and not args.allow_missing_notes:
         raise ExportError("Missing notes for slide images: " + ", ".join(missing_notes))
-
-    print(f"Session: {session_dir}")
-    print(f"Slide images: {len(images)}")
     print(f"Speaker-note blocks: {len(notes)}")
-    if args.dry_run:
-        print("Dry run: no Drive or Slides changes will be made.")
 
     root = root_folder
     if root is None:
@@ -609,7 +712,6 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
     session_folder = ensure_folder(session_title(session_dir), course_folder.get("id"), dry_run=args.dry_run)
     materials = upload_session_materials(session_dir, session_folder, dry_run=args.dry_run)
 
-    deck_title = args.deck_title or session_title(session_dir)
     canva_bundle_path: Path | None = None
     warnings = []
     existing_deck = find_existing_file(
@@ -692,6 +794,16 @@ def parse_args() -> argparse.Namespace:
         "--canva-pptx-dir",
         help="Write per-session PPTX bundle here for Canva single-presentation import workflows",
     )
+    parser.add_argument(
+        "--canva-pptx-only",
+        action="store_true",
+        help="Only write Canva PPTX bundles from slide images; do not create Drive folders or Google Slides",
+    )
+    parser.add_argument(
+        "--canva-course-pptx-only",
+        action="store_true",
+        help="Only write one Canva PPTX bundle for the whole course at <output>/<course>/<course>.pptx",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print planned gws commands without changing Drive")
     parser.add_argument("--report-json", help="Write JSON report. Prefer 非公開/ for Drive links.")
     parser.add_argument("--keep-pptx", help="Keep the temporary PPTX at this path for debugging")
@@ -705,22 +817,37 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     args = parser.parse_args()
-    if args.all_sessions:
+    if args.canva_course_pptx_only:
+        if not args.course_dir:
+            parser.error("--canva-course-pptx-only requires --course-dir")
+        if args.session_dir:
+            parser.error("--canva-course-pptx-only cannot be used with --session-dir")
+    elif args.all_sessions:
         if not args.course_dir:
             parser.error("--all-sessions requires --course-dir")
     elif not args.session_dir:
         parser.error("Provide --session-dir, or --course-dir with --all-sessions")
     if args.deck_title and args.all_sessions:
         parser.error("--deck-title is only valid with one --session-dir")
+    if (args.canva_pptx_only or args.canva_course_pptx_only) and not args.canva_pptx_dir:
+        parser.error("--canva-pptx-only/--canva-course-pptx-only requires --canva-pptx-dir")
     return args
 
 
 def main() -> int:
     args = parse_args()
     try:
+        if args.canva_course_pptx_only:
+            results = [export_course_canva_bundle(Path(args.course_dir), args)]
+            if args.report_json:
+                report_path = Path(args.report_json)
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+            return 0
+
         sessions = numbered_sessions(Path(args.course_dir)) if args.all_sessions else [Path(args.session_dir)]
         root_folder = {"id": args.root_folder_id, "name": args.root_folder_name, "created": False} if args.root_folder_id else None
-        if args.all_sessions and not args.root_folder_id:
+        if args.all_sessions and not args.root_folder_id and not args.canva_pptx_only:
             root_folder = ensure_folder(args.root_folder_name, None, dry_run=args.dry_run)
         results = [export_session(session, args, root_folder=root_folder) for session in sessions]
         if args.report_json:

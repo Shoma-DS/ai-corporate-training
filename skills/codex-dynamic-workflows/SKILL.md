@@ -1,11 +1,13 @@
 ---
 name: codex-dynamic-workflows
-description: Plan and run AI-agent dynamic workflows for complex tasks that benefit from explicit orchestration, goal mode, subagents or simulated work packets, approval gates, integration, verification, and reusable workflow artifacts. Use when the user invokes this skill, asks for a swarm, subagents, parallel agents, a dynamic workflow, a large migration or audit, multi-track research plus implementation, or Claude Code-style workflow orchestration.
+description: Downstream coordination helper for the AI法人研修 course-production workflow. Use only when corporate-training-course-builder needs explicit orchestration, goal mode, subagents or simulated work packets, approval gates, integration, verification, or reusable workflow artifacts, or when the user explicitly asks only for workflow/subagent orchestration. Do not use as the entrypoint for "講座作成", "講座を作成してください", or broad training-material production.
 ---
 
 # AI Agent Dynamic Workflows
 
 Use this skill to turn a large task into a supervised AI-agent workflow: draft an orchestration artifact, enter goal mode when sustained execution is requested, delegate disjoint work to subagents when available, integrate results, verify the outcome, and save reusable workflow artifacts.
+
+In this repository, this skill is a downstream coordination helper. For "講座作成", "講座を作成してください", or any broad training-material production request, start with `skills/corporate-training-course-builder/SKILL.md` and use this skill only if that course workflow needs explicit packets, approvals, subagents, or reusable orchestration notes. This skill must not create a separate course-production standard.
 
 This skill works in agents that support skills. Do not claim that a local script can call subagent tools unless the current environment exposes such a runner. When no programmable runner exists, create a human-readable orchestration script and operate it through the available agent tools.
 

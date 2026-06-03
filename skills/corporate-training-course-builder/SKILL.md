@@ -1,7 +1,6 @@
 ---
 name: corporate-training-course-builder
-description: >-
-  Use when creating or updating corporate training course sessions end to end: curriculum expansion, 120-minute instructor scripts, slide outlines, image-generation prompts, GPT image 2 raster slide images, handouts, worksheets, exercise CSV/sample data, session-specific exercise-data splitting, official logos/screenshots, public/private source notes, and per-session folder organization. Also use for revising handouts or exercise data while checking online concrete examples, public practitioner use cases, and current official facts; and for instructor script polish: screen-share detailing, SME metaphors, industry-specific examples, and script readability. Trigger for one-phrase requests such as "第2回作って", "第4回の台本とスライド作って", "何回目の台本とスライド作って", "N回目の講師台本とスライド画像まで", "講師台本とスライド画像まで", "研修資料を一式作成", "配布資料と演習データも作って", "各回の演習データをその回で使うものだけにして", "全部同じに見えるCSVを直して", "ネットで具体例や活用事例を確認しながら練り直して", "スライド画像を再生成", "GPT image 2で1枚まるごと生成", "台本をブラッシュアップ", "画面共有を詳細化", or "メタファーを追加".
+description: Use as the single entrypoint when creating or updating corporate training courses and sessions end to end, including broad requests like 講座作成, 講座を作成してください, 研修資料を作って, session scripts, slide images, handouts, data, verification, and export handoff; downstream helpers must be reached through this workflow unless the user explicitly asks only for export or workflow orchestration.
 ---
 
 # Corporate Training Course Builder
@@ -10,7 +9,20 @@ description: >-
 
 Create complete, session-level corporate training materials that are ready for delivery: slide plan, instructor script, image prompts, generated slide images, handouts, worksheets, sample data, and source notes.
 
-This skill is generic. Use it for any corporate training course, not only Google Workspace/GAS. Apply the repository's `AGENTS.md` first when present.
+This skill is the course-production orchestrator. Use it for any corporate training course, not only Google Workspace/GAS. Apply the repository's `AGENTS.md` first when present.
+
+## Unified Course Workflow
+
+Use this skill as the single production entrypoint for course creation. Other local course-related skills are downstream helpers, not competing workflows.
+
+- Production source of truth: this skill and `references/session-production-workflow.md`.
+- Export helper: `skills/gws-ai-training-slide-exporter/SKILL.md` is used only after local materials and `スライド画像/Sxx.png` exist, for Google Slides, Google Drive, PPTX, and Canva-ready bundles.
+- Workflow planning helper: `skills/codex-dynamic-workflows/SKILL.md` is used only when a task is large enough to require explicit packets, approvals, or reusable orchestration notes.
+- Image generation helper: the system `imagegen` skill is used for final bitmap slide images. It does not replace this course workflow.
+- If a user gives a broad creation request, do not jump directly to an export, Canva, browser, or subagent helper. First run this course workflow, then invoke helpers only at the matching phase.
+- When adding a new repository-local skill or workflow detail, integrate it here or in a directly linked reference file unless it is a narrow downstream helper. Every helper must state when this skill calls it and must not define a separate course-production standard.
+
+For a full-course build or rebuild, follow `references/course-production-unified-workflow.md` before session-specific checklists.
 
 ## One-Phrase Session Requests
 
@@ -73,6 +85,7 @@ For the current `isometric-corporate-clean` style, keep the visual direction cle
 ## Workflow
 
 1. Read the course folder, target session folder, previous session outputs, whole-course curriculum, `AGENTS.md`, existing `スライド案.md`, and `ワークシート.md`.
+   - For full-course creation, rebuild, or cross-session consistency work, read `references/course-production-unified-workflow.md` first and use it as the master checklist.
 2. If current facts, services, laws, tool capabilities, pricing-adjacent details, logos, or case studies matter, browse official or primary sources and save a concise source memo in course-level `全体/調査/`.
 3. If the user asks to check online concrete examples, practitioner examples, or use cases while revising worksheets, handouts, or exercise data, read `references/public-case-research-workflow.md`. Use official sources for current capabilities and general public examples for practical patterns; do not copy private details or reproduce a specific company's workflow.
 4. If the user says exercise data looks duplicated, asks for "その回に必要なデータだけ", or asks to fully fix CSV/sample data, read `references/session-specific-exercise-data-workflow.md`. Split or rebuild `演習データ/` by the learner output and demo actually used in each session, then update stale file references.
@@ -84,6 +97,7 @@ For the current `isometric-corporate-clean` style, keep the visual direction cle
 10. Create `画像生成プロンプト.md` for every slide. Include selected template ID, exact in-image text, visual pattern, official-logo inputs, screenshot inputs, screen-share transition slides, and negative prompt.
 11. Use official logos/screenshots as reference assets when needed. Save official logos in repository-level `素材/ロゴ/` with source notes. Save screen captures for a session in that session's `スクリーンショット/`. Do not ask image generation to invent brand marks from memory.
 12. Use the `imagegen` skill and its rules for raster slide images. Save final images in the target session's `スライド画像/Sxx.png`.
+    - For generated training slide images, use GPT image 2 / built-in image generation as a complete bitmap image. Do not create SVG, HTML, CSS, canvas, browser screenshots, or local conversion outputs as slide-image intermediates.
 13. Verify text accuracy, slide count, asset paths, selected template usage, public-safety constraints, and that scripts/slides/handouts agree.
 
 For a detailed checklist, read `references/session-production-workflow.md`.
@@ -123,6 +137,28 @@ When a user says a slide image is wrong and asks to "regenerate", "作り直し�
 - If the built-in image tool cannot save directly to the requested project path, generate first, then copy or move the generated bitmap file without modifying its pixels.
 - After generation, inspect the image before replacing `スライド画像/Sxx.png`. Check product names, Japanese text, logo placement, card spacing, and whether the output still contains forbidden placeholder text.
 - If you start considering SVG, HTML/CSS, canvas, screenshots, or local conversion for a GPT image 2 request, stop and switch back to bitmap generation.
+
+## Canva Delivery Policy
+
+When the finished slide images will be turned into a Canva presentation, use an image-first delivery flow by default.
+
+- Create complete raster slide images in `スライド画像/Sxx.png` first.
+- Build or export one multi-page presentation per session from those images.
+- Prefer Canva MCP/API or PPTX import for the initial multi-page presentation, so `S01.png` through the final slide are placed in order before any browser-based editing begins.
+- Do not plan to Magic Layers-convert every slide through Canva MCP unless the user explicitly asks for all pages to be editable.
+- Mark only high-edit pages for manual Magic Layers in Canva: cover, section dividers, date/company/instructor placeholders, curriculum tables, audience/output lists, and customer-specific proposal pages.
+- Leave fixed diagrams, screenshots, screen-share transition slides, exercise instructions, summaries, and completed visual explanations as image pages.
+- Keep Canva URLs, design IDs, and manual editing notes in `非公開/Canva/` or the private Google Drive sync destination, not in public course files.
+
+If a user asks for Canva export without specifying Magic Layers, assume they want a visually faithful image-based Canva deck, not fully decomposed editable layers.
+
+If the user explicitly asks to run Magic Layers in the Canva browser:
+
+- Use `skills/gws-ai-training-slide-exporter/SKILL.md` as the execution guide after local slide images are complete.
+- Apply Magic Layers page by page inside the already-created multi-page Canva presentation, not by creating detached one-page designs unless the user asks for the legacy all-page conversion route.
+- After each page, wait for Canva processing to finish, then inspect the page for Japanese mojibake, changed wording, missing text, distorted tables, overlapped elements, incorrect logos, and layout collapse.
+- If a page fails, undo or return to the pre-Magic-Layers state, retry once or twice, then either keep the image page or mark it for manual repair in `非公開/Canva/`.
+- Treat browser automation as high-cost. When subagents and model selection are available, delegate browser navigation and repetitive Canva checks to a low-cost browser subagent, keep orchestration and final QA in the main agent, and reserve image generation for the image-capable high-accuracy model.
 
 ## Quality Rules
 

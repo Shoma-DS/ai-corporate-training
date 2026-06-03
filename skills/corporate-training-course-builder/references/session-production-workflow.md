@@ -65,12 +65,29 @@ Use this checklist when turning a session request into complete materials.
 - For UI/screens, use session-local `スクリーンショット/`.
 - Save final images as `スライド画像/Sxx.png`.
 - Inspect images for readable text, wrong wording, layout overlap, and old terminology.
+- If the user objects to SVG/HTML generation, asks for GPT image 2, or asks to rebuild from image generation, delete stale generated slide images only after confirming the scope, then regenerate complete bitmap images. Keep plans/scripts/prompts unless explicitly told to delete them.
+- Never create slide images through SVG, HTML/CSS, canvas, browser screenshots, ImageMagick, PIL, rsvg conversion, local rasterization, tracing, local compositing, or post-generation text/logo overlays.
+- The only acceptable final-image path for generated training slides is GPT image 2 / built-in image generation as a complete raster slide, followed by moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
+
+## Canva Delivery
+
+- Default to image-first Canva delivery: one multi-page presentation per session made from `スライド画像/Sxx.png`.
+- Use `skills/gws-ai-training-slide-exporter` for Google Slides export, speaker notes, and Canva-ready PPTX bundles.
+- Create the initial Canva deck through MCP/API or PPTX import before any browser Magic Layers work, with `S01.png` through the final slide arranged as consecutive pages.
+- Do not make all pages Magic Layers by default. This is too costly for high-slide-count training decks and often unnecessary.
+- Create a private manual Magic Layers target list for only pages likely to be edited after import: cover, section dividers, company/date/instructor placeholders, curriculum tables, learner output summaries, and proposal/customization pages.
+- Leave fixed visual explanation pages, screenshots, screen-share transition pages, exercise instructions, and summaries as flat images unless the user explicitly asks otherwise.
+- If browser Magic Layers is requested, apply it one page at a time, wait for completion, compare the result against the source image for Japanese text corruption, wording changes, missing objects, overlaps, and layout collapse, then undo and retry failed pages before moving on.
+- If the same page fails Magic Layers 3 times, stop converting that page and keep the original image page. Record the failure pattern and add any reusable check item to `skills/gws-ai-training-slide-exporter/references/canva-quality-checklist.md`.
+- Store page-level Magic Layers status, retries, and repair notes under `非公開/Canva/`; do not write design IDs or edit URLs into public files.
+- Store Canva URLs, design IDs, and editing notes only in `非公開/Canva/` or the private Google Drive sync destination.
 
 ## Parallel Production
 
 - When the user asks for subagents or parallelization, the main agent chooses one fixed template ID for the session before assigning work.
 - Split parallel slide image generation into disjoint `Sxx` batches and make each image worker responsible only for its assigned files.
 - Image workers must generate complete raster slide images with GPT image 2 / built-in image generation only. Do not use SVG, HTML/CSS, canvas, browser screenshots, local conversion, local compositing, or overlays.
+- For Canva browser operations, use a separate browser-control worker when the environment supports subagents and model selection. Prefer a low-cost model for repetitive Kimi WebBridge navigation and screenshots, keep the main agent responsible for acceptance decisions, and use image-capable high-accuracy generation only when a slide image must be regenerated.
 - The main agent keeps progress visible, reconciles subagent outputs, and checks that scripts, prompts, handouts/data, filenames, and generated images match.
 
 ## Verification

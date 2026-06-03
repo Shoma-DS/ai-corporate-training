@@ -1,4 +1,4 @@
 interface:
-  display_name: "AI Agent Dynamic Workflows"
-  short_description: "Plan and run supervised subagent workflows"
-  default_prompt: "Use $codex-dynamic-workflows to plan and run a supervised multi-agent workflow for this task."
+  display_name: "Course Workflow Coordination"
+  short_description: "Downstream helper for supervised packets, subagents, and approvals inside the course-production workflow."
+  default_prompt: "Use this only as a downstream coordination helper when corporate-training-course-builder needs explicit packets, subagents, approvals, or reusable orchestration notes. Do not use it as the entrypoint for 講座作成 or as a separate course-production standard."
