@@ -28,12 +28,27 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 
 1. Read `AGENTS.md`, the course folder, `全体/` files, existing session folders, and relevant private source extracts without copying private details into public files.
 2. Confirm course category, learner level, delivery format, standard hours, LMS/log requirements, outputs, and public-safety constraints.
-3. Select one slide template for the course or a justified template per session. Record the template ID in slide plans and image prompts.
-4. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed.
-5. Produce each session with `session-production-workflow.md`: slide plan, instructor script, worksheet, handouts, exercise data, image prompts, and final slide images.
-6. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`.
-7. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, and image readability.
-8. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
+3. Run a course-specific differentiation pass before drafting the syllabus. Do not simply copy the previous course's six-session shape. Identify the target theme's unique chapters, official-source constraints, public learning-market patterns, signature exercise, and theme-specific outputs.
+4. Research official/vendor/public primary sources and, where useful, public course outlines such as Udemy curriculum pages, public syllabi, YouTube/blog course outlines, Qiita, Zenn, note, and product-community walkthroughs. Extract only themes, chapter ideas, learner pain points, and gaps; do not copy paid content, copyrighted prose, screenshots, quizzes, datasets, or private details.
+5. Write a course-level differentiation memo in `全体/調査/` or another course-level design memo. Include: nearby existing courses compared, what will not be reused blindly, official sources that change the curriculum, public course-outline patterns, signature chapter/exercise, and theme-specific outputs.
+6. Select one slide template for the course or a justified template per session. Record the template ID in slide plans and image prompts.
+7. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed.
+8. Produce each session with `session-production-workflow.md`: slide plan, instructor script, worksheet, handouts, exercise data, image prompts, and final slide images.
+9. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`.
+10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, and whether the session still has theme-specific content rather than generic copied structure.
+11. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
+
+## Differentiation Gate
+
+Before a new full-course outline is accepted, answer these questions in the course-level memo:
+
+- What is the one-line promise of this course that would not fit the previous courses?
+- Which 2-4 chapters or exercises are specific to this theme?
+- Which official capabilities, limitations, risks, or recommended workflows deserve deeper coverage?
+- What do public course outlines such as Udemy curricula commonly cover, and what useful corporate-training angle is missing from them?
+- Which public practitioner patterns are worth abstracting into fictional exercises?
+- Which reused structure is kept only for eligibility/compliance, and how is the actual content different?
+- If the course title were hidden, could a reviewer still tell the theme from the chapter names, exercises, sample data, and outputs?
 
 ## Hard Image Rule
 
@@ -71,5 +86,5 @@ Run export only after `スライド画像/Sxx.png` exists and passes verificatio
 - Canva standard route: create the multi-page image-first presentation through MCP/API or PPTX import first, then use browser Magic Layers only for high-edit pages.
 - Canva exception route: all-page Magic Layers only when the user explicitly asks for fully editable pages.
 - Browser Magic Layers route: open the created Canva presentation, apply Magic Layers one page at a time, wait for processing, verify text and layout, undo/retry failed pages, and record page-level status in `非公開/Canva/`.
-- Agent split: if subagents and model selection are available, use low-cost browser workers for Kimi WebBridge/Canva clicking and screenshots, keep final QA and orchestration in the main agent, and reserve high-accuracy image-capable models for GPT image 2 regeneration.
+- Agent split: if subagents and model selection are available, use `codex-5.3spark` / `GPT-5.3 Codex Spark` browser workers for Kimi WebBridge/Canva clicking, waiting, screenshots, and repetitive checks, using Spark allowance before higher-cost models. Keep final QA, public-safety judgment, wording, and orchestration in the main agent, and reserve high-accuracy image-capable models for GPT image 2 regeneration.
 - Keep Drive/Canva URLs, design IDs, and private editing notes in `非公開/` or private Drive destinations.
