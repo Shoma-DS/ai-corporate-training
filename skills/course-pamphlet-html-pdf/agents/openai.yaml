@@ -1,0 +1,4 @@
+interface:
+  display_name: "パンフレットHTML/PDF"
+  short_description: "講座パンフレットをHTML-firstで作りPDFへ変換する"
+  default_prompt: "Use $course-pamphlet-html-pdf to refresh 講座/COURSE/全体/パンフレット.html and パンフレット.pdf from the current pamphlet source."

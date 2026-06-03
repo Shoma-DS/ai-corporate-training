@@ -17,6 +17,7 @@ Use this skill as the single production entrypoint for course creation. Other lo
 
 - Production source of truth: this skill and `references/session-production-workflow.md`.
 - Export helper: `skills/gws-ai-training-slide-exporter/SKILL.md` is used only after local materials and `スライド画像/Sxx.png` exist, for Google Slides, Google Drive, PPTX, and Canva-ready bundles.
+- Pamphlet helper: `skills/course-pamphlet-html-pdf/SKILL.md` is used when course-level pamphlet content must be authored, migrated from legacy Markdown, or converted to client-ready PDF.
 - Workflow planning helper: `skills/codex-dynamic-workflows/SKILL.md` is used only when a task is large enough to require explicit packets, approvals, or reusable orchestration notes.
 - Image generation helper: the system `imagegen` skill is used for final bitmap slide images. It does not replace this course workflow.
 - If a user gives a broad creation request, do not jump directly to an export, Canva, browser, or subagent helper. First run this course workflow, then invoke helpers only at the matching phase.
@@ -42,7 +43,7 @@ Course-level:
 - `全体/`
 - `全体/調査/`
 
-Put course-wide materials in `全体/`: course overview, detailed syllabus, all-session worksheet, all-session instructor notes, exercise-data index, pamphlets, course-level slide outline, level mapping, and use-case/data design notes. Put course-wide source and research notes in `全体/調査/`.
+Put course-wide materials in `全体/`: course overview, detailed syllabus, all-session worksheet, all-session instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, course-level slide outline, level mapping, and use-case/data design notes. Put course-wide source and research notes in `全体/調査/`.
 
 Repository-level shared assets:
 
@@ -98,7 +99,8 @@ For the current `isometric-corporate-clean` style, keep the visual direction cle
 11. Use official logos/screenshots as reference assets when needed. Save official logos in repository-level `素材/ロゴ/` with source notes. Save screen captures for a session in that session's `スクリーンショット/`. Do not ask image generation to invent brand marks from memory.
 12. Use the `imagegen` skill and its rules for raster slide images. Save final images in the target session's `スライド画像/Sxx.png`.
     - For generated training slide images, use GPT image 2 / built-in image generation as a complete bitmap image. Do not create SVG, HTML, CSS, canvas, browser screenshots, or local conversion outputs as slide-image intermediates.
-13. Verify text accuracy, slide count, asset paths, selected template usage, public-safety constraints, and that scripts/slides/handouts agree.
+13. For course-level pamphlets, create or update `全体/パンフレット.html` as the source of truth and generate `全体/パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration and HTML-to-PDF conversion. Do not create new pamphlets as Markdown-first deliverables.
+14. Verify text accuracy, slide count, asset paths, selected template usage, pamphlet HTML/PDF existence, public-safety constraints, and that scripts/slides/handouts agree.
 
 For a detailed checklist, read `references/session-production-workflow.md`.
 
@@ -159,6 +161,20 @@ If the user explicitly asks to run Magic Layers in the Canva browser:
 - After each page, wait for Canva processing to finish, then inspect the page for Japanese mojibake, changed wording, missing text, distorted tables, overlapped elements, incorrect logos, and layout collapse.
 - If a page fails, undo or return to the pre-Magic-Layers state, retry once or twice, then either keep the image page or mark it for manual repair in `非公開/Canva/`.
 - Treat browser automation as high-cost. When subagents and model selection are available, delegate browser navigation and repetitive Canva checks to a low-cost browser subagent, keep orchestration and final QA in the main agent, and reserve image generation for the image-capable high-accuracy model.
+
+## Pamphlet HTML/PDF Policy
+
+Course pamphlets are client-facing submission artifacts, so they must be available as print-ready HTML and PDF.
+
+- New pamphlets are authored directly as `全体/パンフレット.html`.
+- Always generate or refresh `全体/パンフレット.pdf` from the HTML before delivery.
+- Existing `パンフレット原稿.md` or `パンフレット.md` files are legacy migration sources. If their content changes, run the pamphlet helper to regenerate HTML and PDF.
+- Standard build command:
+
+```bash
+python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py --course-dir '講座/COURSE'
+```
+- Do not put prices, application contacts, customer-specific notes, private URLs, Canva URLs, Drive URLs, credentials, or unpublished internal details into public pamphlet HTML/PDF.
 
 ## Quality Rules
 

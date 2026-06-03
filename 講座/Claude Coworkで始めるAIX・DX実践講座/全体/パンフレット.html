@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Coworkで始めるAIX・DX実践講座</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5d6878;
+      --line: #d7e1ec;
+      --navy: #123a5a;
+      --blue: #2876a8;
+      --teal: #1f9f9a;
+      --orange: #f0a04b;
+      --paper: #ffffff;
+      --soft: #f4f8fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #edf1f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+
+    .pamphlet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow: 0 12px 34px rgba(24, 39, 56, .15);
+    }
+
+    .cover {
+      min-height: 104mm;
+      padding: 18mm 18mm 14mm;
+      color: #ffffff;
+      background:
+        linear-gradient(135deg, rgba(18, 58, 90, .98), rgba(18, 58, 90, .86) 52%, rgba(31, 159, 154, .88)),
+        linear-gradient(45deg, #f9fbfd, #dcecf8);
+      break-after: avoid-page;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #cfe9ff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    h1 {
+      width: 86%;
+      margin: 0 0 14px;
+      font-size: 30px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .cover-lead {
+      width: 88%;
+      margin: 0 0 18px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chips span {
+      border: 1px solid rgba(255, 255, 255, .48);
+      background: rgba(255, 255, 255, .12);
+      padding: 5px 8px;
+      font-size: 9.5px;
+      font-weight: 800;
+    }
+
+    .content {
+      padding: 14mm 18mm 18mm;
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      padding-left: 9px;
+      border-left: 5px solid var(--orange);
+      color: var(--navy);
+      font-size: 17px;
+      line-height: 1.3;
+      break-after: avoid;
+    }
+
+    h3 {
+      margin: 12px 0 6px;
+      color: var(--ink);
+      font-size: 12.5px;
+      break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 10.2px;
+    }
+
+    .label {
+      margin-top: 10px;
+      margin-bottom: 3px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    ul {
+      margin: 5px 0 10px 18px;
+      padding: 0;
+      font-size: 9.8px;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      margin: 8px 0 13px;
+      border-collapse: collapse;
+      font-size: 8.7px;
+      break-inside: avoid;
+    }
+
+    th {
+      border: 1px solid #b9d2e4;
+      background: #d9ebf6;
+      color: var(--navy);
+      padding: 5px 6px;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    td {
+      border: 1px solid var(--line);
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    code {
+      padding: 1px 4px;
+      border: 1px solid #dce5ef;
+      background: #f7fbff;
+      color: #294057;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: .92em;
+    }
+
+    .source-note {
+      margin-top: 18px;
+      padding-top: 6px;
+      border-top: 1px solid #e4ebf2;
+      color: var(--muted);
+      font-size: 8.2px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .pamphlet {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="pamphlet">
+    <section class="cover">
+      <p class="eyebrow">AI法人研修 / 法人向け研修パンフレット</p>
+      <h1>Claude Coworkで始めるAIX・DX実践講座</h1>
+      <p class="cover-lead">AIエージェントへ仕事を「丸投げ」するのではなく、任せる範囲、見せる情報、承認する操作、確認する成果物を設計し、現場主導のAIX・DX推進につなげる講座です。</p>
+      <div class="chips">
+        <span>6回、各120分、合計約12時間</span>
+      </div>
+    </section>
+    <section class="content">
+      <h2>研修の目的</h2>
+<p>本講座では、Claude Coworkを使ったデスクトップ業務の委任を入口に、業務課題整理、委任設計、情報管理、成果物レビュー、運用設計、AIX・DX提案書作成までを学びます。受講者は、明日から自部署で試行できる実務アウトプットを作成します。</p>
+<h2>よくある悩み</h2>
+<ul>
+<li>生成AIを使っているが、チャットでの相談や文章作成に留まっている。</li>
+<li>資料、表計算、ブラウザ、フォルダをまたぐ作業が多く、手作業の確認が残っている。</li>
+<li>AIエージェントに仕事を任せたいが、機密情報や誤操作が心配で導入判断ができない。</li>
+<li>効果、リスク、運用、教育まで含めた導入提案に落とし込めていない。</li>
+</ul>
+<h2>この研修で解決すること</h2>
+<ul>
+<li>委任できる業務と人が判断すべき業務を切り分けられる。</li>
+<li>Claude Coworkへ渡すタスクブリーフを作れる。</li>
+<li>フォルダ、ファイル、アプリ、コネクタのアクセス範囲を設計できる。</li>
+<li>AIの成果物をレビューし、誤り、推測、機密混入を確認できる。</li>
+<li>AIX・DX施策として、KPI、リスク、運用、ロードマップを説明できる。</li>
+</ul>
+<h2>受講後にできること</h2>
+<ul>
+<li>業務棚卸しからAIエージェント活用の要件定義まで自走できる。</li>
+<li>ダミーデータを使って安全に試行し、実業務への適用条件を整理できる。</li>
+<li>週次レポート、会議メモ整理、ファイル整理、問い合わせ傾向整理などを業務フローとして設計できる。</li>
+<li>部署内展開に必要な運用設計書、リスクチェックリスト、導入提案書を作れる。</li>
+</ul>
+<h2>研修の強み</h2>
+<ul>
+<li>ツール紹介で終わらず、業務課題、委任設計、情報管理、運用まで扱う。</li>
+<li>録画動画とLMSにより、受講状況、学習時間、課題提出、修了確認を管理しやすい。</li>
+<li>実在の顧客情報や社内資料を使わず、ダミーデータで安全に演習できる。</li>
+<li>最終成果物がAIX・DX提案書になるため、受講後の社内説明に使いやすい。</li>
+</ul>
+<h2>対象者</h2>
+<p>DX推進担当、業務改善担当、管理部門リーダー、情報システム担当、生成AIを部署単位の業務改善へ広げたい方。</p>
+<h2>提供方式・学習時間</h2>
+<ul>
+<li>録画動画によるeラーニング</li>
+<li>6回、各120分、合計約12時間</li>
+<li>LMSによる受講状況、受講時間、課題提出、修了確認の記録を前提</li>
+</ul>
+<h2>カリキュラム</h2>
+<table>
+<thead><tr>
+<th>回</th>
+<th>テーマ</th>
+<th>成果物</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>業務課題整理とCowork委任設計</td>
+<td>業務棚卸しシート、タスクブリーフ</td>
+</tr>
+<tr>
+<td>2</td>
+<td>デスクトップ業務環境と情報管理設計</td>
+<td>アクセス範囲設計、情報管理チェック</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Coworkによる資料・表計算・ファイル整理実践</td>
+<td>実務タスク手順書、成果物レビュー表</td>
+</tr>
+<tr>
+<td>4</td>
+<td>コネクタ・プラグイン・スキル連携設計</td>
+<td>連携設計書、接続しない判断リスト</td>
+</tr>
+<tr>
+<td>5</td>
+<td>評価・権限・承認・運用設計</td>
+<td>運用設計書、リスクチェックリスト</td>
+</tr>
+<tr>
+<td>6</td>
+<td>AIX・DX提案書と展開計画</td>
+<td>AIX・DX提案書、導入ロードマップ</td>
+</tr>
+</tbody></table>
+<h2>注意事項</h2>
+<p>Claude Cowork、Claude Code、コネクタ、プラグイン、接続先SaaSの提供状況、利用条件、管理者設定、利用上限は変わる可能性があります。導入時は最新の公式情報と社内ルールを確認してください。助成金の対象可否や申請要件は断定せず、公的情報と社内確認を前提にしてください。</p>
+      <p class="source-note">生成元: パンフレット原稿.md。価格、申込先、助成率、申請期限など変わり得る情報は固定せず、提出前に最新情報を確認してください。</p>
+    </section>
+  </main>
+</body>
+</html>

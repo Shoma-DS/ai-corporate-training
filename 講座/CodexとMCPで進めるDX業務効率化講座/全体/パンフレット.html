@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodexとMCPで進めるDX業務効率化講座</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5d6878;
+      --line: #d7e1ec;
+      --navy: #123a5a;
+      --blue: #2876a8;
+      --teal: #1f9f9a;
+      --orange: #f0a04b;
+      --paper: #ffffff;
+      --soft: #f4f8fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #edf1f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+
+    .pamphlet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow: 0 12px 34px rgba(24, 39, 56, .15);
+    }
+
+    .cover {
+      min-height: 104mm;
+      padding: 18mm 18mm 14mm;
+      color: #ffffff;
+      background:
+        linear-gradient(135deg, rgba(18, 58, 90, .98), rgba(18, 58, 90, .86) 52%, rgba(31, 159, 154, .88)),
+        linear-gradient(45deg, #f9fbfd, #dcecf8);
+      break-after: avoid-page;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #cfe9ff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    h1 {
+      width: 86%;
+      margin: 0 0 14px;
+      font-size: 30px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .cover-lead {
+      width: 88%;
+      margin: 0 0 18px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chips span {
+      border: 1px solid rgba(255, 255, 255, .48);
+      background: rgba(255, 255, 255, .12);
+      padding: 5px 8px;
+      font-size: 9.5px;
+      font-weight: 800;
+    }
+
+    .content {
+      padding: 14mm 18mm 18mm;
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      padding-left: 9px;
+      border-left: 5px solid var(--orange);
+      color: var(--navy);
+      font-size: 17px;
+      line-height: 1.3;
+      break-after: avoid;
+    }
+
+    h3 {
+      margin: 12px 0 6px;
+      color: var(--ink);
+      font-size: 12.5px;
+      break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 10.2px;
+    }
+
+    .label {
+      margin-top: 10px;
+      margin-bottom: 3px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    ul {
+      margin: 5px 0 10px 18px;
+      padding: 0;
+      font-size: 9.8px;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      margin: 8px 0 13px;
+      border-collapse: collapse;
+      font-size: 8.7px;
+      break-inside: avoid;
+    }
+
+    th {
+      border: 1px solid #b9d2e4;
+      background: #d9ebf6;
+      color: var(--navy);
+      padding: 5px 6px;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    td {
+      border: 1px solid var(--line);
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    code {
+      padding: 1px 4px;
+      border: 1px solid #dce5ef;
+      background: #f7fbff;
+      color: #294057;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: .92em;
+    }
+
+    .source-note {
+      margin-top: 18px;
+      padding-top: 6px;
+      border-top: 1px solid #e4ebf2;
+      color: var(--muted);
+      font-size: 8.2px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .pamphlet {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="pamphlet">
+    <section class="cover">
+      <p class="eyebrow">AI法人研修 / 法人向け研修パンフレット</p>
+      <h1>CodexとMCPで進めるDX業務効率化講座</h1>
+      <p class="cover-lead">CodexとMCPで進めるDX業務効率化講座</p>
+      <div class="chips">
+        <span>6回、各120分、合計約12時間</span>
+<span>録画動画によるeラーニング</span>
+<span>LMSによる受講状況、受講時間、課題提出、修了確認の記録を前提</span>
+<span>6回、各120分、合計約12時間</span>
+      </div>
+    </section>
+    <section class="content">
+      <h2>2. 研修の目的</h2>
+<p>本研修は、生成AIを単なるツール操作で終わらせず、業務課題の解決、職務遂行力の向上、DX推進、継続運用へつなげる力を育成します。</p>
+<p>受講者は、日常業務の転記、集計、報告、問い合わせ対応、社内ナレッジ整理、定型文書作成などを題材に、As-Is/To-Be、要件定義、プロトタイプ、MCP連携、運用設計、効果説明を実践します。</p>
+<h2>3. よくある悩み、導入背景</h2>
+<ul>
+<li>生成AIを使っているが、個人利用に留まり、部署の業務改善へ広がっていない。</li>
+<li>業務改善のアイデアはあるが、要件、データ、権限、運用、効果測定まで整理できていない。</li>
+<li>CodexのようなAIエージェントに何を任せ、どこで人が確認すべきか判断できない。</li>
+<li>MCPで社内ツールやデータをつなぐ際の、情報漏洩、誤操作、権限過多が心配である。</li>
+<li>作成した自動化やスクリプトが属人化し、引き継ぎ、ログ、復旧、教育が整っていない。</li>
+<li>DX推進担当として、現場、IT部門、管理者、経営層へ説明できる提案資料が必要である。</li>
+</ul>
+<h2>4. この研修で解決すること</h2>
+<ul>
+<li>業務課題を、入力、処理、出力、確認、保存、通知、改善の流れで整理します。</li>
+<li>Codexへ依頼するタスクを、目的、対象ファイル、制約、期待出力、確認方法まで含めて設計します。</li>
+<li>業務改善用のサンプルリポジトリ、ダミーデータ、検証手順、変更履歴を整備します。</li>
+<li>MCPのResources、Prompts、Toolsを区別し、接続先、権限、承認、ログを含む連携設計を行います。</li>
+<li>AI出力レビュー、テスト、リスクチェック、停止条件、手動復旧、教育まで含む運用設計を作ります。</li>
+</ul>
+<h2>5. 受講後にできること</h2>
+<ul>
+<li>自社・自部署の業務改善テーマを選び、AIエージェント活用の要件定義メモを作成できます。</li>
+<li>Codexに安全に作業させるための作業範囲、承認ルール、ファイル構成、テストデータを準備できます。</li>
+<li>CSV処理、レポート生成、チェックリスト作成、簡易Webツールなどのプロトタイプを作成・検証できます。</li>
+<li>MCP連携候補を評価し、接続してよい情報、実行してよい操作、人の承認が必要な操作を整理できます。</li>
+<li>導入後のログ確認、プロンプト改善、権限見直し、教育、横展開まで含む継続運用計画を作れます。</li>
+<li>DX業務効率化提案書を作成し、関係者へ導入判断の材料として提示できます。</li>
+</ul>
+<h2>6. 研修の強み</h2>
+<ul>
+<li>業務課題から始め、CodexとMCPを業務フローに組み込む設計力を重視します。</li>
+<li>ダミー業務データを使い、機密情報を扱わずに実務に近い演習を行います。</li>
+<li>「AIに任せる作業」と「人が確認する作業」を分け、誤実行、権限過多、機密入力、出力確認まで扱います。</li>
+<li>最終成果物として、プロトタイプ、MCP連携設計書、運用設計書、リスクチェックリスト、導入提案書を作成します。</li>
+</ul>
+<h2>7. 対象者、推奨される知識・経験</h2>
+<p class="label">対象者:</p>
+<ul>
+<li>DX推進担当、業務改善担当、情報システム担当、管理部門リーダー</li>
+<li>生成AIを使った業務効率化を部署単位で進めたい方</li>
+<li>社内資料、SaaS、データ、スクリプトをAIエージェントと連携させる検討を始めたい方</li>
+<li>現場の課題を要件定義し、IT部門や外部パートナーへ説明できる状態を目指す方</li>
+</ul>
+<p class="label">推奨される前提:</p>
+<ul>
+<li>生成AIの基本的な利用経験がある</li>
+<li>Excel、スプレッドシート、CSV、業務マニュアルなどを日常業務で扱っている</li>
+<li>ファイル、フォルダ、ブラウザ、ターミナル、Gitの基本概念を学ぶ意欲がある</li>
+<li>プログラミング経験は必須ではないが、サンプルコードや設定ファイルを読み、修正する演習を行う</li>
+</ul>
+<h2>8. 提供方式、学習時間、受講管理</h2>
+<ul>
+<li>提供方式: 録画動画によるeラーニング</li>
+<li>標準学習時間: 6回、各120分、合計約12時間</li>
+<li>標準受講期間: 2か月以内</li>
+<li>受講管理: LMSによる受講状況、受講時間、課題提出、修了確認の記録を前提</li>
+<li>演習環境: Codexを利用できる環境、サンプルリポジトリ、ダミーCSV、Markdown、JSON、ローカルサンプルMCP設定</li>
+</ul>
+<h2>9. カリキュラム表</h2>
+<table>
+<thead><tr>
+<th>回</th>
+<th>テーマ</th>
+<th>時間</th>
+<th>主な内容</th>
+<th>成果物</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>DX業務課題整理とCodex活用設計</td>
+<td>120分</td>
+<td>業務棚卸し、As-Is/To-Be、AIエージェント適用範囲、Codex依頼文の設計</td>
+<td>業務棚卸しシート、Codexタスクブリーフ、改善テーマ選定メモ</td>
+</tr>
+<tr>
+<td>2</td>
+<td>業務リポジトリと安全な作業環境の設計</td>
+<td>120分</td>
+<td>サンプルリポジトリ、AGENTS.md、ダミーデータ、Git、サンドボックス、承認、秘密情報管理</td>
+<td>業務改善リポジトリ設計、AGENTS.md案、ダミーデータ、作業安全チェック</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Codexによる業務改善プロトタイプ実装</td>
+<td>120分</td>
+<td>プロンプトから実装、テスト、デバッグ、レビュー、レポート生成・CSV処理のプロトタイプ</td>
+<td>業務効率化プロトタイプ、テスト結果、修正ログ</td>
+</tr>
+<tr>
+<td>4</td>
+<td>MCPで社内ツールとデータをつなぐ設計</td>
+<td>120分</td>
+<td>MCPのResources/Prompts/Tools、接続候補、認証、承認、MCP設定、接続しない判断</td>
+<td>MCP連携設計書、ツール棚卸し、MCP設定ドラフト</td>
+</tr>
+<tr>
+<td>5</td>
+<td>評価・権限・運用設計と定着化</td>
+<td>120分</td>
+<td>AI出力レビュー、テスト観点、ログ、承認、プロンプトインジェクション、運用手順、教育</td>
+<td>運用設計書、リスクチェックリスト、テスト観点表、復旧手順</td>
+</tr>
+<tr>
+<td>6</td>
+<td>DX業務効率化提案書と展開計画</td>
+<td>120分</td>
+<td>KPI、効果試算、導入ロードマップ、関係者説明、横展開、改善サイクル</td>
+<td>DX業務効率化提案書、導入ロードマップ、次アクション一覧</td>
+</tr>
+</tbody></table>
+<h2>10. 演習、成果物、業務への持ち帰り</h2>
+<p>演習では、架空の問い合わせ対応、週次レポート作成、社内FAQ整備、申請チェック、議事録からのToDo抽出を題材にします。各回の成果物は最終回の提案書へ統合し、受講後に自社業務へ置き換えられる構成にします。</p>
+<p class="label">主な持ち帰り成果物:</p>
+<ul>
+<li>業務棚卸しシート</li>
+<li>Codexタスクブリーフ</li>
+<li>業務改善リポジトリ設計</li>
+<li>業務効率化プロトタイプ</li>
+<li>MCP連携設計書</li>
+<li>運用設計書、リスクチェックリスト、テスト観点表</li>
+<li>DX業務効率化提案書</li>
+</ul>
+<h2>11. 注意事項、申込や運用に関する確認事項</h2>
+<ul>
+<li>Codex、MCP、接続先SaaSの利用可否、管理者設定、契約条件、利用上限、データ利用設定は受講時点で確認します。</li>
+<li>実在の顧客情報、社員情報、契約情報、未公開資料、認証キー、OAuth認証情報は演習に使いません。</li>
+<li>AIエージェントの出力は下書き扱いとし、業務判断、外部送信、顧客対応、社内展開前には人が確認します。</li>
+<li>MCP連携は、接続先ごとの利用規約、権限、監査ログ、削除手順、停止手順を確認してから本番化します。</li>
+<li>助成金に関する対象者、訓練時間、OFF-JT、LMS記録、修了証、支給申請、計画申請などの要件は、最新の公的情報と社内確認を前提にします。</li>
+<li>価格、申込先、助成率、申請期限など変わり得る情報は、本資料には固定せず、作成時点の最新参照元で確認します。</li>
+</ul>
+      <p class="source-note">生成元: パンフレット原稿.md。価格、申込先、助成率、申請期限など変わり得る情報は固定せず、提出前に最新情報を確認してください。</p>
+    </section>
+  </main>
+</body>
+</html>

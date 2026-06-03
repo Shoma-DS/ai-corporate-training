@@ -6,6 +6,7 @@ import csv
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -712,6 +713,7 @@ def main() -> None:
     parser.add_argument("--skip-pptx", action="store_true")
     parser.add_argument("--pptx-only", action="store_true")
     parser.add_argument("--skip-existing-images", action="store_true")
+    parser.add_argument("--skip-pamphlet-build", action="store_true")
     args = parser.parse_args()
     if args.pptx_only:
         for session in SESSIONS:
@@ -741,6 +743,16 @@ def main() -> None:
         )
         + "\n",
     )
+    if not args.skip_pamphlet_build:
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "skills" / "course-pamphlet-html-pdf" / "scripts" / "build_pamphlets.py"),
+                "--course-dir",
+                str(COURSE_DIR),
+            ],
+            check=True,
+        )
     print(f"created {len(created)} sessions under {COURSE_DIR}")
     print(f"pptx output: {OUT_DIR}")
 
