@@ -38,6 +38,101 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, and whether the session still has theme-specific content rather than generic copied structure.
 11. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
 
+## High-Density Slide Plan Rebuild
+
+Use this gate when the user asks to rebuild an existing course by matching another course's "情報量", "構図", "具体度", "例の出し方", or "スライドの密度". This is a quality and structure transfer, not a content transfer.
+
+### Intake Pattern
+
+When the user gives a request like "Google Workspace講座をこのスライドの情報量を見習って作って", apply this exact interpretation:
+
+- The reference deck is a quality benchmark only. Imitate density, layout logic, specificity, and example style; do not inherit the reference deck's content, chapter order, claims, or examples.
+- The target course keeps its own business purpose, official product constraints, data model, tools, exercises, and learner outputs.
+- For all six sessions, first inspect the existing `スライド案.md`, whole-course files, and nearby accepted slides before editing.
+- If the user asks for screenshots or public examples, use Web search and official/public sources to collect URLs and downloadable assets, then save only safe assets/source notes in the allowed folders.
+- For large full-course changes, use a dynamic workflow with packet ownership and final integration instead of editing sessions opportunistically.
+
+### Reference Handling
+
+- Use the reference course only for observable production qualities: So What headlines, 3-6 content blocks per slide, tables/comparison/process/checklist structures, concrete industry examples, numeric sense, exercise detail, screenshot/case usage, and clear learner outputs.
+- Do not copy the reference course's topic sequence, chapter titles, examples, claims, exercises, or wording into the target course.
+- Before writing, identify what must remain target-course specific: official capabilities, constraints, data model, learner outputs, demos, risks, and final deliverables.
+
+### Rebuild Shape
+
+For each 120-minute session:
+
+- Target 35-45 slides unless the course format requires otherwise.
+- Keep or create a 120-minute time allocation table whose slide ranges match the actual slide headings.
+- Use `### Sxx ...` for every slide and `**ヘッドライン:**` for every slide.
+- Use visible structures instead of loose bullets: comparison table, process flow, classification map, checklist, Before/After, issue -> action -> effect, output map, or review rubric.
+- Add 3-6 meaningful blocks per slide where appropriate: business context, tool role, example, learner action, output, check point, risk, source note, screenshot instruction.
+- Place demos and exercises at natural chapter ends. Exercise slides must include steps, files/data used, output, review criteria, self-check, and how the output connects to later sessions.
+- Add industry examples across the course, but keep them fictional or abstracted from public patterns. Do not use private customer details.
+- Mark material needs per slide: `なし`, `スクリーンショット/...`, official logo, public case/source, screen-share transition, exercise data, or generated diagram.
+
+### Official Assets and Screenshots
+
+- Browse current official or primary sources when facts, capabilities, logos, UI screens, quotas, brand assets, or public cases matter.
+- Save course-wide source notes in `全体/調査/` with URL, publisher, confirmation date, and how the source affected the course.
+- Save official logos only in repository-level `素材/ロゴ/` with source notes.
+- Save session-specific screen captures in the session's `スクリーンショット/`.
+- Prefer official product pages, official docs, official help pages, official blogs, and public customer stories for source facts.
+- For operation screenshots, use dummy environments or exercise data. Do not capture real accounts, customer data, file names, email addresses, API keys, billing, contract details, or private Drive/Canva URLs.
+- If `curl` cannot capture a JS-rendered help/product page reliably, record the URL and capture instructions. Use browser automation only when needed, preferably through a low-cost browser worker if available.
+- Do not ask image generation to invent real logos, product UI, customer screenshots, or exact official screens.
+
+For Google Workspace/GAS courses specifically, check official Google Workspace, Google Help, Google Developers, Workspace Updates, and public customer-story pages before adding current feature claims. Download only public/official static images that are safe to store, such as official Open Graph images or press-kit/brand assets, and record their URL and use in `全体/調査/`. For screenshots of Forms, Sheets, Apps Script, Gemini, Drive, Gmail, Calendar, or Admin screens, prefer official public screenshots or a dummy environment; never capture personal Drive contents, account names, email addresses, project IDs, OAuth credentials, billing, or private file names.
+
+### Dynamic Workflow Pattern
+
+For a six-session full-course rebuild, use `skills/codex-dynamic-workflows/SKILL.md` as a downstream helper when parallelism or auditability helps. A reliable packet split is:
+
+- P1: sessions 1-2 slide-plan rebuild, quality verification, and補修.
+- P2: sessions 3-4 slide-plan rebuild, quality verification, and補修.
+- P3: sessions 5-6 slide-plan rebuild, quality verification, and補修.
+- P4: official assets, screenshots, public examples, source notes, and screenshot acquisition memos.
+- P5: integrated verification, public-safety scan, workflow artifacts, and final report.
+
+Create `.workflow/<slug>/plan.md`, `state.json`, `orchestration.md`, `packets/`, `results/`, and `final-report.md`. Run the dynamic workflow verifier before calling the rebuild complete.
+
+Each session packet should write or repair the current `スライド案.md` directly only for its owned sessions. It should report slide count, headline count, chapter ranges, exercise count, screenshot/source needs, and any stale-path or public-safety fixes. The integration packet must inspect current files after all packet work finishes; subagent completion logs alone are not acceptance evidence.
+
+### Goal/Handoff Prompt
+
+When a long rebuild needs to continue in Goal mode or another agent session, prepare a handoff prompt with this structure:
+
+```text
+Objective:
+Course path:
+Reference quality benchmark:
+Do:
+Do not:
+Workflow artifacts:
+Packet status:
+Required source/asset rules:
+Verification commands:
+Completion report format:
+```
+
+If the user explicitly says "クリップボードに入れて", copy this prompt with `pbcopy`. If clipboard access is unavailable, save it as `.workflow/<slug>/handoff-prompt.md` and tell the user the path.
+
+### Completion Gate
+
+Before completion, prove the rebuild with current-state evidence:
+
+- For every session, count `^### S[0-9][0-9]` and `^\*\*ヘッドライン:\*\*`; counts must match.
+- Confirm every 120-minute session table totals 120 minutes and references existing slide ranges.
+- Confirm slide counts are usually 35-45 for 120-minute sessions.
+- Search for stale slide numbers, old session ranges, old filenames, and reference-course terminology that does not belong to the target course.
+- Search for unsafe data patterns and public-repo risks: real-looking emails, phone numbers, personal names, customer records, prices, contact details, credentials, API keys, private URLs, and contract details. Keep occurrences only when they are explicit "do not include" warnings or safe dummy examples such as `test-dummy@example.com`.
+- Confirm source notes exist for official logos, screenshots, current service capabilities, quotas/limits, and public cases.
+- Confirm screenshot folders either contain the referenced assets or the slide plan/source memo states exactly what to capture from a dummy environment.
+- Run `python3 scripts/validate_local_skills.py`.
+- If a dynamic workflow artifact exists, run `python3 skills/codex-dynamic-workflows/scripts/verify_workflow.py .workflow/<slug>`.
+
+Report the final result with: changed files, per-session slide counts, major補修 points, acquired assets/source notes, verification commands, and any remaining human screenshot checks.
+
 ## Differentiation Gate
 
 Before a new full-course outline is accepted, answer these questions in the course-level memo:

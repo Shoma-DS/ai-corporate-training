@@ -10,6 +10,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS_DIR = ROOT / "skills"
+FORBIDDEN_SLIDE_RENDER_PATTERNS = {
+    "from PIL": "PIL/Pillow must not be used to create slide images",
+    "import PIL": "PIL/Pillow must not be used to create slide images",
+    "ImageDraw": "Python drawing must not be used to create slide images",
+    "ImageFont": "Python drawing must not be used to create slide images",
+    "render_slide": "local slide rendering functions are forbidden",
+    "Image.new(": "local bitmap drawing is forbidden for slide images",
+    "rsvg-convert": "local rasterization is forbidden for slide images",
+    "cairosvg": "local rasterization is forbidden for slide images",
+    "html2image": "HTML screenshot conversion is forbidden for slide images",
+}
 
 
 def parse_frontmatter(path: Path) -> dict[str, str]:
@@ -67,6 +78,20 @@ def validate_skill(skill_dir: Path) -> list[str]:
     return errors
 
 
+def validate_no_local_slide_rendering() -> list[str]:
+    errors: list[str] = []
+    for script in sorted((ROOT / "scripts").glob("*.py")):
+        if script.name == Path(__file__).name:
+            continue
+        text = script.read_text(encoding="utf-8")
+        if "スライド画像" not in text and "slide image" not in text and "slide_images" not in text:
+            continue
+        for pattern, message in FORBIDDEN_SLIDE_RENDER_PATTERNS.items():
+            if pattern in text:
+                errors.append(f"{script}: {message}: found {pattern!r}")
+    return errors
+
+
 def main() -> int:
     if not SKILLS_DIR.exists():
         print("No local skills directory found.")
@@ -75,6 +100,7 @@ def main() -> int:
     errors: list[str] = []
     for skill_dir in sorted(p for p in SKILLS_DIR.iterdir() if p.is_dir()):
         errors.extend(validate_skill(skill_dir))
+    errors.extend(validate_no_local_slide_rendering())
 
     if errors:
         for error in errors:

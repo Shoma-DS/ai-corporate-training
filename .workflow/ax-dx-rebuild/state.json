@@ -1,0 +1,18 @@
+{
+  "slug": "ax-dx-rebuild",
+  "status": "phase1_complete",
+  "packets": {
+    "P01": "completed",
+    "P02": "completed",
+    "P03": "completed",
+    "P04": "completed",
+    "P05": "pending_approval"
+  },
+  "template_id": "isometric-corporate-clean",
+  "session_count": 2,
+  "verified_slides": {
+    "session1": 44,
+    "session2": 50
+  },
+  "next_step": "画像生成プロンプト作成（ユーザー承認後）またはユーザー指示に従う"
+}

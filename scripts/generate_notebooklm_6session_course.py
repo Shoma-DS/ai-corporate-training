@@ -4,15 +4,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, "/private/tmp/ai_training_pydeps")
 
-from PIL import Image, ImageDraw, ImageFont
 from pptx import Presentation
 from pptx.util import Inches
 
@@ -153,110 +150,32 @@ SESSION_EXTRA = {
         37: "運用設計書、レビュー手順、リスクチェックを確認する",
     },
     "06": {
+        4: "第1回から第5回の成果物を、最終提案と実務展開計画へ接続する",
         10: "削減時間、品質安定、属人化解消を提案書の言葉にする",
         16: "KPI効果試算と導入ロードマップを組み立てる",
         23: "NotebookLM業務効率化DX提案書の骨子を作る",
         37: "提案書、ロードマップ、KPI試算表を確認する",
+        38: "講座全体の成果物を、修了後の小さな導入テーマと部署展開へ接続する",
     },
 }
 
 
-FONT_CACHE: dict[tuple[int, bool], ImageFont.ImageFont] = {}
-
-
-def font(size: int, bold: bool = False) -> ImageFont.ImageFont:
-    key = (size, bold)
-    if key in FONT_CACHE:
-        return FONT_CACHE[key]
-    candidates = [
-        "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc" if bold else "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
-        "/System/Library/Fonts/Hiragino Sans GB.ttc",
-        "/System/Library/Fonts/Helvetica.ttc",
-    ]
-    for path in candidates:
-        try:
-            FONT_CACHE[key] = ImageFont.truetype(path, size=size)
-            return FONT_CACHE[key]
-        except OSError:
-            continue
-    FONT_CACHE[key] = ImageFont.load_default()
-    return FONT_CACHE[key]
-
-
-def wrap_text(draw: ImageDraw.ImageDraw, text: str, fnt: ImageFont.ImageFont, max_width: int) -> list[str]:
-    lines: list[str] = []
-    for paragraph in text.split("\n"):
-        current = ""
-        for ch in paragraph:
-            trial = current + ch
-            if draw.textbbox((0, 0), trial, font=fnt)[2] <= max_width:
-                current = trial
-            else:
-                if current:
-                    lines.append(current)
-                current = ch
-        if current:
-            lines.append(current)
-    return lines
-
-
-def draw_card(draw: ImageDraw.ImageDraw, xy: tuple[int, int, int, int], fill: str, outline: str = "#D8E3EA") -> None:
-    draw.rounded_rectangle(xy, radius=24, fill=fill, outline=outline, width=2)
-
-
-def render_slide(path: Path, session: dict[str, str], slide_no: int, title: str, body: str, pattern: str) -> None:
-    img = Image.new("RGB", (1920, 1080), "#FBFCF8")
-    d = ImageDraw.Draw(img)
-    title_f = font(58, True)
-    sub_f = font(30)
-    small_f = font(24)
-    body_f = font(34)
-    d.rectangle((0, 0, 1920, 1080), fill="#FBFCF8")
-    d.rounded_rectangle((64, 48, 1860, 152), radius=28, fill="#FFFFFF", outline="#DDE7EF", width=2)
-    d.text((92, 72), f"S{slide_no:02d}  {title}", fill="#16324F", font=title_f)
-    d.text((92, 158), f"{COURSE_NAME} / 第{session['no']}回 {session['title']}", fill="#4B6B84", font=small_f)
-    d.rounded_rectangle((1540, 64, 1828, 128), radius=20, fill="#E7F3F1", outline="#BBDDD8", width=2)
-    d.text((1574, 78), "2時間 / 録画ワーク", fill="#0F6B65", font=small_f)
-
-    colors = ["#E8F2FF", "#EAF7F0", "#FFF3DC", "#F1ECFF", "#FDECEC"]
-    labels = [
-        "業務課題",
-        "情報源",
-        "根拠確認",
-        "人のレビュー",
-        "運用改善",
-    ]
-    for i, label in enumerate(labels):
-        x = 116 + i * 350
-        draw_card(d, (x, 250, x + 270, 420), colors[i])
-        d.ellipse((x + 24, 282, x + 76, 334), fill=["#2F80ED", "#1B9A70", "#E39A21", "#7B61D1", "#D85858"][i])
-        d.text((x + 96, 280), label, fill="#16324F", font=body_f)
-        if i < len(labels) - 1:
-            d.line((x + 284, 335, x + 330, 335), fill="#7AA9C4", width=6)
-            d.polygon([(x + 330, 335), (x + 314, 324), (x + 314, 346)], fill="#7AA9C4")
-
-    draw_card(d, (116, 500, 1240, 900), "#FFFFFF")
-    d.text((156, 534), "このスライドの要点", fill="#16324F", font=body_f)
-    wrapped = wrap_text(d, body, sub_f, 1020)
-    y = 604
-    for line in wrapped[:7]:
-        d.text((170, y), "・" + line, fill="#243B53", font=sub_f)
-        y += 48
-    draw_card(d, (1300, 500, 1800, 900), "#F4F8FB")
-    d.text((1340, 534), "図解パターン", fill="#16324F", font=body_f)
-    d.text((1340, 604), pattern, fill="#2F80ED", font=sub_f)
-    d.text((1340, 690), "Canvaではこの画像を\nページ全面に配置し、\n表紙・章扉などのみ\n必要に応じて編集化。", fill="#4B5563", font=sub_f)
-    d.text((92, 1018), "Public-safe dummy course material. No personal data, no customer data, no credentials.", fill="#8796A5", font=small_f)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    img.save(path, compress_level=1)
+SESSION_TITLE_EXTRA = {
+    "06": {
+        38: "実務への受け渡し",
+    },
+}
 
 
 def slide_rows(session: dict[str, str]) -> list[dict[str, str | int]]:
     rows = []
     extras = SESSION_EXTRA[session["no"]]
+    title_extras = SESSION_TITLE_EXTRA.get(session["no"], {})
     for idx, (title, body, pattern) in enumerate(BASE_SLIDES, start=1):
         if idx in extras:
             body = extras[idx]
+        if idx in title_extras:
+            title = title_extras[idx]
         rows.append(
             {
                 "no": idx,
@@ -276,7 +195,7 @@ def write(path: Path, text: str) -> None:
 def write_csv(path: Path, rows: list[list[str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerows(rows)
 
 
@@ -668,7 +587,15 @@ Canva URL、design ID、編集メモは `非公開/Canva/` に保存し、public
     )
 
 
-def create_session(session: dict[str, str], *, skip_pptx: bool = False, skip_existing_images: bool = False) -> Path:
+def missing_slide_images(session_dir: Path, rows: list[dict[str, str | int]]) -> list[Path]:
+    return [
+        session_dir / "スライド画像" / f"S{int(row['no']):02d}.png"
+        for row in rows
+        if not (session_dir / "スライド画像" / f"S{int(row['no']):02d}.png").exists()
+    ]
+
+
+def create_session(session: dict[str, str], *, skip_pptx: bool = False) -> Path:
     session_dir = COURSE_DIR / session["dir"]
     for sub in ["スライド画像", "スクリーンショット", "配布資料", "演習データ"]:
         (session_dir / sub).mkdir(parents=True, exist_ok=True)
@@ -697,14 +624,15 @@ def create_session(session: dict[str, str], *, skip_pptx: bool = False, skip_exi
             ["取引条件表", "Sheet", "個別判断", "2026-05-10", "営業管理", "機密", "不可", "使用しない"],
         ],
     )
-    for row in rows:
-        image_path = session_dir / "スライド画像" / f"S{int(row['no']):02d}.png"
-        if skip_existing_images and image_path.exists():
-            continue
-        print(f"render {session['no']} S{int(row['no']):02d}", flush=True)
-        render_slide(image_path, session, int(row["no"]), str(row["title"]), str(row["body"]), str(row["pattern"]))
     if not skip_pptx:
-        create_pptx(session_dir, session, rows)
+        missing = missing_slide_images(session_dir, rows)
+        if missing:
+            print(
+                f"skip pptx for session {session['no']}: {len(missing)} GPT image 2 slide images are missing",
+                file=sys.stderr,
+            )
+        else:
+            create_pptx(session_dir, session, rows)
     return session_dir
 
 
@@ -712,7 +640,6 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-pptx", action="store_true")
     parser.add_argument("--pptx-only", action="store_true")
-    parser.add_argument("--skip-existing-images", action="store_true")
     parser.add_argument("--skip-pamphlet-build", action="store_true")
     args = parser.parse_args()
     if args.pptx_only:
@@ -721,7 +648,7 @@ def main() -> None:
         print(f"pptx output: {OUT_DIR}")
         return
     write_course_files()
-    created = [create_session(session, skip_pptx=args.skip_pptx, skip_existing_images=args.skip_existing_images) for session in SESSIONS]
+    created = [create_session(session, skip_pptx=args.skip_pptx) for session in SESSIONS]
     write(
         OUT_DIR / "manifest.json",
         json.dumps(

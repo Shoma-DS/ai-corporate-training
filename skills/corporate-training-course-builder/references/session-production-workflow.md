@@ -40,6 +40,18 @@ Use this checklist when turning a session request into complete materials.
 - When a live operation or recorded work screen is planned, create a transition slide such as "ここから画面共有で確認します" rather than embedding a fake work-scene frame in the slide.
 - For level 3-facing slides, keep "business transformation -> requirements -> workflow/data design -> implementation -> operation -> KPI/proposal" visible as the learning progression. Avoid titles that make the deck look like "Google Workspace活用", "GAS入門", or another tool-introduction course unless that is explicitly the user's intent.
 - Add slides that prove this is the requested theme, not a generic DX course: official-feature deep dives, theme-specific workflow diagrams, actual data/source types, tool-specific constraints, distinctive risks, and a signature learner output.
+- When rebuilding a session to match another course's "情報量" or "具体度", transfer only the density pattern: So What headline, 3-6 content blocks, visible structure, industry examples, numeric sense, screenshot/source instruction, and detailed exercise output. Do not transfer the reference course's content, chapter order, wording, or examples.
+- For high-density rebuilds, every slide should normally include:
+  - `**ヘッドライン:**` with the conclusion or So What.
+  - A visible structure such as comparison, process, checklist, Before/After, issue -> action -> effect, output map, or rubric.
+  - 3-6 meaningful blocks when the slide is explanatory or submission-facing.
+  - `**図解パターン:**` or another material/pattern marker.
+  - `**テンプレートID:**`.
+  - `**スクリーンショット:**` or `なし`, with source/capture condition when useful.
+- Exercise and demo slides must identify the file/data to open, the learner action, the output, the review/self-check criteria, and the next-session or final-output connection.
+- Do not fill every slide with generic bullets just to increase volume. Increase density by adding concrete business context, tool-specific constraints, realistic examples, output names, review criteria, and operation checks.
+- When a slide is about an actual service, UI, or operation flow, decide explicitly whether the best material is an official/public screenshot, a dummy-environment screenshot, an official logo, a public case image, a generated diagram, or a screen-share transition. Record that decision in the slide plan.
+- If the user asks for "Web検索→自動DL" of examples or screenshots, first prefer official/static assets that can be downloaded safely. If a page requires login, contains private user data, or is JS-rendered, save the URL and capture instructions instead of forcing an unsafe download.
 
 ## Instructor Script
 
@@ -121,5 +133,11 @@ Use this checklist when turning a session request into complete materials.
 - Search for stale paths such as per-session `素材/ロゴ/`, `素材/スクリーンショット/`, `素材/作業風景/`, or per-session `調査/`.
 - Search for unsafe data patterns: emails, phone numbers, real names, customer-like records, prices, contact details, API keys.
 - Confirm that source notes exist for logos, screenshots, external facts, and case studies.
+- For high-density rebuilds, mechanically verify the basics:
+  - `rg -c '^### S[0-9][0-9]' スライド案.md`
+  - `rg -c '^\*\*ヘッドライン:\*\*' スライド案.md`
+  - Confirm both counts match.
+  - Confirm the time allocation table totals the stated duration, usually 120 minutes.
+  - Confirm screenshot references either point to existing files, official URLs, or clearly marked dummy-environment capture tasks.
 - For public-example-driven revisions, confirm the source memo separates official facts from practitioner patterns and records rejected ideas that were outdated, paid-feature dependent, unsafe, or too specific.
 - For level 3-facing brochures or application materials, search for stale tool-first framing such as "ツール操作", "ツール紹介", "○○活用講座", or a title that leads with a product name. Reframe to issue analysis, As-Is/To-Be, requirements definition, operating design, logs/exception handling, KPI, rollout, and improvement proposal.

@@ -1,0 +1,53 @@
+{
+  "title": "Google Workspace講座スライド案リビルド統合",
+  "slug": "gws-rebuild",
+  "workflow": "gws-rebuild",
+  "updated_at": "2026-06-04",
+  "status": "integrated_verification_complete",
+  "approval": {
+    "external_web_research": "allowed by user request",
+    "local_file_edits": "allowed in workspace",
+    "destructive_actions": "not requested and not used"
+  },
+  "goal": "Google Workspace・GASで進めるAI業務効率化-DX実践講座 全6回のスライド案を、AX・DXワークショップ講座の情報量・構図・具体度を参考にリビルドし、統合検証まで完了する",
+  "packets": [
+    {
+      "id": "P1",
+      "scope": "第1回・第2回",
+      "status": "complete",
+      "result": ".workflow/gws-rebuild/results/P1-session-01-02.md"
+    },
+    {
+      "id": "P2",
+      "scope": "第3回・第4回",
+      "status": "complete",
+      "result": ".workflow/gws-rebuild/results/P2-session-03-04.md"
+    },
+    {
+      "id": "P3",
+      "scope": "第5回・第6回",
+      "status": "complete",
+      "result": ".workflow/gws-rebuild/results/P3-session-05-06.md"
+    },
+    {
+      "id": "P4",
+      "scope": "公式素材・スクリーンショット・出典メモ",
+      "status": "complete_with_followup",
+      "result": ".workflow/gws-rebuild/results/P4-assets-sources.md"
+    },
+    {
+      "id": "P5",
+      "scope": "全6回統合検証",
+      "status": "complete",
+      "result": ".workflow/gws-rebuild/results/P5-integrated-verification.md"
+    }
+  ],
+  "verification": {
+    "slide_counts_checked": true,
+    "headline_counts_checked": true,
+    "time_allocation_checked": true,
+    "public_safety_checked": true,
+    "source_memo_added": true,
+    "workflow_artifacts_completed": true
+  }
+}

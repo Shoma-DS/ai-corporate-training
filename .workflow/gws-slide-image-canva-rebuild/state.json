@@ -1,0 +1,28 @@
+{
+  "workflow": "gws-slide-image-canva-rebuild",
+  "course": "講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座",
+  "status": "in_progress",
+  "slide_total": 247,
+  "prompt_sync": {
+    "status": "complete",
+    "script": ".workflow/gws-slide-image-canva-rebuild/sync_image_prompts.py",
+    "counts": {
+      "01": 43,
+      "02": 40,
+      "03": 44,
+      "04": 40,
+      "05": 40,
+      "06": 40
+    }
+  },
+  "image_regeneration": {
+    "status": "in_progress",
+    "scope": "all_247_slides",
+    "priority": "missing_images_first"
+  },
+  "canva": {
+    "status": "pending",
+    "deck_strategy": "image_first_pptx_then_browser_magic_layers",
+    "private_log_dir": "非公開/Canva/"
+  }
+}

@@ -13,6 +13,8 @@
 - 同スキル内で詳細チェックリストが必要な場合は、`skills/corporate-training-course-builder/references/session-production-workflow.md` を参照する。
 - スライド画像、講座ビジュアル、画像素材を GPT image 2 で作る場合、またはユーザーが「上から処理ではなく1枚まるごと生成」と指定した場合も、`skills/corporate-training-course-builder/SKILL.md` の画像生成ルールに従う。
 - スライド画像の「再生成」「作り直し」「GPT image 2」指定では、既存PNGの上から文字や要素を重ねて直さず、SVG/HTML/CSS/canvas/ローカル変換を中間に挟まず、公式ロゴなどの参照素材を読み込んだうえで1枚の完成画像として生成し直す。
+- `スライド画像/Sxx.png` は、GPT image 2 / built-in `image_gen` で1枚の完成ビットマップとして生成した画像、または規約確認済みの公式スクリーンショット・公式素材だけを完成物として認める。SVG、HTML/CSS、canvas、ブラウザスクリーンショット、PIL/Pillow、ImageMagick、PDF/PPTX書き出し、ローカルラスタライズ、ローカル合成、テキスト後載せで作ったPNGを `スライド画像/` の完成物として保存しない。
+- 画像生成できていないスライドは「未生成」と記録し、仮画像・プレースホルダー・ローカル描画画像で生成済み扱いにしない。スクリプトは `スライド案.md`、`講師台本.md`、`画像生成プロンプト.md`、配布資料、演習データ、PPTX組み立てまでに限定し、`スライド画像/Sxx.png` を自動描画しない。
 - Canvaで複数ページの研修プレゼンを作る場合は、まずCanva MCP/APIまたはPPTX取り込みで、`スライド画像/Sxx.png` が1ページ目から最終ページまで順番に並ぶ画像ベースのプレゼンテーションを作る。いきなりブラウザ操作で全ページを1枚ずつ作らない。
 - CanvaのMagic Layersを使う場合は、作成済みの複数ページプレゼンをブラウザで開き、対象ページを1枚ずつ適用、数秒待機、文字化け・文言変化・レイアウト崩れを検証する。失敗した場合はCommand+Z、戻る、または履歴操作で適用前に戻して再試行し、成功・失敗・再試行回数を `非公開/Canva/` に記録する。
 - Canva取り込みやMagic Layersで品質を保ちやすい設定・工夫がある場合は、エージェント側で積極的に採用する。同じページでMagic Layersが3回以上失敗する場合は、それ以上変換せず元画像のまま残す。失敗から得た確認観点は `skills/gws-ai-training-slide-exporter/references/canva-quality-checklist.md` に追記し、次回以降の重点チェックに使う。
