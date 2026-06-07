@@ -34,3 +34,7 @@ __pycache__/
 .obsidian/
 *.swp
 *.swo
+.claude/eval/dspy/optimized_program.json
+.claude/eval/.local-config
+.claude/eval/.pending-review
+.claude/eval/.reviewing
