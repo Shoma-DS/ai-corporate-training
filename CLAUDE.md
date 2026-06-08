@@ -10,6 +10,7 @@
 - スライド画像、講座ビジュアル、画像素材を GPT image 2 で作る場合、またはユーザーが「上から処理ではなく1枚まるごと生成」と指定した場合も、`skills/corporate-training-course-builder/SKILL.md` の画像生成ルールに従う。
 - スライド画像の再生成では、既存画像への後載せ修正ではなく、SVG/HTML/CSS/canvas/ローカル変換を中間に挟まず、必要な公式ロゴやスクリーンショットを参照した1枚の完成画像として作り直す。
 - ローカルスキルの確認は Ruby ではなく Python で行う。必要な場合は `python3 scripts/validate_local_skills.py` を使う。
+- UdemyのAI・DX講座リサーチ、研修ネタ帳の作成・更新、最新AIトレンド調査を行う場合は、`skills/udemy-trend-research/SKILL.md` を読んでから作業する。
 
 ## 公開リポジトリの注意
 

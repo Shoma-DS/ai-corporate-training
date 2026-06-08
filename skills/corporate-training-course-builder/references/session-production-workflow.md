@@ -32,6 +32,7 @@ Use this checklist when turning a session request into complete materials.
 - Do not leave important explanations only in `講師台本.md`. If the script contains a concept needed for screening, promote a concise version onto the slide or into the pamphlet.
 - Avoid both extremes: do not make sparse decorative slides that require narration, and do not use unstructured bullet dumps. Rebuild bullets into sequence, comparison, classification, issue -> action -> effect, cause -> result, or conclusion + reasons.
 - Use slide density appropriate for screening. A clean slide is not enough if it only shows a mood image, a title, or a few abstract labels. Include 3-6 meaningful content blocks when needed: learning action, procedure, tool role, output, review point, and business connection.
+- For future slide images in any course, use the recent S02 "導入判断キャンバス" sample as the minimum visual-density benchmark: a finished Google Workspace-style slide with a So What headline, compact course/session header, multiple structured cards or a table/process/checklist/canvas, an output or exercise band, and risk/source/review notes when relevant.
 - Make session-opening and exercise slides especially explicit. They should show what the learner will create, what files/data are used, how the work is checked, and how it connects to the final practical output.
 - If a stakeholder says "講師コメントを読めば分かるがスライドだけでは想像しにくい", treat that as a slide failure. Rewrite the slide text and structure rather than only changing the script.
 - Add a slide when the topic changes, the instructor switches to a work screen, an exercise begins, or a case/example is introduced.
@@ -81,6 +82,8 @@ Use this checklist when turning a session request into complete materials.
 - For the current main style, use `isometric-corporate-clean`: clean white or very pale blue-gray background, navy/blue/teal/mint/light-gray palette, card-based organization, subtle lines and shadows, corporate isometric diagrams, and compatibility with real screenshots and official logos.
 - Each prompt should include the exact in-image Japanese text.
 - Each prompt should include the selected template ID and diagram pattern, or explain why the slide uses a screenshot/official logo/screen-share transition instead of a diagram.
+- Each prompt should describe the complete finished slide, not a blank design template. Include exact card labels, table columns, process steps, exercise/output/review text, risk/source notes, and where the isometric scene or official material appears.
+- Do not use prompt boilerplate that only changes the title. If the prompt does not specify the content blocks and layout, repair it before image generation.
 - For official logos, use local reference assets from repository-level `素材/ロゴ/`; do not invent them from memory.
 - When regenerating a flawed slide image, create a whole new raster image with `imagegen` if the user asks for regeneration or GPT image 2. Do not patch over the old image with overlays or deterministic redraws unless explicitly requested.
 - If the request specifically says GPT image 2, one complete image, or no overlay/local conversion, generate the final visual as a bitmap image. Do not create SVG, HTML/CSS, canvas, screenshots, ImageMagick/rsvg/PIL conversions, tracing, or local compositing as intermediates.
@@ -90,6 +93,7 @@ Use this checklist when turning a session request into complete materials.
 - For UI/screens, use session-local `スクリーンショット/`.
 - Save final images as `スライド画像/Sxx.png`.
 - Inspect images for readable text, wrong wording, layout overlap, and old terminology.
+- Reject and regenerate the whole image if it has important Japanese text errors, wrong service/output names, empty placeholders, missing exercise/output/risk content, sparse title-only composition, unreadable tiny text, or visible overlap. Do not repair with local text overlays.
 - If the user objects to SVG/HTML generation, asks for GPT image 2, or asks to rebuild from image generation, delete stale generated slide images only after confirming the scope, then regenerate complete bitmap images. Keep plans/scripts/prompts unless explicitly told to delete them.
 - Never create slide images through SVG, HTML/CSS, canvas, browser screenshots, ImageMagick, PIL, rsvg conversion, local rasterization, tracing, local compositing, or post-generation text/logo overlays.
 - The only acceptable final-image path for generated training slides is GPT image 2 / built-in image generation as a complete raster slide, followed by moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
@@ -128,6 +132,7 @@ Use this checklist when turning a session request into complete materials.
 - Add the minute values inside each session curriculum table and confirm they total the stated duration, usually 120 minutes.
 - If an HTML pamphlet was changed, regenerate `パンフレット.pdf` and verify the PDF text/preview contains the correction. Do not assume the PDF was updated just because the HTML was updated.
 - Confirm that `画像生成プロンプト.md` records a selected template ID and that diagram pattern IDs match `スライド/テンプレート/カタログ.yml` or the selected template file.
+- Confirm that prompts and generated images meet the dense-slide benchmark; blank templates and "text later" assumptions fail verification.
 - Parse all changed CSV files with Python's `csv` module.
 - Confirm each session references only data in its own `演習データ/` folder unless a shared course-level dataset is explicitly documented.
 - Search for stale deleted filenames after session-specific data cleanup.

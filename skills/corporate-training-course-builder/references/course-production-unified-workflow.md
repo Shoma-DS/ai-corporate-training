@@ -34,13 +34,17 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 6. Select one slide template for the course or a justified template per session. Record the template ID in slide plans and image prompts.
 7. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed.
 8. Produce each session with `session-production-workflow.md`: slide plan, instructor script, worksheet, handouts, exercise data, image prompts, and final slide images.
-9. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`.
+9. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`. Each image must meet the repository dense-slide benchmark: So What headline, compact course/session context, structured cards/table/process/checklist/canvas, learner output or review point, and needed risk/source/screenshot handling.
 10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, and whether the session still has theme-specific content rather than generic copied structure.
 11. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
 
 ## High-Density Slide Plan Rebuild
 
 Use this gate when the user asks to rebuild an existing course by matching another course's "情報量", "構図", "具体度", "例の出し方", or "スライドの密度". This is a quality and structure transfer, not a content transfer.
+
+If the user names the Google Workspace/GAS course, or says "Google Workspace講座くらいの情報量", use `講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座/` as the repository density benchmark. The target course must match that course's per-slide density: concrete output names, comparison tables, Before/After, process flows, industry examples, exercise instructions, review criteria, screenshot/material notes, and risk checks. Do not proceed to image generation or export while target slides still look like repeated generic bullets.
+
+For slide images, also use the recent S02 "導入判断キャンバス" sample level as the minimum acceptance benchmark: a finished white-background Google Workspace-style slide with a clear headline, multiple structured content cards or a decision canvas, visible learner exercise/output, risk or confirmation notes where relevant, and a composed isometric business scene. A title-only image, blank template, or generic diagram does not pass even if it looks clean.
 
 ### Intake Pattern
 
@@ -68,7 +72,9 @@ For each 120-minute session:
 - Keep or create a 120-minute time allocation table whose slide ranges match the actual slide headings.
 - Use `### Sxx ...` for every slide and `**ヘッドライン:**` for every slide.
 - Use visible structures instead of loose bullets: comparison table, process flow, classification map, checklist, Before/After, issue -> action -> effect, output map, or review rubric.
-- Add 3-6 meaningful blocks per slide where appropriate: business context, tool role, example, learner action, output, check point, risk, source note, screenshot instruction.
+- Add 3-6 meaningful blocks per slide where appropriate: business context, tool role, example, learner action, output, check point, risk, source note, screenshot instruction. Blocks must not be repeated boilerplate; they must name the specific business situation, data/file used, decision criterion, or learner output for that slide.
+- For image prompts, name the exact visible cards, labels, table columns, process steps, bottom exercise/output band, and right-side or corner isometric scene. Do not write prompts that rely on adding the real slide text later.
+- At least most slides should include one concrete structured element that can stand alone in a submitted deck, such as a table, flow, checklist, case card, sample output, rubric, or exercise instruction. A headline plus generic bullets is not acceptable for a high-density rebuild.
 - Place demos and exercises at natural chapter ends. Exercise slides must include steps, files/data used, output, review criteria, self-check, and how the output connects to later sessions.
 - Add industry examples across the course, but keep them fictional or abstracted from public patterns. Do not use private customer details.
 - Mark material needs per slide: `なし`, `スクリーンショット/...`, official logo, public case/source, screen-share transition, exercise data, or generated diagram.
@@ -130,6 +136,7 @@ Before completion, prove the rebuild with current-state evidence:
 - Search for unsafe data patterns and public-repo risks: real-looking emails, phone numbers, personal names, customer records, prices, contact details, credentials, API keys, private URLs, and contract details. Keep occurrences only when they are explicit "do not include" warnings or safe dummy examples such as `test-dummy@example.com`.
 - Confirm source notes exist for official logos, screenshots, current service capabilities, quotas/limits, and public cases.
 - Confirm screenshot folders either contain the referenced assets or the slide plan/source memo states exactly what to capture from a dummy environment.
+- Confirm image prompts and generated slide images meet the dense-slide benchmark. Reject blank templates, sparse mood images, placeholder slots, wrong Japanese text, missing output/exercise/risk areas, and any slide that is clearly thinner than the S02 sample.
 - Run `python3 scripts/validate_local_skills.py`.
 - If a dynamic workflow artifact exists, run `python3 skills/codex-dynamic-workflows/scripts/verify_workflow.py .workflow/<slug>`.
 
@@ -157,6 +164,7 @@ Allowed:
 - Using official logos/screenshots as references when license and source notes are acceptable.
 - Generating one complete bitmap image per slide with GPT image 2 / built-in image generation.
 - Moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
+- Inspecting the generated bitmap and regenerating the whole image when text, density, placeholders, or layout fail.
 
 Not allowed:
 

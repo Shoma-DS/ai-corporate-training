@@ -51,7 +51,8 @@ def iso_z(dt: datetime) -> str:
 def read_stdin() -> str:
     if sys.stdin.isatty():
         return ""
-    return sys.stdin.read()
+    # フックは1行JSONを渡してstdinを閉じない場合がある。read()はEOF待ちでブロックするのでreadlineに変更
+    return sys.stdin.readline()
 
 
 def safe_json_loads(value: str) -> object | None:
@@ -156,6 +157,13 @@ class FileLock:
 
     def __enter__(self) -> "FileLock":
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        # ゾンビロック対策: 既存ロックが存在すればPIDが生きているか確認し、死んでいれば削除
+        if self.path.exists():
+            try:
+                pid = int(self.path.read_text().strip())
+                os.kill(pid, 0)  # PIDが存在しなければOSError
+            except (ValueError, OSError):
+                self.path.unlink(missing_ok=True)
         deadline = time.monotonic() + self.timeout_seconds
         while True:
             try:

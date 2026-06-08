@@ -19,7 +19,7 @@
 
 ## Template ID
 isometric-corporate-clean（第1〜3回・第6回）
-soft-isometric-corporate-warm（第4〜5回）
+isometric-corporate-clean（第4〜5回）
 
 ## 共通ルール
 - 各スライドに必ず「ヘッドライン」（So What型結論）を設ける
