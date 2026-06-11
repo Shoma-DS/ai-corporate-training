@@ -618,6 +618,81 @@ def numbered_sessions(course_dir: Path) -> list[Path]:
     return sorted([p for p in course_dir.iterdir() if p.is_dir() and re.match(r"\d{2}-", p.name)], key=lambda p: p.name)
 
 
+def drive_folder_url(folder: dict[str, Any]) -> str:
+    if folder.get("webViewLink"):
+        return str(folder["webViewLink"])
+    if folder.get("id"):
+        return f"https://drive.google.com/drive/folders/{folder['id']}"
+    return ""
+
+
+def markdown_cell(value: Any) -> str:
+    text = "" if value is None else str(value)
+    return text.replace("|", "\\|").replace("\n", "<br>")
+
+
+def markdown_link(label: str, url: str) -> str:
+    safe_label = markdown_cell(label)
+    return f"[{safe_label}]({url})" if url else safe_label or "-"
+
+
+def link_index_target(args: argparse.Namespace) -> Path:
+    if args.link_index_path:
+        path = Path(args.link_index_path).expanduser()
+    else:
+        path = Path(args.course_dir).expanduser() / "全体" / "Google_Driveリンク一覧.md"
+    return path if path.is_absolute() else Path.cwd() / path
+
+
+def write_link_index(results: list[dict[str, Any]], out_path: Path) -> None:
+    if not results:
+        raise ExportError("No export results available for link index.")
+
+    first = results[0]
+    root_folder = first.get("rootFolder", {})
+    course_folder = first.get("courseFolder", {})
+    root_name = root_folder.get("name", "Drive root")
+    course_name = course_folder.get("name", "Course folder")
+    generated_at = dt.datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    lines = [
+        "# Google Drive / Google Slides リンク一覧",
+        "",
+        f"- 生成日時: {generated_at}",
+        f"- Driveルート: {markdown_link(str(root_name), drive_folder_url(root_folder))}",
+        f"- 講座フォルダ: {markdown_link(str(course_name), drive_folder_url(course_folder))}",
+        "- 詳細な置換レポートやDrive APIレスポンスは `非公開/` に保存し、この一覧には共有に必要なリンクだけを残す。",
+        "",
+        "| 回 | セッション | Driveフォルダ | Google Slides | スライド数 | 置換数 | 警告 |",
+        "| --- | --- | --- | --- | ---: | ---: | --- |",
+    ]
+    for result in results:
+        session_folder = result.get("sessionFolder", {})
+        presentation = result.get("presentation", {})
+        session_name = str(session_folder.get("name") or presentation.get("name") or "")
+        session_no = session_name.split("-", 1)[0] if re.match(r"^\d{2}-", session_name) else ""
+        warnings = result.get("warnings") or []
+        warning_label = "なし" if not warnings else f"{len(warnings)}件"
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_cell(session_no),
+                    markdown_cell(session_name),
+                    markdown_link("回フォルダ", drive_folder_url(session_folder)),
+                    markdown_link(str(presentation.get("name") or "Google Slides"), str(presentation.get("webViewLink") or "")),
+                    markdown_cell(result.get("slideImageCount", "")),
+                    markdown_cell(len(result.get("replacedPresentations") or [])),
+                    markdown_cell(warning_label),
+                ]
+            )
+            + " |"
+        )
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def export_course_canva_bundle(course_dir: Path, args: argparse.Namespace) -> dict[str, Any]:
     course_dir = course_dir.resolve()
     if "非公開" in course_dir.parts:
@@ -830,6 +905,15 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Delete existing Google Slides decks with the same title in the target session folder before creating a new deck",
     )
+    parser.add_argument(
+        "--write-link-index",
+        action="store_true",
+        help="Write a Markdown index of Drive folders and Google Slides links to <course-dir>/全体/Google_Driveリンク一覧.md",
+    )
+    parser.add_argument(
+        "--link-index-path",
+        help="Override the Markdown link index output path. Use with --write-link-index.",
+    )
     parser.add_argument("--report-json", help="Write JSON report. Prefer 非公開/ for Drive links.")
     parser.add_argument("--keep-pptx", help="Keep the temporary PPTX at this path for debugging")
     parser.add_argument(
@@ -856,6 +940,12 @@ def parse_args() -> argparse.Namespace:
         parser.error("--deck-title is only valid with one --session-dir")
     if (args.canva_pptx_only or args.canva_course_pptx_only) and not args.canva_pptx_dir:
         parser.error("--canva-pptx-only/--canva-course-pptx-only requires --canva-pptx-dir")
+    if args.link_index_path and not args.write_link_index:
+        parser.error("--link-index-path requires --write-link-index")
+    if args.write_link_index and not args.all_sessions:
+        parser.error("--write-link-index requires --course-dir with --all-sessions")
+    if args.write_link_index and (args.canva_pptx_only or args.canva_course_pptx_only):
+        parser.error("--write-link-index is only valid for Drive/Google Slides export")
     return args
 
 
@@ -875,6 +965,13 @@ def main() -> int:
         if args.all_sessions and not args.root_folder_id and not args.canva_pptx_only:
             root_folder = ensure_folder(args.root_folder_name, None, dry_run=args.dry_run)
         results = [export_session(session, args, root_folder=root_folder) for session in sessions]
+        if args.write_link_index:
+            link_path = link_index_target(args)
+            if args.dry_run:
+                print(f"Dry run: link index would be written to {link_path}")
+            else:
+                write_link_index(results, link_path)
+                print(f"Link index written: {link_path}")
         if args.report_json:
             report_path = Path(args.report_json)
             report_path.parent.mkdir(parents=True, exist_ok=True)

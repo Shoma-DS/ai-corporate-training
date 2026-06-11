@@ -301,7 +301,7 @@ python3 skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_
 ## Safety Rules
 
 - Do not upload files under `非公開/`.
-- Do not save Google Drive file IDs, URLs, or customer-specific links into public tracked files unless the user explicitly asks.
+- Do not save Google Drive file IDs, URLs, or customer-specific links into public tracked files unless the user explicitly asks. When they ask for a public link list, generate only the sharing index at `講座/COURSE/全体/Google_Driveリンク一覧.md`; keep raw reports and API responses under `非公開/`.
 - Use generated/public-safe slide images and dummy data only.
 - Run `gws auth status` before export. If it fails, stop and ask the user to run Google Workspace authentication.
 - If a folder name is duplicated in Drive under the same parent, stop and ask for an explicit parent/root folder ID.
@@ -325,6 +325,8 @@ Useful options:
 - `--report-json 非公開/.../export-report.json`: save Drive IDs/URLs outside public tracked files.
 - `--tmp-dir 書き出し/gws-ai-training-slide-exporter/tmp`: default repository-local PPTX temp directory for this gws-based exporter. Some `gws --upload` calls in this environment reject files outside the current repository. This is a gws CLI constraint for this script, not a general Drive-copy rule.
 - `--replace-existing-decks`: when a session deck with the same title already exists in the target Drive session folder, delete that Google Slides deck first, then create a fresh deck from the current local `スライド画像/Sxx.png`.
+- `--write-link-index`: after a full-course Drive/Google Slides export, write `講座/COURSE/全体/Google_Driveリンク一覧.md` with the Drive root, course folder, session folders, Google Slides links, slide counts, replacement counts, and warnings.
+- `--link-index-path <path>`: override the public Markdown link index destination. Use only with `--write-link-index`.
 - `--canva-pptx-dir`: output one PPTX per session for Canva single-presentation import workflows.
 - `--canva-pptx-only`: only create Canva-ready PPTX bundles from `スライド画像/Sxx.png`; do not create Drive folders or Google Slides.
 - `--canva-course-pptx-only`: create one Canva-ready PPTX for the whole course at `<canva-pptx-dir>/<講座名>/<講座名>.pptx`; do not create Drive folders or Google Slides.
@@ -362,9 +364,9 @@ When local `スライド画像/Sxx.png` have been regenerated and the user wants
 2. Run `gws auth status`. If auth is invalid, stop and ask the user to authenticate.
 3. Run a dry-run against the target course/session to verify local slide counts, speaker-note blocks, and Drive folder names.
 4. Use the same Drive root/course/session folder names as the prior export. Do not create a new course folder just because the public-facing training name changed; the repository course folder remains the stable Drive path unless the user explicitly asks to move it.
-5. Run the exporter with `--replace-existing-decks` and `--report-json` under `非公開/`.
+5. Run the exporter with `--replace-existing-decks` and `--report-json` under `非公開/`. If the user wants a shareable link list, also add `--write-link-index`.
 6. The exporter deletes only Google Slides files with the same deck title inside each target session folder, then uploads a new image-based Google Slides deck from the current local images and inserts speaker notes.
-7. Do not save Drive file IDs, URLs, or report JSON in public tracked files. Keep replacement reports under `非公開/`.
+7. Keep replacement reports under `非公開/`. When `--write-link-index` is used, review and commit only `講座/COURSE/全体/Google_Driveリンク一覧.md` as the public sharing index.
 8. After export, verify each returned deck has the expected page count. If a conversion or speaker-note insertion warning appears, report it and rerun only the affected session after fixing the local source.
 
 Recommended full-course replacement command:
@@ -374,6 +376,7 @@ python3 skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_
   --course-dir '講座/COURSE' \
   --all-sessions \
   --replace-existing-decks \
+  --write-link-index \
   --report-json '非公開/gws-exports/COURSE/replace-report.json'
 ```
 
