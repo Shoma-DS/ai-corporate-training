@@ -324,6 +324,7 @@ Useful options:
 - `--dry-run`: inspect the planned folder/deck work without calling `gws`.
 - `--report-json 非公開/.../export-report.json`: save Drive IDs/URLs outside public tracked files.
 - `--tmp-dir 書き出し/gws-ai-training-slide-exporter/tmp`: default repository-local PPTX temp directory for this gws-based exporter. Some `gws --upload` calls in this environment reject files outside the current repository. This is a gws CLI constraint for this script, not a general Drive-copy rule.
+- `--replace-existing-decks`: when a session deck with the same title already exists in the target Drive session folder, delete that Google Slides deck first, then create a fresh deck from the current local `スライド画像/Sxx.png`.
 - `--canva-pptx-dir`: output one PPTX per session for Canva single-presentation import workflows.
 - `--canva-pptx-only`: only create Canva-ready PPTX bundles from `スライド画像/Sxx.png`; do not create Drive folders or Google Slides.
 - `--canva-course-pptx-only`: create one Canva-ready PPTX for the whole course at `<canva-pptx-dir>/<講座名>/<講座名>.pptx`; do not create Drive folders or Google Slides.
@@ -352,6 +353,29 @@ Using `rclone` to copy files or folders to Google Drive is allowed when that is 
    - uploaded or skipped `講師台本.md`, `スライド案.md`, and exercise-data files
    - deck URL, unless the user requested not to display it
    - any missing notes or slide-count warnings
+
+### Workflow (Google Slides replacement after slide-image updates)
+
+When local `スライド画像/Sxx.png` have been regenerated and the user wants Drive/Google Slides updated, use replacement rather than creating duplicate decks.
+
+1. Confirm the target course/session and ensure the local slide images are the approved final raster images from the course workflow.
+2. Run `gws auth status`. If auth is invalid, stop and ask the user to authenticate.
+3. Run a dry-run against the target course/session to verify local slide counts, speaker-note blocks, and Drive folder names.
+4. Use the same Drive root/course/session folder names as the prior export. Do not create a new course folder just because the public-facing training name changed; the repository course folder remains the stable Drive path unless the user explicitly asks to move it.
+5. Run the exporter with `--replace-existing-decks` and `--report-json` under `非公開/`.
+6. The exporter deletes only Google Slides files with the same deck title inside each target session folder, then uploads a new image-based Google Slides deck from the current local images and inserts speaker notes.
+7. Do not save Drive file IDs, URLs, or report JSON in public tracked files. Keep replacement reports under `非公開/`.
+8. After export, verify each returned deck has the expected page count. If a conversion or speaker-note insertion warning appears, report it and rerun only the affected session after fixing the local source.
+
+Recommended full-course replacement command:
+
+```bash
+python3 skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_to_gws.py \
+  --course-dir '講座/COURSE' \
+  --all-sessions \
+  --replace-existing-decks \
+  --report-json '非公開/gws-exports/COURSE/replace-report.json'
+```
 
 ### Workflow (Canva image-first branch)
 

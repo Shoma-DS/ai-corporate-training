@@ -8,6 +8,7 @@
 - Codex、Claude Code、その他のエージェントは、作業前にこの `AGENTS.md` を読み、依頼内容に合う `skills/*/SKILL.md` がある場合は、そのスキルを読んでから作業する。
 - 「講座作成」「講座を作成してください」「研修資料を作って」のような一言依頼では、必ず `skills/corporate-training-course-builder/SKILL.md` を唯一の入口として参照し、同スキルの一気通貫ワークフローに従う。研修資料、講師台本、スライド構成、画像生成プロンプト、スライド画像、配布資料、ワークシート、演習データを作る・直す場合も同じ入口を使う。
 - `skills/gws-ai-training-slide-exporter/` や `skills/codex-dynamic-workflows/` は、講座作成スキルから呼び出す下流ヘルパーとして扱う。ユーザーが書き出しだけ、Drive/Slides/Canva連携だけ、またはワークフロー調整だけを明示した場合を除き、これらを講座作成の入口にしない。
+- スライド画像が更新され、既存のGoogle Slidesを差し替える場合は、同じDriveルート/講座フォルダ/回フォルダを使い、`skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_to_gws.py --replace-existing-decks` で対象回フォルダ内の同名Google Slidesだけを削除してから新規作成する。DriveのID・URL・置換レポートは `非公開/` に保存し、public repoへ書かない。
 - `skills/course-pamphlet-html-pdf/` は、パンフレットHTML/PDF作成の下流ヘルパーとして扱う。新規パンフレットはMarkdownではなく `<講座名>_パンフレット.html` を正として作り、提出用の `<講座名>_パンフレット.pdf` まで生成する。ファイル名だけで講座がわかるように、講座フォルダ名を接頭辞にする。旧 `パンフレット.html` / `パンフレット.pdf` 名のファイルに触れる場合は `git mv` で新名称へ揃える。既存の `パンフレット原稿.md` や `パンフレット.md` は移行元として扱い、内容を変えた場合は同スキルのスクリプトでHTMLとPDFへ反映する。
 - 研修名・講座名の表示は、提出用パンフレットHTML/PDFまたはユーザーの最新フィードバックを正とする。スライド案、講師台本、画像生成プロンプト、スライド画像、PPTX/Google Slides/Canva書き出し、全体資料、再生成スクリプトで表示名がずれている場合は、パンフレット側の研修名へ統一する。フォルダ名や密度基準としての旧講座名はパス識別子として残してよいが、受講者・審査者に見える表示名とは分けて扱う。
 - `講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座/` の公開表示名は、パンフレットに合わせて `生成AI・GASで実践する業務変革・DX推進講座` とする。同フォルダ名は既存パス・密度基準名として扱い、スライドや画像内の研修名として再利用しない。

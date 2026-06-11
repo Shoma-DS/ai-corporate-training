@@ -153,6 +153,16 @@ def find_existing_file(
     return {**files[0], "duplicateCount": len(files)}
 
 
+def delete_drive_file(file_id: str, *, dry_run: bool) -> None:
+    gws(
+        "drive",
+        "files",
+        "delete",
+        params={"fileId": file_id, "supportsAllDrives": True},
+        dry_run=dry_run,
+    )
+
+
 def upload_mime_type(path: Path) -> str:
     explicit = {
         ".csv": "text/csv",
@@ -714,12 +724,21 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
 
     canva_bundle_path: Path | None = None
     warnings = []
-    existing_deck = find_existing_file(
+    existing_decks = find_files(
         deck_title,
         session_folder.get("id"),
         dry_run=args.dry_run,
         mime_type=GOOGLE_SLIDES_MIME,
+        page_size=100,
     )
+    replaced_decks: list[dict[str, Any]] = []
+    if existing_decks and args.replace_existing_decks:
+        for deck in existing_decks:
+            if deck.get("id"):
+                delete_drive_file(deck["id"], dry_run=args.dry_run)
+            replaced_decks.append(deck)
+        existing_decks = []
+    existing_deck = {**existing_decks[0], "duplicateCount": len(existing_decks)} if existing_decks else None
     if existing_deck:
         if args.canva_pptx_dir:
             with tempfile.TemporaryDirectory(prefix="ai-training-gws-", dir=temp_parent_dir(args.tmp_dir)) as tmp:
@@ -771,6 +790,7 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
         "courseFolder": course_folder,
         "sessionFolder": session_folder,
         "presentation": presentation,
+        "replacedPresentations": replaced_decks,
         "materials": materials,
         "canvaPptxPath": str(canva_bundle_path) if canva_bundle_path else "",
         "slideImageCount": len(images),
@@ -805,6 +825,11 @@ def parse_args() -> argparse.Namespace:
         help="Only write one Canva PPTX bundle for the whole course at <output>/<course>/<course>.pptx",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned gws commands without changing Drive")
+    parser.add_argument(
+        "--replace-existing-decks",
+        action="store_true",
+        help="Delete existing Google Slides decks with the same title in the target session folder before creating a new deck",
+    )
     parser.add_argument("--report-json", help="Write JSON report. Prefer 非公開/ for Drive links.")
     parser.add_argument("--keep-pptx", help="Keep the temporary PPTX at this path for debugging")
     parser.add_argument(
