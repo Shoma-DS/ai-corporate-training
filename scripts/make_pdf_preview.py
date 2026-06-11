@@ -20,7 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "pdfs",
         nargs="*",
-        help="PDF files to include. Defaults to all 講座/*/全体/パンフレット.pdf files.",
+        help="PDF files to include. Defaults to all 講座/*/全体/*パンフレット.pdf files.",
     )
     parser.add_argument(
         "-o",
@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def find_default_pdfs() -> list[Path]:
-    return sorted((ROOT / "講座").glob("*/全体/パンフレット.pdf"))
+    return sorted((ROOT / "講座").glob("*/全体/*パンフレット.pdf"))
 
 
 def as_file_url(path: Path) -> str:
@@ -196,7 +196,7 @@ def build_html(pdfs: list[Path]) -> str:
       list.innerHTML = '<div class="empty">PDFが見つかりません。</div>';
       viewer.replaceWith(Object.assign(document.createElement('div'), {{
         className: 'empty',
-        textContent: '講座/*/全体/パンフレット.pdf を生成してから再実行してください。'
+        textContent: '講座/*/全体/*パンフレット.pdf を生成してから再実行してください。'
       }}));
     }}
 

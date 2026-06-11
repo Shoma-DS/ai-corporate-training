@@ -125,12 +125,12 @@ Use this checklist when turning a session request into complete materials.
 - Confirm the session has at least one theme-specific concept, example, dataset, official-source point, or exercise that would not fit unchanged in another course.
 - Confirm public course-outline research, if used, influenced the structure only as abstracted themes/gaps and did not copy paid or copyrighted course content.
 - For submission-facing decks, sample the slides without reading `講師台本.md` and confirm a first-time reviewer can identify the topic, learning action, expected output, and reason for the slide.
-- Perform a reviewer-only pass: open only `パンフレット.pdf` and the slide deck/images, then answer "what course is this?", "what does each session do?", "what outputs are created?", and "how are learning hours/LMS/completion handled?". If any answer requires `講師台本.md`, revise the submitted materials.
+- Perform a reviewer-only pass: open only `<講座名>_パンフレット.pdf` and the slide deck/images, then answer "what course is this?", "what does each session do?", "what outputs are created?", and "how are learning hours/LMS/completion handled?". If any answer requires `講師台本.md`, revise the submitted materials.
 - Search for public-facing labels such as `レベル3相当の評価観点`; replace them with learner-centered wording such as `本講座受講後の到達点` unless the user explicitly wants internal mapping language.
 - Confirm delivery format language. For e-learning reskilling courses, use e-learning and LMS recording language; do not leave `オンラインワークショップ` or `ハイブリッド` in public-facing pamphlet text unless explicitly requested.
 - Use the stakeholder-approved LMS wording or a close equivalent: `eラーニング。本研修は、LMS(学習管理システム:Learning Management System)を利用し、各自の受講状況や受講時間を全て記録することで、受講者の学習状況の把握を行い、適切なスキルアップをサポートいたします。`
 - Add the minute values inside each session curriculum table and confirm they total the stated duration, usually 120 minutes.
-- If an HTML pamphlet was changed, regenerate `パンフレット.pdf` and verify the PDF text/preview contains the correction. Do not assume the PDF was updated just because the HTML was updated.
+- If an HTML pamphlet was changed, regenerate `<講座名>_パンフレット.pdf` and verify the PDF text/preview contains the correction. Do not assume the PDF was updated just because the HTML was updated.
 - Confirm that `画像生成プロンプト.md` records a selected template ID and that diagram pattern IDs match `スライド/テンプレート/カタログ.yml` or the selected template file.
 - Confirm that prompts and generated images meet the dense-slide benchmark; blank templates and "text later" assumptions fail verification.
 - Parse all changed CSV files with Python's `csv` module.

@@ -31,6 +31,19 @@ For `講座/AX・DXワークショップ講座/`, always consult the accepted re
 
 If the user asks to "continue with a dynamic workflow", "Goalアクションに登録", "クリップボードに入れて", or resumes after a session/context limit, create a compact handoff prompt before further execution. The handoff prompt must include the unchanged objective, course path, current artifacts, packet/status table, public/private constraints, downstream helper sequence, and verification commands. Copy it to the clipboard only when the user explicitly asks for clipboard placement; otherwise save it under `.workflow/<slug>/handoff-prompt.md`.
 
+## Course Name Consistency
+
+The public-facing course/training name must be consistent across pamphlets, slide plans, scripts, image prompts, generated slide images, and exports.
+
+- Treat the submitted pamphlet HTML/PDF or the user's latest explicit feedback as the source of truth for the visible training name.
+- Folder names, old file prefixes, density benchmark names, and script path constants may remain as stable path identifiers. Do not automatically treat them as the visible course title.
+- When a training-name mismatch is reported, search and update all text sources that can regenerate submitted materials: `全体/` files, session `スライド案.md`, `講師台本.md`, `画像生成プロンプト.md`, source notes, and rebuild/export scripts that write visible names.
+- Search both punctuation variants, especially `/` and `-` forms such as `...効率化/DX...` and `...効率化-DX...`.
+- In image prompts, write `Course` and `Session` only as context when they are not meant to be visible. Prefer wording such as `Context only, do not render as visible text`. Put only the intended visible text inside the slide title, headline, and source-text block.
+- If an existing `スライド画像/Sxx.png` already contains a stale training name, do not repair it with local overlays or raster edits. Regenerate the whole slide image with the corrected prompt and inspect it before accepting.
+
+For `講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座/`, the current public-facing training name is `生成AI・GASで実践する業務変革・DX推進講座`. The folder name remains valid as a repository path and density benchmark label, but it is not the visible training title for submitted slides or pamphlets.
+
 ## One-Phrase Session Requests
 
 When the user says "4回目の台本とスライド画像まで作って", "第4回の台本とスライド作って", "何回目の台本とスライド作って", or "N回目の講師台本とスライド画像まで", treat it as an end-to-end target-session request, not only a planning request.
@@ -49,7 +62,7 @@ Course-level:
 - `全体/`
 - `全体/調査/`
 
-Put course-wide materials in `全体/`: course overview, detailed syllabus, all-session worksheet, all-session instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, course-level slide outline, level mapping, and use-case/data design notes. Put course-wide source and research notes in `全体/調査/`.
+Put course-wide materials in `全体/`: course overview, detailed syllabus, all-session worksheet, all-session instructor notes, exercise-data index, `<講座名>_パンフレット.html`, `<講座名>_パンフレット.pdf`, course-level slide outline, level mapping, and use-case/data design notes. Put course-wide source and research notes in `全体/調査/`.
 
 Repository-level shared assets:
 
@@ -103,17 +116,22 @@ A production-ready slide image normally includes:
 - A visible learner action, practical output, review criterion, or business decision point.
 - Risk, governance, source, or confirmation notes when the slide involves AI output, official services, personal data, screenshots, or operational adoption.
 - A concrete visual composition using the `isometric-corporate-clean` style: white background, navy/teal cards, thin borders, readable short Japanese labels, right-side or corner isometric business scene where useful, and a bottom band for exercise/output/risk notes when it clarifies the slide.
+- Concrete proper nouns wherever the learner is supposed to act: recommended service names (e.g. Codex, Claude Code, NotebookLM, Gamma, Dify, ラッコキーワード), recommended MCP servers (e.g. GitHub MCP, Slack MCP, Notion MCP, Google Drive MCP, Playwright MCP, ラッコキーワードMCP, Adobe Express MCP, Canva MCP), and fictional-but-numeric business cases. Use `references/concrete-tools-mcp-case-bank.md` as the source of truth for names, fictional companies, and per-course emphasis. Abstract frameworks (入力→処理→出力→確認 etc.) are allowed only as the surrounding structure; the slide itself must let learners map the framework to a named tool or a numbered case on the spot.
+- A caution near tool/MCP slides that availability, terms, and pricing change and must be re-checked against official sources at adoption time. Never render logos or real UI without reference assets.
 
 Do not treat these as complete:
 
 - Blank slide templates that expect text to be added later.
 - Mood images, title-only section dividers, or abstract diagrams with no useful slide content.
-- Repeated generic prompt boilerplate with only the slide title changed.
+- Repeated generic prompt boilerplate with only the slide title changed, including "judgment table" or "content block" templates whose sentences just embed the slide title into a fixed phrase across many slides.
 - Prompts that say "show cards", "show workflow", or "safe trial boundary" without naming the exact cards, labels, output, checks, and layout.
+- Tool/use-case/exercise slides that name no concrete service, MCP, or numeric case at all.
 
 Before image generation, `画像生成プロンプト.md` must include the exact short Japanese text to render, the selected diagram pattern, card/table/process layout, material and screenshot/logo handling, and a negative prompt that forbids placeholder slots, fake UI, invented logos, unreadable tiny text, and stale labels. If this is missing, repair the prompt before generating images.
 
 After generation, inspect every slide image before accepting it. Reject and regenerate the whole image if important Japanese text is wrong, product/service names are wrong, content blocks are missing, there are empty placeholders, the slide is visibly sparser than the S02 sample, text overlaps, or the exercise/risk/output element disappeared. Do not fix these failures with local overlays or raster edits.
+
+When the user asks to revise **image prompts only**, keep the scope narrow: edit `画像生成プロンプト.md` and supporting repository rules/reference files only. Do not change pamphlet HTML/PDF, slide plans, scripts, handouts, exercise data, or generated slide images unless the user explicitly expands the scope. If a course is marked as submitted or frozen, such as the Google Workspace/GAS course during a submission window, use it only as a density benchmark and do not edit its course files.
 
 ## Subsidy Review Submission Principle
 
@@ -190,7 +208,7 @@ Good differentiation examples:
 13. Use the `imagegen` skill and its rules for raster slide images. Save final images in the target session's `スライド画像/Sxx.png`.
     - For generated training slide images, use GPT image 2 / built-in image generation as a complete bitmap image. Do not create SVG, HTML, CSS, canvas, browser screenshots, or local conversion outputs as slide-image intermediates.
     - Inspect each generated image against the Dense Slide Image Standard. If it is too sparse, has wrong Japanese text, contains placeholders, loses the exercise/output/risk block, or looks like a blank template, mark it rejected and regenerate the whole image.
-14. For course-level pamphlets, create or update `全体/パンフレット.html` as the source of truth and generate `全体/パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration and HTML-to-PDF conversion. Do not create new pamphlets as Markdown-first deliverables.
+14. For course-level pamphlets, create or update `全体/<講座名>_パンフレット.html` as the source of truth and generate `全体/<講座名>_パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration and HTML-to-PDF conversion. Do not create new pamphlets as Markdown-first deliverables.
 15. Verify text accuracy, slide count, per-session time totals, theme-specific differentiation, asset paths, selected template usage, pamphlet HTML/PDF existence, public-safety constraints, and that scripts/slides/handouts agree.
     - For submission-facing materials, review the pamphlet and slides without reading `講師台本.md`. If the course content is not understandable from those two artifacts alone, revise the slides/pamphlet before delivery.
 
@@ -273,12 +291,12 @@ If the user explicitly asks to run Magic Layers in the Canva browser:
 
 Course pamphlets are client-facing submission artifacts, so they must be available as print-ready HTML and PDF.
 
-- New pamphlets are authored directly as `全体/パンフレット.html`.
-- Always generate or refresh `全体/パンフレット.pdf` from the HTML before delivery.
+- New pamphlets are authored directly as `全体/<講座名>_パンフレット.html`. The file name must identify the course on its own (course folder name + `_パンフレット`).
+- Always generate or refresh `全体/<講座名>_パンフレット.pdf` from the HTML before delivery.
 - For e-learning reskilling courses, describe the delivery format as e-learning only unless the user explicitly says otherwise. Use LMS wording that explains `LMS(学習管理システム:Learning Management System)` and that each learner's attendance status and learning time are recorded.
 - Do not label learner outcomes in public-facing pamphlets or slides as `レベル3相当の評価観点`. Use learner-centered wording such as `本講座受講後の到達点` so the material does not look like it was made only for Manabi DX screening.
 - Check that every curriculum table row group totals the stated session duration, usually 120 minutes per session. If a table totals 140 minutes or another mismatched value, adjust before PDF generation.
-- After generating PDF, verify the PDF text or preview itself, not only the HTML. Use `pdftotext` or a visual preview to confirm corrected wording is actually reflected in `パンフレット.pdf`.
+- After generating PDF, verify the PDF text or preview itself, not only the HTML. Use `pdftotext` or a visual preview to confirm corrected wording is actually reflected in the pamphlet PDF.
 - Search the final HTML/PDF text for stale public-facing delivery words such as `オンラインワークショップ`, `ハイブリッド`, and stale screening labels such as `レベル3相当の評価観点`.
 - Existing `パンフレット原稿.md` or `パンフレット.md` files are legacy migration sources. If their content changes, run the pamphlet helper to regenerate HTML and PDF.
 - Standard build command:
@@ -423,6 +441,7 @@ Before finishing, confirm:
 - The target session has the standard folder structure.
 - `スライド案.md`, `講師台本.md`, `画像生成プロンプト.md`, `ワークシート.md`, and needed handouts/data exist.
 - Slide numbers and titles match across slide plan, script, prompts, and images.
+- Visible course/training names match the submitted pamphlet or latest user correction; old path names or benchmark labels are not leaking into slide titles, image prompts, generated images, or export-facing text.
 - `画像生成プロンプト.md` records the selected slide template ID and uses a diagram pattern from `スライド/テンプレート/カタログ.yml` or the selected `source_file`.
 - `画像生成プロンプト.md` and generated images satisfy the Dense Slide Image Standard; blank templates, sparse mood images, and text-to-be-added-later prompts do not pass.
 - One session uses one template ID and one visual style across prompts and generated images, unless the user explicitly requested mixed templates.

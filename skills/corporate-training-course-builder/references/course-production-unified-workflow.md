@@ -6,7 +6,7 @@ Use this workflow when creating, rebuilding, or coordinating a whole corporate t
 
 - `corporate-training-course-builder`: the single entrypoint and source of truth for course/session production.
 - `imagegen`: final raster image generation only. Use GPT image 2 / built-in image generation for complete bitmap slide images.
-- `course-pamphlet-html-pdf`: downstream pamphlet builder for `パンフレット.html` and `パンフレット.pdf`.
+- `course-pamphlet-html-pdf`: downstream pamphlet builder for `<講座名>_パンフレット.html` and `<講座名>_パンフレット.pdf`.
 - `gws-ai-training-slide-exporter`: downstream export only, after local slide images and scripts are complete.
 - `codex-dynamic-workflows`: optional coordination layer for large, risky, or parallel work. It must not define a separate content standard.
 
@@ -32,10 +32,10 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 4. Research official/vendor/public primary sources and, where useful, public course outlines such as Udemy curriculum pages, public syllabi, YouTube/blog course outlines, Qiita, Zenn, note, and product-community walkthroughs. Extract only themes, chapter ideas, learner pain points, and gaps; do not copy paid content, copyrighted prose, screenshots, quizzes, datasets, or private details.
 5. Write a course-level differentiation memo in `全体/調査/` or another course-level design memo. Include: nearby existing courses compared, what will not be reused blindly, official sources that change the curriculum, public course-outline patterns, signature chapter/exercise, and theme-specific outputs.
 6. Select one slide template for the course or a justified template per session. Record the template ID in slide plans and image prompts.
-7. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `パンフレット.html`, `パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed.
+7. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `<講座名>_パンフレット.html`, `<講座名>_パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed. Treat the submitted pamphlet title or the user's latest explicit correction as the public-facing training-name source of truth.
 8. Produce each session with `session-production-workflow.md`: slide plan, instructor script, worksheet, handouts, exercise data, image prompts, and final slide images.
 9. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`. Each image must meet the repository dense-slide benchmark: So What headline, compact course/session context, structured cards/table/process/checklist/canvas, learner output or review point, and needed risk/source/screenshot handling.
-10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, and whether the session still has theme-specific content rather than generic copied structure.
+10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, course-name consistency, and whether the session still has theme-specific content rather than generic copied structure.
 11. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
 
 ## High-Density Slide Plan Rebuild
@@ -136,6 +136,8 @@ Before completion, prove the rebuild with current-state evidence:
 - Search for unsafe data patterns and public-repo risks: real-looking emails, phone numbers, personal names, customer records, prices, contact details, credentials, API keys, private URLs, and contract details. Keep occurrences only when they are explicit "do not include" warnings or safe dummy examples such as `test-dummy@example.com`.
 - Confirm source notes exist for official logos, screenshots, current service capabilities, quotas/limits, and public cases.
 - Confirm screenshot folders either contain the referenced assets or the slide plan/source memo states exactly what to capture from a dummy environment.
+- Confirm the public-facing course/training name is consistent across pamphlet HTML/PDF, course-level files, `スライド案.md`, `講師台本.md`, `画像生成プロンプト.md`, generated slide images, and export scripts. Search old `/` and `-` title variants, and do not allow path-only benchmark names to appear as visible titles.
+- Confirm `Course`, `Session`, folder names, and other metadata in image prompts are marked as context-only when they are not intended to be rendered as visible slide text.
 - Confirm image prompts and generated slide images meet the dense-slide benchmark. Reject blank templates, sparse mood images, placeholder slots, wrong Japanese text, missing output/exercise/risk areas, and any slide that is clearly thinner than the S02 sample.
 - Run `python3 scripts/validate_local_skills.py`.
 - If a dynamic workflow artifact exists, run `python3 skills/codex-dynamic-workflows/scripts/verify_workflow.py .workflow/<slug>`.
@@ -186,7 +188,7 @@ When the user says "全部削除して画像生成からやり直して", "再�
 
 Run export only after `スライド画像/Sxx.png` exists and passes verification.
 
-- Pamphlet PDF: ensure `全体/パンフレット.html` and `全体/パンフレット.pdf` exist. If legacy Markdown exists and is newer than HTML, regenerate HTML/PDF through `skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py`.
+- Pamphlet PDF: ensure `全体/<講座名>_パンフレット.html` and `全体/<講座名>_パンフレット.pdf` exist. If legacy Markdown exists and is newer than HTML, regenerate HTML/PDF through `skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py`.
 - Google Slides: use image pages plus speaker notes from `講師台本.md`.
 - Canva standard route: create the multi-page image-first presentation through MCP/API or PPTX import first, then use browser Magic Layers only for high-edit pages.
 - Canva exception route: all-page Magic Layers only when the user explicitly asks for fully editable pages.

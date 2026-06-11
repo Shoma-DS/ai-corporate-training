@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodexとMCPで進めるDX業務効率化講座</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8e2ee;
+      --pale: #eaf4fb;
+      --blue: #2a76a8;
+      --navy: #123a5a;
+      --cyan: #2bbbd3;
+      --orange: #f4a261;
+      --soft-orange: #fff0e4;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eceff3;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 18px;
+      padding: 16mm 17mm 14mm;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(24, 39, 56, .16);
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .footer {
+      position: absolute;
+      left: 17mm;
+      right: 17mm;
+      bottom: 7mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #8390a0;
+      font-size: 8.5px;
+      border-top: 1px solid #e8eef5;
+      padding-top: 4px;
+    }
+
+    .hero {
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      border: 1px solid #cfdceb;
+      background:
+        linear-gradient(120deg, #f8fbff 0%, #eef7fb 56%, #123a5a 56%, #0e2c45 100%);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.14fr .86fr;
+      gap: 14px;
+      padding: 18px 20px;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-kicker {
+      margin: 0 0 7px;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      color: #0f2842;
+      font-size: 22.5px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      font-size: 9.8px;
+      color: #294057;
+      margin-bottom: 9px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .hero-meta span {
+      border: 1px solid #b9d2e4;
+      background: #ffffff;
+      color: var(--navy);
+      padding: 4px 7px;
+      font-size: 8.3px;
+      font-weight: 800;
+    }
+
+    .hero-map {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-content: center;
+    }
+
+    .hero-step {
+      min-height: 46px;
+      background: rgba(255, 255, 255, .96);
+      border-left: 4px solid var(--orange);
+      padding: 8px;
+      font-size: 8.1px;
+      font-weight: 800;
+      color: var(--navy);
+      box-shadow: 0 8px 20px rgba(6, 28, 47, .16);
+    }
+
+    .hero-step span {
+      display: block;
+      margin-bottom: 2px;
+      color: #bf672d;
+      font-size: 7.5px;
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      color: var(--navy);
+      border-left: 5px solid var(--orange);
+      padding-left: 8px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      margin: 13px 0 6px;
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 10.2px;
+    }
+
+    .lead {
+      font-size: 11.2px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .tool-note {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 9px;
+      margin: 8px 0 12px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 10px;
+      min-height: 48px;
+    }
+
+    .box strong {
+      display: block;
+      color: var(--blue);
+      font-size: 10.5px;
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 6px 0 10px 18px;
+      padding: 0;
+      font-size: 9.8px;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px;
+      font-size: 8.8px;
+    }
+
+    th {
+      background: #cfe3f3;
+      color: #172033;
+      text-align: left;
+      font-weight: 800;
+      border: 1px solid #b9d2e4;
+      padding: 5px 6px;
+    }
+
+    td {
+      border: 1px solid #d9e1e8;
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    .num {
+      width: 35px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--navy);
+      background: #f7fbff;
+    }
+
+    .time {
+      width: 48px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      padding-bottom: 7px;
+      border-bottom: 3px solid #d8e8f5;
+      font-size: 18px;
+      color: var(--navy);
+    }
+
+    .process-panel {
+      width: 100%;
+      margin: 18px auto 10px;
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      padding: 13px 14px;
+    }
+
+    .process-panel strong {
+      display: block;
+      color: var(--navy);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .process-grid div {
+      background: #ffffff;
+      border-top: 4px solid var(--cyan);
+      min-height: 54px;
+      padding: 8px 6px;
+      font-size: 8.2px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--navy);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      margin: 10px 0 14px;
+    }
+
+    .flow div {
+      background: #f5f9fc;
+      border-top: 4px solid var(--cyan);
+      padding: 8px 6px;
+      min-height: 46px;
+      font-size: 8.5px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .kpi div {
+      background: var(--soft-orange);
+      border-left: 4px solid var(--orange);
+      padding: 8px;
+      min-height: 45px;
+    }
+
+    .kpi b {
+      display: block;
+      color: #bf672d;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .kpi span {
+      font-size: 8.5px;
+      color: var(--muted);
+    }
+
+    .checklist {
+      columns: 2;
+      column-gap: 18px;
+      font-size: 9px;
+    }
+
+    .page-mark {
+      color: #9aa6b4;
+      font-weight: 700;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="hero-kicker">eラーニング研修 / DX業務効率化・AIエージェント活用</p>
+        <h1>CodexとMCPで進める<br>DX業務効率化講座</h1>
+        <p>業務課題整理から要件定義、プロトタイプ実装、MCP連携設計、運用設計、導入提案までを一貫して扱う、高度デジタル人材向けの実践型講座です。</p>
+        <div class="hero-meta">
+          <span>全6回</span>
+          <span>標準学習時間 約12時間</span>
+          <span>プロトタイプ実装</span>
+          <span>MCP連携設計</span>
+        </div>
+      </div>
+      <div class="hero-map" aria-label="講座で扱うDX業務効率化プロセス">
+        <div class="hero-step"><span>01</span>業務課題整理・活用設計</div>
+        <div class="hero-step"><span>02</span>安全な作業環境設計</div>
+        <div class="hero-step"><span>03</span>プロトタイプ実装</div>
+        <div class="hero-step"><span>04</span>MCP連携設計</div>
+        <div class="hero-step"><span>05</span>評価・権限・運用設計</div>
+        <div class="hero-step"><span>06</span>提案書・展開計画</div>
+      </div>
+    </div>
+
+    <p class="lead">生成AIを単なるツール操作で終わらせず、業務課題の解決、職務遂行力の向上、DX推進、継続運用へつなげる力を育成する実践型講座です。</p>
+
+    <div class="tool-note">CodexとMCPは、業務改善を実装・検証・運用へ組み込むための手段として扱います。主役は、業務課題整理、要件定義、プロトタイプ、連携設計、リスク管理、導入提案です。</div>
+
+    <h2>研修の目的</h2>
+    <p>日常業務の転記、集計、報告、問い合わせ対応、社内ナレッジ整理、定型文書作成などを題材に、As-Is/To-Be、要件定義、プロトタイプ、MCP連携、運用設計、効果説明を実践します。</p>
+    <p>Codexへ依頼するタスクを、目的、対象ファイル、制約、期待出力、確認方法まで含めて設計し、MCPのResources、Prompts、Toolsを区別した連携設計、AI出力レビュー、テスト、停止条件、手動復旧、教育までを扱います。</p>
+
+    <div class="two-col">
+      <div class="box">
+        <strong>対象者</strong>
+        <ul>
+          <li>DX推進担当、業務改善担当、情報システム担当、管理部門リーダー</li>
+          <li>生成AIを使った業務効率化を部署単位で進めたい方</li>
+          <li>社内資料、SaaS、データ、スクリプトをAIエージェントと連携させる検討を始めたい方</li>
+          <li>プログラミング経験は必須ではありませんが、サンプルコードや設定ファイルを読み、修正する演習を行います</li>
+        </ul>
+      </div>
+      <div class="box">
+        <strong>受講後にできること</strong>
+        <ul>
+          <li>業務改善テーマを選び、AIエージェント活用の要件定義メモを作成できる</li>
+          <li>CSV処理、レポート生成などのプロトタイプを作成・検証できる</li>
+          <li>MCP連携候補を評価し、接続してよい情報と承認が必要な操作を整理できる</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>研修の強み</h2>
+    <div class="flow">
+      <div>業務課題<br>整理</div>
+      <div>要件定義</div>
+      <div>安全な<br>作業環境</div>
+      <div>プロトタイプ<br>実装</div>
+      <div>MCP連携・<br>運用設計</div>
+      <div>導入提案</div>
+    </div>
+
+    <ul>
+      <li>業務課題から始め、CodexとMCPを業務フローに組み込む設計力を重視します。</li>
+      <li>ダミー業務データを使い、機密情報を扱わずに実務に近い演習を行います。</li>
+      <li>「AIに任せる作業」と「人が確認する作業」を分け、誤実行、権限過多、機密入力、出力確認まで扱い、最終成果物としてプロトタイプ、MCP連携設計書、運用設計書、導入提案書を作成します。</li>
+    </ul>
+
+    <div class="footer">
+      <span>CodexとMCPで進めるDX業務効率化講座</span>
+      <span class="page-mark">1</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">1. 研修概要</h2>
+
+    <table>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+      <tr>
+        <td class="num">方式</td>
+        <td>eラーニング。本研修は、LMS(学習管理システム:Learning Management System)を利用し、各自の受講状況や受講時間を全て記録することで、受講者の学習状況の把握を行い、適切なスキルアップをサポートいたします。</td>
+      </tr>
+      <tr>
+        <td class="num">時間</td>
+        <td>6回、各120分、合計約12時間。2か月以内を目安に、実務演習と課題作成を組み合わせて進めます。</td>
+      </tr>
+      <tr>
+        <td class="num">環境</td>
+        <td>Codexを利用できる環境、サンプルリポジトリ、ダミーCSV、Markdown、JSON、ローカルサンプルMCP設定を使用します。実在の顧客情報や社内固有情報は使いません。</td>
+      </tr>
+      <tr>
+        <td class="num">成果物</td>
+        <td>業務棚卸しシート、Codexタスクブリーフ、業務改善リポジトリ設計、AGENTS.md案、業務効率化プロトタイプ、MCP連携設計書、運用設計書、リスクチェックリスト、テスト観点表、DX業務効率化提案書。</td>
+      </tr>
+    </table>
+
+    <h2>よくある悩み・導入背景</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>個人利用で止まっている</strong>
+        <p>生成AIを使っているが、個人利用に留まり、部署の業務改善へ広がっていない。</p>
+      </div>
+      <div class="box">
+        <strong>要件まで整理できない</strong>
+        <p>改善アイデアはあるが、要件、データ、権限、運用、効果測定まで整理できていない。</p>
+      </div>
+      <div class="box">
+        <strong>任せる範囲が決まらない</strong>
+        <p>CodexのようなAIエージェントに何を任せ、どこで人が確認すべきか判断できない。</p>
+      </div>
+      <div class="box">
+        <strong>連携の安全性が不安</strong>
+        <p>MCPで社内ツールやデータをつなぐ際の、情報漏洩、誤操作、権限過多が心配である。</p>
+      </div>
+      <div class="box">
+        <strong>自動化が属人化する</strong>
+        <p>作成した自動化やスクリプトが属人化し、引き継ぎ、ログ、復旧、教育が整っていない。</p>
+      </div>
+      <div class="box">
+        <strong>説明資料がない</strong>
+        <p>DX推進担当として、現場、IT部門、管理者、経営層へ説明できる提案資料が必要である。</p>
+      </div>
+    </div>
+
+    <div class="process-panel" aria-label="DX業務効率化プロセス">
+      <strong>業務課題を、検証済みの改善フローと導入提案へ</strong>
+      <div class="process-grid">
+        <div>課題と原因を<br>整理する</div>
+        <div>入力・処理・出力を<br>要件化する</div>
+        <div>安全な作業環境を<br>整える</div>
+        <div>Codexで試作・<br>検証する</div>
+        <div>MCP連携を<br>設計する</div>
+        <div>権限・承認・ログを<br>組み込む</div>
+        <div>KPIと効果を<br>仮説化する</div>
+        <div>提案書として<br>説明する</div>
+      </div>
+    </div>
+
+    <h2>本講座受講後の到達点</h2>
+    <ul class="checklist">
+      <li>業務課題を、実装前にAs-Is/To-Beと要件に分解できる</li>
+      <li>目的、制約、期待出力、検証方法まで具体化したCodex依頼を作れる</li>
+      <li>ダミーデータ、公開不可情報、承認が必要な操作を区別できる</li>
+      <li>MCPのResources、Prompts、Tools、認証、承認、ログ、停止手順を説明できる</li>
+      <li>プロトタイプの結果を鵜呑みにせず、テスト、レビュー、リスク確認ができる</li>
+      <li>効果、リスク、運用、ロードマップ、次アクションを含む提案書を作れる</li>
+    </ul>
+
+    <div class="footer">
+      <span>研修概要</span>
+      <span class="page-mark">2</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">2. カリキュラム</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>回</th>
+          <th>テーマ</th>
+          <th>主な内容</th>
+          <th>成果物</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td>DX業務課題整理とCodex活用設計</td>
+          <td>業務棚卸し、As-Is/To-Be、AIエージェント適用範囲、Codex依頼文の設計。</td>
+          <td>業務棚卸しシート、Codexタスクブリーフ、改善テーマ選定メモ</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>業務リポジトリと安全な作業環境の設計</td>
+          <td>サンプルリポジトリ、AGENTS.md、ダミーデータ、Git、サンドボックス、承認、秘密情報管理。</td>
+          <td>業務改善リポジトリ設計、AGENTS.md案、ダミーデータ、作業安全チェック</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Codexによる業務改善プロトタイプ実装</td>
+          <td>プロンプトから実装、テスト、デバッグ、レビュー、レポート生成・CSV処理のプロトタイプ。</td>
+          <td>業務効率化プロトタイプ、テスト結果、修正ログ</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>MCPで社内ツールとデータをつなぐ設計</td>
+          <td>MCPのResources/Prompts/Tools、接続候補、認証、承認、MCP設定、接続しない判断。</td>
+          <td>MCP連携設計書、ツール棚卸し、MCP設定ドラフト</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>評価・権限・運用設計と定着化</td>
+          <td>AI出力レビュー、テスト観点、ログ、承認、プロンプトインジェクション、運用手順、教育。</td>
+          <td>運用設計書、リスクチェックリスト、テスト観点表、復旧手順</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td>DX業務効率化提案書と展開計画</td>
+          <td>KPI、効果試算、導入ロードマップ、関係者説明、横展開、改善サイクル。</td>
+          <td>DX業務効率化提案書、導入ロードマップ、次アクション一覧</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>演習テーマ例</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>問い合わせ対応の整理</strong>
+        <p>架空の問い合わせデータを分類し、対応傾向の整理と分類補助のプロトタイプを設計する。</p>
+      </div>
+      <div class="box">
+        <strong>週次レポート生成</strong>
+        <p>ダミーCSVを読み、エラーを検出し、整形済みの週次レポートを出力する処理を試作する。</p>
+      </div>
+      <div class="box">
+        <strong>社内FAQ整備</strong>
+        <p>架空の社内文書からFAQ候補を整理し、更新・確認の流れを設計する。</p>
+      </div>
+      <div class="box">
+        <strong>申請チェック</strong>
+        <p>申請データの空欄、重複、異常値を検出するチェックリストと処理を作る。</p>
+      </div>
+      <div class="box">
+        <strong>議事録からのToDo抽出</strong>
+        <p>ダミー議事録から決定事項、担当者、期限を抽出し、一覧化する流れを設計する。</p>
+      </div>
+      <div class="box">
+        <strong>MCP連携の可否判断</strong>
+        <p>接続候補ツールを棚卸しし、権限、認証、承認、接続しない判断を整理する。</p>
+      </div>
+    </div>
+
+    <h2>最終成果物</h2>
+    <div class="kpi">
+      <div><b>Prototype</b><span>テスト済みの業務効率化プロトタイプ</span></div>
+      <div><b>MCP</b><span>認証・承認・ログを含むMCP連携設計書</span></div>
+      <div><b>Operation</b><span>テスト観点・復旧手順を含む運用設計書</span></div>
+      <div><b>Proposal</b><span>KPIとロードマップを含む導入提案書</span></div>
+    </div>
+
+    <div class="footer">
+      <span>カリキュラム</span>
+      <span class="page-mark">3</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">3. 詳細カリキュラム</h2>
+
+    <h3>第1回: DX業務課題整理とCodex活用設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>講座全体像、最終成果物、Codex/MCPを手段として使う考え方、公開不可情報</td><td class="time">10分</td></tr>
+      <tr><td>DX業務効率化の基本</td><td>属人化、転記、確認漏れ、報告負荷、標準化、継続運用</td><td class="time">15分</td></tr>
+      <tr><td>業務棚卸し</td><td>業務名、現状作業、入力、処理、出力、確認、保存、通知、頻度、影響</td><td class="time">25分</td></tr>
+      <tr><td>As-Is/To-Be設計</td><td>現状フロー、目指す状態、Gap、AIに任せる範囲、人が確認する範囲</td><td class="time">25分</td></tr>
+      <tr><td>Codexタスクブリーフ</td><td>目的、対象ファイル、制約、期待出力、テスト、禁止事項、確認方法</td><td class="time">20分</td></tr>
+      <tr><td>優先順位付け</td><td>効果、頻度、難易度、情報リスク、データ整備状況、現場定着</td><td class="time">15分</td></tr>
+      <tr><td>演習</td><td>改善テーマ選定メモとCodexタスクブリーフを作成</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第2回: 業務リポジトリと安全な作業環境の設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>リポジトリ化の目的</td><td>業務改善の材料、仕様、データ、検証結果を残す理由</td><td class="time">10分</td></tr>
+      <tr><td>標準フォルダ構成</td><td>docs、data/sample、scripts、outputs、tests、prompts、runbooks</td><td class="time">20分</td></tr>
+      <tr><td>AGENTS.md</td><td>作業ルール、公開不可情報、承認が必要な操作、テスト、命名規則</td><td class="time">20分</td></tr>
+      <tr><td>ダミーデータ設計</td><td>実データを使わない、匿名化、架空部署、架空顧客、CSV/JSON/Markdown</td><td class="time">20分</td></tr>
+      <tr><td>Gitと差分確認</td><td>変更前確認、差分レビュー、コミット、戻し方、未コミット変更の扱い</td><td class="time">15分</td></tr>
+      <tr><td>サンドボックスと承認</td><td>作業範囲の制限、危険なコマンド、ネットワーク、外部接続の承認</td><td class="time">20分</td></tr>
+      <tr><td>演習</td><td>業務改善リポジトリ設計とAGENTS.md案を作る</td><td class="time">15分</td></tr>
+    </table>
+
+    <h3>第3回: Codexによる業務改善プロトタイプ実装</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>Codexへの依頼の型</td><td>背景、目的、制約、対象ファイル、完成条件、検証コマンド</td><td class="time">15分</td></tr>
+      <tr><td>プロトタイプ候補</td><td>CSV整形、週次レポート生成、問い合わせ分類補助、チェックリスト生成</td><td class="time">15分</td></tr>
+      <tr><td>実装デモ</td><td>サンプルCSVを読み、エラーを検出し、整形済みレポートを出力</td><td class="time">25分</td></tr>
+      <tr><td>テストと確認</td><td>正常系、空欄、重複、異常値、文字化け、出力形式</td><td class="time">20分</td></tr>
+      <tr><td>デバッグとレビュー</td><td>エラーの読み方、差分確認、修正依頼、過剰実装の抑止</td><td class="time">20分</td></tr>
+      <tr><td>ワーク</td><td>自分の改善テーマに合うプロトタイプ仕様へ置き換える</td><td class="time">15分</td></tr>
+      <tr><td>まとめ</td><td>第4回のMCP連携へ渡す入力・出力・権限を整理</td><td class="time">10分</td></tr>
+    </table>
+
+    <div class="footer">
+      <span>詳細カリキュラム 1</span>
+      <span class="page-mark">4</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">4. 詳細カリキュラム</h2>
+
+    <h3>第4回: MCPで社内ツールとデータをつなぐ設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>MCPの位置づけ</td><td>AIアプリと外部システムをつなぐ標準、接続口としての考え方</td><td class="time">15分</td></tr>
+      <tr><td>MCPの構成要素</td><td>Host、Client、Server、Resources、Prompts、Tools、JSON-RPC</td><td class="time">20分</td></tr>
+      <tr><td>Resources設計</td><td>参照させる資料、DBスキーマ、ファイル、URI、選択範囲、更新頻度</td><td class="time">20分</td></tr>
+      <tr><td>Tools設計</td><td>実行させる操作、読み取り専用、書き込み、削除、外部送信、承認</td><td class="time">20分</td></tr>
+      <tr><td>Prompts設計</td><td>定型ワークフロー、入力形式、出力形式、レビュー観点、禁止事項</td><td class="time">15分</td></tr>
+      <tr><td>MCP設定と認証</td><td>STDIO、Streamable HTTP、認証情報、OAuth、設定ファイル、秘密情報</td><td class="time">15分</td></tr>
+      <tr><td>演習</td><td>MCP連携設計書と接続しない判断リストを作る</td><td class="time">15分</td></tr>
+    </table>
+
+    <h3>第5回: 評価・権限・運用設計と定着化</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>運用設計の全体像</td><td>作って終わりにしない、ログ、レビュー、改善、教育、責任者</td><td class="time">15分</td></tr>
+      <tr><td>AI出力評価</td><td>事実、推測、要確認、利用不可、引用元、再現性、誤分類</td><td class="time">20分</td></tr>
+      <tr><td>権限と承認</td><td>読み取り、書き込み、削除、外部送信、機密情報、認証キー、OAuth</td><td class="time">20分</td></tr>
+      <tr><td>セキュリティリスク</td><td>プロンプトインジェクション、権限過多、ツール誤実行、データ流出</td><td class="time">20分</td></tr>
+      <tr><td>テスト設計</td><td>正常系、異常系、境界値、権限エラー、MCP停止、接続先変更</td><td class="time">20分</td></tr>
+      <tr><td>手動復旧</td><td>ログ確認、再実行、ロールバック、停止、管理者連絡、利用者告知</td><td class="time">15分</td></tr>
+      <tr><td>演習</td><td>運用設計書、リスクチェックリスト、テスト観点表を作る</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第6回: DX業務効率化提案書と展開計画</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>提案書の役割</td><td>導入判断者に、課題、効果、リスク、進め方を説明する</td><td class="time">15分</td></tr>
+      <tr><td>成果物整理</td><td>業務棚卸し、Codexタスク、プロトタイプ、MCP設計、運用設計</td><td class="time">20分</td></tr>
+      <tr><td>KPIと効果試算</td><td>削減時間、対応速度、ミス削減、品質安定、属人化解消、教育負荷</td><td class="time">20分</td></tr>
+      <tr><td>導入ロードマップ</td><td>試行、本番化、教育、運用、改善、横展開、見直し会議</td><td class="time">20分</td></tr>
+      <tr><td>関係者説明</td><td>現場、管理者、IT部門、経営層への説明観点</td><td class="time">15分</td></tr>
+      <tr><td>自己レビュー</td><td>提案書の抜け漏れ、リスク、誇大表現、公開不可情報を確認</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>翌日からの次アクション、担当者、期限、確認元を整理</td><td class="time">10分</td></tr>
+    </table>
+
+    <h2>注意事項</h2>
+    <ul>
+      <li>Codex、MCP、接続先SaaSの利用可否、管理者設定、契約条件、利用上限、データ利用設定は受講時点で確認します。</li>
+      <li>実在の顧客情報、社員情報、契約情報、未公開資料、認証キー、OAuth認証情報は演習に使いません。</li>
+      <li>AIエージェントの出力は下書き扱いとし、業務判断、外部送信、顧客対応、社内展開前には人が確認します。</li>
+      <li>MCP連携は、接続先ごとの利用規約、権限、監査ログ、削除手順、停止手順を確認してから本番化します。</li>
+      <li>助成金に関する対象者、訓練時間、OFF-JT、LMS記録、修了証、支給申請、計画申請などの要件は、最新の公的情報と社内確認を前提にします。</li>
+    </ul>
+
+    <div class="footer">
+      <span>詳細カリキュラム 2</span>
+      <span class="page-mark">5</span>
+    </div>
+  </section>
+</body>
+</html>

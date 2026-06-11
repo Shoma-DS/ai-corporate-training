@@ -21,6 +21,17 @@ LEGACY_MD_NAMES = ("パンフレット原稿.md", "パンフレット.md")
 PDF_CONVERTER = Path(__file__).resolve().with_name("html_to_pdf.py")
 
 
+def pamphlet_html_path(whole_dir: Path) -> Path:
+    """講座名付きの `<講座名>_パンフレット.html` を正とし、旧 `パンフレット.html` にフォールバックする。"""
+    named = whole_dir / f"{whole_dir.parent.name}_{HTML_NAME}"
+    if named.exists():
+        return named
+    legacy = whole_dir / HTML_NAME
+    if legacy.exists():
+        return legacy
+    return named
+
+
 @dataclass(frozen=True)
 class PamphletTarget:
     whole_dir: Path
@@ -31,7 +42,7 @@ class PamphletTarget:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate パンフレット.html and パンフレット.pdf from course pamphlet sources."
+        description="Generate <講座名>_パンフレット.html and <講座名>_パンフレット.pdf from course pamphlet sources."
     )
     parser.add_argument(
         "--course-dir",
@@ -71,7 +82,7 @@ def discover_targets(args: argparse.Namespace) -> list[PamphletTarget]:
 
     def add_whole_dir(whole_dir: Path, markdown_path: Path | None = None) -> None:
         whole_dir = whole_dir.resolve()
-        html_path = whole_dir / HTML_NAME
+        html_path = pamphlet_html_path(whole_dir)
         if markdown_path is None:
             for name in LEGACY_MD_NAMES:
                 candidate = whole_dir / name
@@ -84,7 +95,7 @@ def discover_targets(args: argparse.Namespace) -> list[PamphletTarget]:
             whole_dir=whole_dir,
             markdown_path=markdown_path.resolve() if markdown_path else None,
             html_path=html_path,
-            pdf_path=whole_dir / PDF_NAME,
+            pdf_path=html_path.with_suffix(".pdf"),
         )
 
     for raw in args.course_dir:
