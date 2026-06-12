@@ -644,6 +644,28 @@ def link_index_target(args: argparse.Namespace) -> Path:
     return path if path.is_absolute() else Path.cwd() / path
 
 
+def normalize_public_title(raw_title: str) -> str:
+    title = raw_title.strip()
+    title = re.sub(r"^#+\s*", "", title)
+    return title.strip().rstrip("。")
+
+
+def public_course_display_name(out_path: Path, fallback: str) -> str:
+    course_dir = out_path.parent.parent if out_path.parent.name == "全体" else out_path.parent
+    candidates = [
+        course_dir / "全体" / "詳細シラバス.md",
+        course_dir / "全体" / "講座概要.md",
+    ]
+    for path in candidates:
+        if not path.exists():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            title = normalize_public_title(line)
+            if title and not title.startswith("講座概要") and not title.startswith("タイトルと一言訴求"):
+                return title
+    return normalize_public_title(fallback)
+
+
 def write_link_index(results: list[dict[str, Any]], out_path: Path) -> None:
     if not results:
         raise ExportError("No export results available for link index.")
@@ -653,14 +675,16 @@ def write_link_index(results: list[dict[str, Any]], out_path: Path) -> None:
     course_folder = first.get("courseFolder", {})
     root_name = root_folder.get("name", "Drive root")
     course_name = course_folder.get("name", "Course folder")
+    display_name = public_course_display_name(out_path, str(course_name))
     generated_at = dt.datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
 
     lines = [
         "# Google Drive / Google Slides リンク一覧",
         "",
         f"- 生成日時: {generated_at}",
+        f"- 講座表示名: {markdown_cell(display_name)}",
         f"- Driveルート: {markdown_link(str(root_name), drive_folder_url(root_folder))}",
-        f"- 講座フォルダ: {markdown_link(str(course_name), drive_folder_url(course_folder))}",
+        f"- 講座フォルダ: {markdown_link('講座フォルダ', drive_folder_url(course_folder))}",
         "- 詳細な置換レポートやDrive APIレスポンスは `非公開/` に保存し、この一覧には共有に必要なリンクだけを残す。",
         "",
         "| 回 | セッション | Driveフォルダ | Google Slides | スライド数 | 置換数 | 警告 |",

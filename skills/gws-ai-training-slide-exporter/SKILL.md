@@ -11,6 +11,8 @@ Publish local AI法人研修 session assets to Google Drive as structured course
 
 This is a downstream export skill. If the user asks to create, rebuild, revise, or regenerate a course/session, first use `skills/corporate-training-course-builder/SKILL.md`. Return to this skill only after local course materials and `スライド画像/Sxx.png` are complete.
 
+Before export or replacement, read `クライアント指示コンテキスト.md` when it exists and verify any relevant Drive/Slides instructions, especially naming, replacement, duplicate deletion, and public/private link handling.
+
 Do not define course content, curriculum standards, slide-image rules, or Canva policy independently here. Those live in `skills/corporate-training-course-builder/SKILL.md` and its references. This skill only executes the delivery phase selected by that workflow.
 
 This skill is for repository sessions that contain:

@@ -6,6 +6,7 @@
 
 - このリポジトリ専用のスキルは、リポジトリ直下の `skills/` を正とする。グローバルの `~/.codex/skills/` や各ツール固有の外部スキルより、この直下のスキルを優先して参照する。
 - Codex、Claude Code、その他のエージェントは、作業前にこの `AGENTS.md` を読み、依頼内容に合う `skills/*/SKILL.md` がある場合は、そのスキルを読んでから作業する。
+- クライアント・レビュー担当者からの指示は、リポジトリ直下の `クライアント指示コンテキスト.md` を正本として蓄積する。研修資料、パンフレット、スライド、画像生成プロンプト、スライド画像、Google Slides/Drive書き出しを作る・直す前に必ず同ファイルを読み、完了前に該当する検証項目を満たしたか確認する。
 - 「講座作成」「講座を作成してください」「研修資料を作って」のような一言依頼では、必ず `skills/corporate-training-course-builder/SKILL.md` を唯一の入口として参照し、同スキルの一気通貫ワークフローに従う。研修資料、講師台本、スライド構成、画像生成プロンプト、スライド画像、配布資料、ワークシート、演習データを作る・直す場合も同じ入口を使う。
 - `skills/gws-ai-training-slide-exporter/` や `skills/codex-dynamic-workflows/` は、講座作成スキルから呼び出す下流ヘルパーとして扱う。ユーザーが書き出しだけ、Drive/Slides/Canva連携だけ、またはワークフロー調整だけを明示した場合を除き、これらを講座作成の入口にしない。
 - スライド画像が更新され、既存のGoogle Slidesを差し替える場合は、同じDriveルート/講座フォルダ/回フォルダを使い、`skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_to_gws.py --replace-existing-decks` で対象回フォルダ内の同名Google Slidesだけを削除してから新規作成する。DriveのID・URL・置換レポートは原則 `非公開/` に保存する。ユーザーが共有用リンク一覧を明示した場合は、`--write-link-index` で `講座名/全体/Google_Driveリンク一覧.md` を作成・更新し、Google SlidesとDriveフォルダのリンクを一覧化する。詳細なAPIレスポンスや置換レポートJSONは引き続き `非公開/` に置く。

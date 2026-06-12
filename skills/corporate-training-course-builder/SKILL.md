@@ -11,6 +11,8 @@ Create complete, session-level corporate training materials that are ready for d
 
 This skill is the course-production orchestrator. Use it for any corporate training course, not only Google Workspace/GAS. Apply the repository's `AGENTS.md` first when present.
 
+Before editing or generating any client-facing course artifact, read the repository-level `クライアント指示コンテキスト.md` when it exists. Treat it as the accumulated client-review context, and verify applicable entries before delivery.
+
 ## Unified Course Workflow
 
 Use this skill as the single production entrypoint for course creation. Other local course-related skills are downstream helpers, not competing workflows.
