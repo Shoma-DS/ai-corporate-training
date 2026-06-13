@@ -258,7 +258,7 @@ Create a Canva folder and move merged decks into it:
 ```bash
 CANVA_ACCESS_TOKEN="$CANVA_ACCESS_TOKEN" \
 python3 .workflow/google-workspace-canva-magic-layers/merge_magic_layers_designs.py \
-  --create-folder "Google Workspace・GASで進めるAI業務効率化-DX実践講座"
+  --create-folder "生成AI・GASで実践する業務変革・DX推進講座"
 ```
 
 Move merged decks into an existing Canva folder:

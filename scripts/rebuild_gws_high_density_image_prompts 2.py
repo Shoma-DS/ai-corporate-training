@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 
-COURSE_DIR = Path("講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座")
+COURSE_DIR = Path("講座/生成AI・GASで実践する業務変革・DX推進講座")
 SESSION_DIRS = sorted(p for p in COURSE_DIR.iterdir() if p.is_dir() and re.match(r"^\d\d-", p.name))
 
 BASE_PROMPT = """16:9、1920x1080の法人研修用スライド画像を、GPT image 2 / built-in image generationで1枚の完成ラスター画像として生成する。白背景、ネイビー見出し、ブルー/ティール/ミントのアクセント、薄いグレー罫線、角丸カード、控えめな影、法人向けでフォーマルな情報設計にする。審査資料として、スライド単体で内容が理解できるように、タイトル、So What型ヘッドライン、本文カード、比較表、手順フロー、チェックリスト、業務例、成果物、確認観点を読みやすく配置する。講師コメントを読まなくても、何を学び、何を作り、どこを確認するかが分かる密度にする。"""

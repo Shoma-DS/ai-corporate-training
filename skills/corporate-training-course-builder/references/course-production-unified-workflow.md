@@ -42,7 +42,7 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 
 Use this gate when the user asks to rebuild an existing course by matching another course's "情報量", "構図", "具体度", "例の出し方", or "スライドの密度". This is a quality and structure transfer, not a content transfer.
 
-If the user names the Google Workspace/GAS course, or says "Google Workspace講座くらいの情報量", use `講座/Google Workspace・GASで進めるAI業務効率化-DX実践講座/` as the repository density benchmark. The target course must match that course's per-slide density: concrete output names, comparison tables, Before/After, process flows, industry examples, exercise instructions, review criteria, screenshot/material notes, and risk checks. Do not proceed to image generation or export while target slides still look like repeated generic bullets.
+If the user names the Google Workspace/GAS course, or says "Google Workspace講座くらいの情報量", use `講座/生成AI・GASで実践する業務変革・DX推進講座/` as the repository density benchmark. The target course must match that course's per-slide density: concrete output names, comparison tables, Before/After, process flows, industry examples, exercise instructions, review criteria, screenshot/material notes, and risk checks. Do not proceed to image generation or export while target slides still look like repeated generic bullets.
 
 For slide images, also use the recent S02 "導入判断キャンバス" sample level as the minimum acceptance benchmark: a finished white-background Google Workspace-style slide with a clear headline, multiple structured content cards or a decision canvas, visible learner exercise/output, risk or confirmation notes where relevant, and a composed isometric business scene. A title-only image, blank template, or generic diagram does not pass even if it looks clean.
 

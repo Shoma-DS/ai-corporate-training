@@ -3,7 +3,7 @@
 - 生成日時: 2026-06-13 22:28:10 JST
 - 講座表示名: 生成AI・GASで実践する業務変革・DX推進講座
 - Driveルート: [AI法人研修](https://drive.google.com/drive/folders/1jaaj-bVBqOvkpS0Gat21ejFjXzTxj3Ez)
-- 講座フォルダ: [講座フォルダ](https://drive.google.com/drive/folders/1qMjpDao-nNdAExj10ZFORD9NAsKPOQT6)
+- 講座フォルダ: [生成AI・GASで実践する業務変革・DX推進講座](https://drive.google.com/drive/folders/1qMjpDao-nNdAExj10ZFORD9NAsKPOQT6)
 - 詳細な置換レポートやDrive APIレスポンスは `非公開/` に保存し、この一覧には共有に必要なリンクだけを残す。
 
 | 回 | セッション | Driveフォルダ | Google Slides | スライド数 | 置換数 | 警告 |
