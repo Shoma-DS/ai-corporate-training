@@ -114,8 +114,8 @@
 
 | 講座 | 重点的に名前を出すもの |
 | --- | --- |
-| CodexとMCPで進めるDX業務効率化講座 | Codex、AGENTS.md、GitHub MCP、Slack MCP、Notion MCP、Google Drive MCP、Playwright MCP、ラッコキーワードMCP、Adobe Express MCP、kintone MCP、PostgreSQL MCP |
-| Claude Coworkで始めるAIX・DX実践講座 | Claude Cowork、コネクタ（Slack・Notion・Google Drive・Microsoft 365）、プラグイン、スキル、サブエージェント、Claude Code |
-| 事例で学ぶ中小企業のAIエージェント導入ワークショップ | Codex、Claude Code、架空事例5社、導入判断キャンバス、90日計画。MCPは展開段階の選択肢として名前を出す |
-| NotebookLMで進める業務効率化DXワークショップ講座 | NotebookLM（根拠付き回答・ブリーフィング・Audio Overview・Mind Map）、Google Drive、Docs、Meet文字起こし、Gemini/Gem、比較としてCopilot・Claude Projects |
-| Google Workspace・GAS講座（提出中・変更不可） | 参照のみ。Gmail、Sheets、Forms、Drive、GAS、Gemini/Gem、Meet文字起こし |
+| AIエージェント実装・連携設計アカデミー | Codex、AGENTS.md、GitHub MCP、Slack MCP、Notion MCP、Google Drive MCP、Playwright MCP、ラッコキーワードMCP、Adobe Express MCP、kintone MCP、PostgreSQL MCP |
+| AI業務委任・実行管理DX推進講座 | Claude Cowork、コネクタ（Slack・Notion・Google Drive・Microsoft 365）、プラグイン、スキル、サブエージェント、Claude Code |
+| 中小企業AIエージェント導入・定着化実践講座 | Codex、Claude Code、架空事例5社、導入判断キャンバス、90日計画。MCPは展開段階の選択肢として名前を出す |
+| 社内ナレッジ活用・根拠確認DX推進講座 | NotebookLM（根拠付き回答・ブリーフィング・Audio Overview・Mind Map）、Google Drive、Docs、Meet文字起こし、Gemini/Gem、比較としてCopilot・Claude Projects |
+| 生成AI・GASで実践する業務変革・DX推進講座（提出中・変更不可） | 参照のみ。Gmail、Sheets、Forms、Drive、GAS、Gemini/Gem、Meet文字起こし |

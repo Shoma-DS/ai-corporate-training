@@ -15,7 +15,7 @@ from pptx.util import Inches
 
 
 ROOT = Path(__file__).resolve().parents[1]
-COURSE_NAME = "NotebookLMで進める業務効率化DXワークショップ講座"
+COURSE_NAME = "社内ナレッジ活用・根拠確認DX推進講座"
 COURSE_DIR = ROOT / "講座" / COURSE_NAME
 OUT_DIR = ROOT / "書き出し" / "canva-pptx" / COURSE_NAME
 TEMPLATE_ID = "isometric-corporate-clean"

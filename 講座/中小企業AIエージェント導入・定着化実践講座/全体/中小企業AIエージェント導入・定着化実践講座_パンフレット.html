@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>中小企業AIエージェント導入・定着化実践講座</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8e2ee;
+      --pale: #eaf4fb;
+      --blue: #2a76a8;
+      --navy: #123a5a;
+      --cyan: #2bbbd3;
+      --orange: #f4a261;
+      --soft-orange: #fff0e4;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eceff3;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 18px;
+      padding: 16mm 17mm 14mm;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(24, 39, 56, .16);
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .footer {
+      position: absolute;
+      left: 17mm;
+      right: 17mm;
+      bottom: 7mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #8390a0;
+      font-size: 8.5px;
+      border-top: 1px solid #e8eef5;
+      padding-top: 4px;
+    }
+
+    .hero {
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      border: 1px solid #cfdceb;
+      background:
+        linear-gradient(120deg, #f8fbff 0%, #eef7fb 56%, #123a5a 56%, #0e2c45 100%);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.14fr .86fr;
+      gap: 14px;
+      padding: 18px 20px;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-kicker {
+      margin: 0 0 7px;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      color: #0f2842;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      font-size: 9.8px;
+      color: #294057;
+      margin-bottom: 9px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .hero-meta span {
+      border: 1px solid #b9d2e4;
+      background: #ffffff;
+      color: var(--navy);
+      padding: 4px 7px;
+      font-size: 8.3px;
+      font-weight: 800;
+    }
+
+    .hero-map {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-content: center;
+    }
+
+    .hero-step {
+      min-height: 46px;
+      background: rgba(255, 255, 255, .96);
+      border-left: 4px solid var(--orange);
+      padding: 8px;
+      font-size: 8.1px;
+      font-weight: 800;
+      color: var(--navy);
+      box-shadow: 0 8px 20px rgba(6, 28, 47, .16);
+    }
+
+    .hero-step span {
+      display: block;
+      margin-bottom: 2px;
+      color: #bf672d;
+      font-size: 7.5px;
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      color: var(--navy);
+      border-left: 5px solid var(--orange);
+      padding-left: 8px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      margin: 13px 0 6px;
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 10.2px;
+    }
+
+    .lead {
+      font-size: 11.2px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .tool-note {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 9px;
+      margin: 8px 0 12px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 10px;
+      min-height: 48px;
+    }
+
+    .box strong {
+      display: block;
+      color: var(--blue);
+      font-size: 10.5px;
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 6px 0 10px 18px;
+      padding: 0;
+      font-size: 9.8px;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px;
+      font-size: 8.8px;
+    }
+
+    th {
+      background: #cfe3f3;
+      color: #172033;
+      text-align: left;
+      font-weight: 800;
+      border: 1px solid #b9d2e4;
+      padding: 5px 6px;
+    }
+
+    td {
+      border: 1px solid #d9e1e8;
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    .num {
+      width: 35px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--navy);
+      background: #f7fbff;
+    }
+
+    .time {
+      width: 48px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      padding-bottom: 7px;
+      border-bottom: 3px solid #d8e8f5;
+      font-size: 18px;
+      color: var(--navy);
+    }
+
+    .process-panel {
+      width: 100%;
+      margin: 18px auto 10px;
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      padding: 13px 14px;
+    }
+
+    .process-panel strong {
+      display: block;
+      color: var(--navy);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .process-grid div {
+      background: #ffffff;
+      border-top: 4px solid var(--cyan);
+      min-height: 54px;
+      padding: 8px 6px;
+      font-size: 8.2px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--navy);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      margin: 10px 0 14px;
+    }
+
+    .flow div {
+      background: #f5f9fc;
+      border-top: 4px solid var(--cyan);
+      padding: 8px 6px;
+      min-height: 46px;
+      font-size: 8.5px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .kpi div {
+      background: var(--soft-orange);
+      border-left: 4px solid var(--orange);
+      padding: 8px;
+      min-height: 45px;
+    }
+
+    .kpi b {
+      display: block;
+      color: #bf672d;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .kpi span {
+      font-size: 8.5px;
+      color: var(--muted);
+    }
+
+    .checklist {
+      columns: 2;
+      column-gap: 18px;
+      font-size: 9px;
+    }
+
+    .page-mark {
+      color: #9aa6b4;
+      font-weight: 700;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="hero-kicker">eラーニング研修 / 中小企業AIエージェント導入・定着化</p>
+        <h1>中小企業AIエージェント<br>導入・定着化実践講座</h1>
+        <p><strong>事例で学ぶ業務棚卸し・小規模プロトタイプ・90日展開計画。</strong><br>公開事例と架空ケースを手がかりに、CodexとClaude Codeを使い分け、明日から一業務で安全に試せるAIエージェント導入計画を作る講座です。</p>
+        <div class="hero-meta">
+          <span>全6回</span>
+          <span>標準学習時間 約12時間</span>
+          <span>Codex×Claude Code使い分け</span>
+          <span>90日展開計画</span>
+        </div>
+      </div>
+      <div class="hero-map" aria-label="講座で扱う導入プロセス">
+        <div class="hero-step"><span>01</span>導入判断・事例選定</div>
+        <div class="hero-step"><span>02</span>業務棚卸し・適用設計</div>
+        <div class="hero-step"><span>03</span>Codexで試作・検証</div>
+        <div class="hero-step"><span>04</span>Claude Codeで保守・手順化</div>
+        <div class="hero-step"><span>05</span>リスク・定着ルール</div>
+        <div class="hero-step"><span>06</span>導入提案・90日計画</div>
+      </div>
+    </div>
+
+    <p class="lead">AIエージェントをツール紹介で終わらせず、「どの業務から始めるか」「何をAIに任せるか」「どこで人が確認するか」「どのように社内展開するか」を設計できる状態を目指す実践型講座です。</p>
+
+    <div class="tool-note">CodexとClaude Codeは、中小企業の業務を改善するための手段として扱います。主役は、導入判断、業務棚卸し、試行設計、人の確認、定着運用、社内展開計画です。</div>
+
+    <h2>研修の目的</h2>
+    <p>中小企業のAIエージェント導入を、事例読解、業務棚卸し、試行設計、ツール使い分け、リスク管理、90日展開計画まで一気通貫で扱います。Codexは小さな改善物の作成と検証、Claude Codeは既存資産の読み解き・レビュー・保守・手順化の導入役として位置づけます。</p>
+    <p>受講者は、事例カード、導入判断キャンバス、AIエージェント適用マップ、試行計画、利用ルール、90日展開計画を作成し、経営層・現場へ自分の言葉で説明できる形に整えます。</p>
+
+    <div class="two-col">
+      <div class="box">
+        <strong>対象者</strong>
+        <ul>
+          <li>中小企業で生成AIやAIエージェント導入を検討する経営企画、DX推進、情報システム、管理部門、現場リーダー</li>
+          <li>業務改善、資料作成、データ整理、手順書作成、問い合わせ対応などの改善テーマを持つ方</li>
+          <li>生成AIの基本的な利用経験がある方。プログラミング経験は必須ではありません</li>
+        </ul>
+      </div>
+      <div class="box">
+        <strong>受講後にできること</strong>
+        <ul>
+          <li>導入事例を、業務課題、入力、AI担当、人の確認、成果物、導入条件へ分解できる</li>
+          <li>Codex向き、Claude Code向き、人が担う作業、対象外の作業を切り分けられる</li>
+          <li>1業務・1週間の試行計画と、90日で社内展開する提案書を作れる</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>研修の強み</h2>
+    <div class="flow">
+      <div>事例読解</div>
+      <div>導入判断</div>
+      <div>業務棚卸し</div>
+      <div>試行設計・<br>検証</div>
+      <div>リスク・<br>定着運用</div>
+      <div>90日<br>展開計画</div>
+    </div>
+
+    <ul>
+      <li>実在企業の詳細情報ではなく、公開事例から抽象化した安全な架空ケースで学びます。</li>
+      <li>CodexとClaude Codeを競合ツールとしてではなく、業務の性質に応じて使い分けます。</li>
+      <li>中小企業でも始めやすい、1業務・1週間・ダミーデータの試行設計に落とし込み、最終成果物を社内説明に使える導入提案書と90日ロードマップにまとめます。</li>
+    </ul>
+
+    <div class="footer">
+      <span>中小企業AIエージェント導入・定着化実践講座</span>
+      <span class="page-mark">1</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">1. 研修概要</h2>
+
+    <table>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+      <tr>
+        <td class="num">方式</td>
+        <td>eラーニング。本研修は、LMS(学習管理システム:Learning Management System)を利用し、各自の受講状況や受講時間を全て記録することで、受講者の学習状況の把握を行い、適切なスキルアップをサポートいたします。</td>
+      </tr>
+      <tr>
+        <td class="num">時間</td>
+        <td>6回、各120分、合計約12時間。2か月以内を目安に、各回のワークシート作成と最終提案書づくりを組み合わせて進めます。</td>
+      </tr>
+      <tr>
+        <td class="num">環境</td>
+        <td>ダミーCSV、架空ケース、ワークシート、CodexまたはClaude Codeを利用できる環境を使用します。利用できない場合は、デモ視聴と手書き設計でも代替できます。実在の顧客情報や社内固有情報は使いません。</td>
+      </tr>
+      <tr>
+        <td class="num">成果物</td>
+        <td>事例カード、導入判断キャンバス、業務棚卸し表、AIエージェント適用マップ、Codexタスクブリーフ、Claude Code作業依頼書、利用ルール、承認フロー、リスク対策表、AIエージェント導入提案書、90日展開ロードマップ。</td>
+      </tr>
+    </table>
+
+    <h2>よくある悩み・導入背景</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>最初の一歩が決まらない</strong>
+        <p>AIエージェントに関心はあるが、自社のどの業務から始めればよいか判断できない。</p>
+      </div>
+      <div class="box">
+        <strong>現場業務へ落とし込めない</strong>
+        <p>CodexやClaude Codeを試したいが、開発者向けの話に見えて現場業務とつながらない。</p>
+      </div>
+      <div class="box">
+        <strong>事例の再現条件が不明</strong>
+        <p>便利そうな事例は見るが、自社で再現するための条件、リスク、運用が分からない。</p>
+      </div>
+      <div class="box">
+        <strong>不安で試行が止まる</strong>
+        <p>小さく試したいが、情報漏洩、誤操作、成果物の確認、社内説明が不安で止まっている。</p>
+      </div>
+    </div>
+
+    <div class="process-panel" aria-label="導入設計プロセス">
+      <strong>事例を、自社で安全に再現できる導入計画へ</strong>
+      <div class="process-grid">
+        <div>事例を条件に<br>分解する</div>
+        <div>業務を棚卸し<br>する</div>
+        <div>AIと人の分担を<br>決める</div>
+        <div>1業務・1週間で<br>試す</div>
+        <div>検証して記録<br>する</div>
+        <div>リスク・承認を<br>設計する</div>
+        <div>効果を仮説化<br>する</div>
+        <div>90日展開計画へ<br>まとめる</div>
+      </div>
+    </div>
+
+    <h2>本講座受講後の到達点</h2>
+    <ul class="checklist">
+      <li>導入事例を業務課題、入力、AI担当、人の確認、成果物、導入条件へ分解できる</li>
+      <li>自社・自部署の業務を棚卸しし、AIに任せる範囲と人が判断する範囲を決められる</li>
+      <li>Codexへ依頼する小さな業務改善プロトタイプのタスクブリーフを作れる</li>
+      <li>Claude Codeへ依頼する既存資産の読解、レビュー、手順化の依頼書を作れる</li>
+      <li>情報管理、承認、停止条件、ログ確認を含む利用ルールを作れる</li>
+      <li>試行、本番化準備、隣接業務展開を含む90日展開計画を説明できる</li>
+    </ul>
+
+    <div class="footer">
+      <span>研修概要</span>
+      <span class="page-mark">2</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">2. カリキュラム</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>回</th>
+          <th>テーマ</th>
+          <th>主な内容</th>
+          <th>成果物</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td>中小企業の導入判断と事例選定</td>
+          <td>AIエージェント導入を、流行ではなく事例・業務課題・リスク・実行可能性から判断する。</td>
+          <td>導入判断キャンバス、事例カード、最初の試行テーマ</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>業務棚卸しとエージェント適用設計</td>
+          <td>現場の反復業務を棚卸しし、Codex向き、Claude Code向き、人が担う範囲へ切り分ける。</td>
+          <td>業務棚卸し表、エージェント適用マップ、試行スコープ</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Codexで小さく作る業務改善プロトタイプ</td>
+          <td>中小企業でありがちな集計・報告・チェック業務を題材に、Codexで小さな改善物を作り検証する。</td>
+          <td>Codexタスクブリーフ、プロトタイプ仕様、検証ログ</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>Claude Codeで保守・レビュー・手順化を進める</td>
+          <td>既存ファイルや手順の読み解き、修正、レビュー、引き継ぎ文書化にClaude Codeを使う設計を学ぶ。</td>
+          <td>Claude Code作業依頼書、レビュー観点表、手順化メモ</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>リスク・権限・承認・定着ルール設計</td>
+          <td>小さく始めても事故を起こさないための情報管理、権限、承認、ログ、教育ルールを設計する。</td>
+          <td>利用ルール、承認フロー、リスク対策表、定着チェックリスト</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td>AIエージェント導入提案と90日展開計画</td>
+          <td>事例、試行結果、リスク対策、効果仮説をまとめ、90日で社内展開する提案書へ仕上げる。</td>
+          <td>導入提案書、90日ロードマップ、経営・現場向け説明メモ</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>演習テーマ例</h2>
+    <div class="two-col">
+      <div class="box">
+        <strong>事例カード作成</strong>
+        <p>公開事例を、業務課題、入力、AI担当、人の確認、成果物、導入条件のカードへ分解する。</p>
+      </div>
+      <div class="box">
+        <strong>業務棚卸しと適用マップ</strong>
+        <p>反復業務を棚卸しし、Codex向き、Claude Code向き、人が担う作業、対象外を色分けする。</p>
+      </div>
+      <div class="box">
+        <strong>集計・報告のCodex試作</strong>
+        <p>ダミーCSVの集計・報告・チェック業務を題材に、Codexで小さな改善物を作り検証する。</p>
+      </div>
+      <div class="box">
+        <strong>手順書のClaude Codeレビュー</strong>
+        <p>既存ファイルや手順の読み解き、修正、レビュー、引き継ぎ文書化の依頼書を作る。</p>
+      </div>
+      <div class="box">
+        <strong>利用ルールと承認フロー</strong>
+        <p>情報管理、権限、承認、停止条件、ログ確認、教育を含む利用ルールを設計する。</p>
+      </div>
+      <div class="box">
+        <strong>導入提案と90日計画</strong>
+        <p>試行結果、リスク対策、効果仮説をまとめ、経営・現場向けの説明メモまで仕上げる。</p>
+      </div>
+    </div>
+
+    <h2>最終成果物</h2>
+    <div class="kpi">
+      <div><b>Canvas</b><span>導入判断キャンバス・適用マップ</span></div>
+      <div><b>Pilot</b><span>1業務・1週間の試行計画と検証ログ</span></div>
+      <div><b>Rule</b><span>利用ルール・承認フロー・リスク対策表</span></div>
+      <div><b>Proposal</b><span>導入提案書と90日展開ロードマップ</span></div>
+    </div>
+
+    <div class="footer">
+      <span>カリキュラム</span>
+      <span class="page-mark">3</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">3. 詳細カリキュラム</h2>
+
+    <h3>第1回: 中小企業の導入判断と事例選定</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、講座全体像、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>架空の中小企業ケース、導入判断の観点、流行とリスクの見極め</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>事例を入力、処理、出力、人の確認、停止条件へ分解する</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>サンプルケースと講師記入例で導入判断キャンバスの粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>事例カードを作り、最初の試行テーマを選定する</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、次回への引き継ぎ</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第2回: 業務棚卸しとエージェント適用設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、前回成果物との接続、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>反復業務の架空ケース、Codex向き・Claude Code向きの判断観点</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>業務の入力、処理、出力、人の確認、停止条件を棚卸し表へ整理</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>サンプルデータと講師記入例で適用マップの粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>業務棚卸し表とエージェント適用マップ、試行スコープを作成</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、次回への引き継ぎ</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第3回: Codexで小さく作る業務改善プロトタイプ</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、前回成果物との接続、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>集計・報告・チェック業務の架空ケース、Codexに任せる範囲とリスク</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>プロトタイプの入力、処理、出力、人の確認、停止条件の設計</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>ダミーCSVと講師記入例で試作・検証の粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>Codexタスクブリーフとプロトタイプ仕様を作成</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、検証ログの整理、次回への引き継ぎ</td><td class="time">10分</td></tr>
+    </table>
+
+    <div class="footer">
+      <span>詳細カリキュラム 1</span>
+      <span class="page-mark">4</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2 class="section-title">4. 詳細カリキュラム</h2>
+
+    <h3>第4回: Claude Codeで保守・レビュー・手順化を進める</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、前回成果物との接続、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>既存ファイル・手順の読み解き、修正、レビュー、引き継ぎ文書化の型</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>依頼の入力、処理、出力、人の確認、停止条件の設計</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>サンプル資産と講師記入例でレビュー観点の粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>Claude Code作業依頼書とレビュー観点表、手順化メモを作成</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、次回への引き継ぎ</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第5回: リスク・権限・承認・定着ルール設計</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、前回成果物との接続、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>情報漏洩、誤操作、権限過多などの失敗ケースと対策の型</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>情報管理、権限、承認、ログ、教育、停止条件のルール設計</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>リスクケースと講師記入例で対策表の粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>利用ルール、承認フロー、リスク対策表、定着チェックリストを作成</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、次回への引き継ぎ</td><td class="time">10分</td></tr>
+    </table>
+
+    <h3>第6回: AIエージェント導入提案と90日展開計画</h3>
+    <table>
+      <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
+      <tr><td>導入と到達点</td><td>学習目的、これまでの成果物の振り返り、今日作る成果物の確認</td><td class="time">10分</td></tr>
+      <tr><td>事例・型の理解</td><td>導入提案書の構成、効果仮説、経営・現場への説明観点</td><td class="time">25分</td></tr>
+      <tr><td>設計手順</td><td>試行、本番化準備、隣接業務展開を含む90日計画の段階設計</td><td class="time">30分</td></tr>
+      <tr><td>デモ・記入例</td><td>講師記入例で提案書とロードマップの粒度を確認</td><td class="time">25分</td></tr>
+      <tr><td>個人ワーク</td><td>導入提案書、90日ロードマップ、説明メモを作成</td><td class="time">20分</td></tr>
+      <tr><td>まとめ</td><td>自己レビュー、受講後の次アクション整理</td><td class="time">10分</td></tr>
+    </table>
+
+    <h2>注意事項</h2>
+    <ul>
+      <li>Codex、Claude Code、関連AIエージェント機能の提供状況、利用条件、管理者設定、利用上限、データ利用設定は変更される可能性があります。導入時は最新の公式情報と社内ルールを確認してください。</li>
+      <li>助成金の対象可否、申請要件、助成率、申請期限は断定せず、最新の公的情報と社内確認を前提にしてください。</li>
+      <li>演習ではダミーデータまたは匿名化データを使用し、顧客情報、社員情報、契約情報、未公開資料、認証情報は扱いません。</li>
+      <li>AIエージェントの出力は下書き扱いとし、業務判断、外部送信、顧客対応、社内展開の前には人が確認します。</li>
+    </ul>
+
+    <div class="footer">
+      <span>詳細カリキュラム 2</span>
+      <span class="page-mark">5</span>
+    </div>
+  </section>
+</body>
+</html>
