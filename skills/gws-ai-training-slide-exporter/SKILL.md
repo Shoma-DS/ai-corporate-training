@@ -33,9 +33,12 @@ AI法人研修/
       Googleスライド
       演習データ/
         local exercise files
+        <回フォルダ名>_演習データ  (--exercise-csv-as-sheets 指定時、CSVを1タブずつ統合したGoogle Sheets)
 ```
 
 The deck contains one local slide image per Google Slides page. Speaker notes are populated from the matching `Sxx` block in `講師台本.md`.
+
+`演習データ` の表計算は、回ごとに1つのGoogle Sheetsへまとめるのを標準とする。`--exercise-csv-as-sheets` を付けると、その回の `演習データ/` 内 CSV/TSV を1つのxlsxへ束ね（各CSV=1タブ）、ネイティブGoogle Sheets 1ファイルとしてアップロードする。CSVを1枚ずつ別スプレッドシートにしない。`.md` などCSV以外は個別ファイルのまま残す。既に旧方式（CSVごとの個別シートや生CSV）でアップロード済みのDriveを作り直すときは `--replace-exercise-sheets` を併用する。
 
 ## Canva Route: 画像アップロード先行プレゼンを標準にする
 
@@ -327,6 +330,8 @@ Useful options:
 - `--report-json 非公開/.../export-report.json`: save Drive IDs/URLs outside public tracked files.
 - `--tmp-dir 書き出し/gws-ai-training-slide-exporter/tmp`: default repository-local PPTX temp directory for this gws-based exporter. Some `gws --upload` calls in this environment reject files outside the current repository. This is a gws CLI constraint for this script, not a general Drive-copy rule.
 - `--replace-existing-decks`: when a session deck with the same title already exists in the target Drive session folder, delete that Google Slides deck first, then create a fresh deck from the current local `スライド画像/Sxx.png`.
+- `--exercise-csv-as-sheets`: 各回の `演習データ/` 内 CSV/TSV を**1つのネイティブGoogle Sheetsへ統合**する。各CSVが1タブ（シート）になり、回ごとに1ファイル `<回フォルダ名>_演習データ` を作る。CSV/TSV以外（`.md`、`.toml` など）は従来どおり個別ファイルとしてアップロードする。指定しない場合はCSVも生ファイルのままアップロードする。
+- `--replace-exercise-sheets`: `--exercise-csv-as-sheets` と併用。旧方式の遺物（CSV1枚ごとの個別Google Sheets、生CSVファイル、古い統合シート）を先に削除してから統合シートを作り直す。再実行で確実に「回ごと1スプレッドシート」へ収束させたいときに使う。
 - `--write-link-index`: after a full-course Drive/Google Slides export, write `講座/COURSE/全体/Google_Driveリンク一覧.md` with the Drive root, course folder, session folders, Google Slides links, slide counts, replacement counts, and warnings.
 - `--link-index-path <path>`: override the public Markdown link index destination. Use only with `--write-link-index`.
 - `--canva-pptx-dir`: output one PPTX per session for Canva single-presentation import workflows.
@@ -440,7 +445,7 @@ python3 非公開/Canva/<課題名>/aggregate_urls.py
 
 ## Implementation Notes
 
-The script avoids public image URLs. It first creates/reuses Drive folders and uploads session Markdown/CSV/sample exercise files. It then builds a temporary PPTX locally from the PNG slide images, uploads the PPTX through `gws drive files create`, and asks Drive to convert it into a native Google Slides presentation. After conversion, it calls `gws slides presentations get` to find each speaker-notes object and `gws slides presentations batchUpdate` to insert the matching script text.
+The script avoids public image URLs. It first creates/reuses Drive folders and uploads session Markdown/CSV/sample exercise files. With `--exercise-csv-as-sheets`, the session's CSV/TSV files are first combined into a single locally-built `.xlsx` (one worksheet per source file, cells written as inline strings), then uploaded with `mimeType=application/vnd.google-apps.spreadsheet` so Drive converts it into one native Google Sheets file whose tabs are the source CSVs. It then builds a temporary PPTX locally from the PNG slide images, uploads the PPTX through `gws drive files create`, and asks Drive to convert it into a native Google Slides presentation. After conversion, it calls `gws slides presentations get` to find each speaker-notes object and `gws slides presentations batchUpdate` to insert the matching script text.
 
 Do not replace this with HTML/SVG/browser screenshots. The goal is to preserve the already generated slide images exactly as slide pages.
 

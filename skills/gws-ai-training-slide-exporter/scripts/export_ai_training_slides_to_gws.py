@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv as csvmod
 import datetime as dt
 import hashlib
 import html
@@ -23,7 +24,9 @@ from typing import Any
 
 FOLDER_MIME = "application/vnd.google-apps.folder"
 GOOGLE_SLIDES_MIME = "application/vnd.google-apps.presentation"
+GOOGLE_SHEETS_MIME = "application/vnd.google-apps.spreadsheet"
 PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+SHEET_CONVERTIBLE_SUFFIXES = {".csv", ".tsv", ".xlsx", ".xls"}
 SLIDE_CX = 12192000
 SLIDE_CY = 6858000
 
@@ -193,9 +196,19 @@ def upload_file_if_missing(
     *,
     dry_run: bool,
     label: str,
+    as_google_sheet: bool = False,
+    drive_name: str | None = None,
 ) -> dict[str, Any]:
     public_safe_path(path)
-    existing = find_existing_file(path.name, parent_id, dry_run=dry_run)
+    # When converting to a native Google Sheet, the Drive file is matched/created
+    # as a spreadsheet (using the explicit drive_name when given, otherwise the
+    # source stem) so we never leave a raw CSV/XLSX next to a converted copy.
+    if as_google_sheet:
+        drive_name = drive_name or path.stem
+        existing = find_existing_file(drive_name, parent_id, dry_run=dry_run, mime_type=GOOGLE_SHEETS_MIME)
+    else:
+        drive_name = path.name
+        existing = find_existing_file(drive_name, parent_id, dry_run=dry_run)
     if existing:
         return {
             "label": label,
@@ -203,25 +216,30 @@ def upload_file_if_missing(
             "driveFile": existing,
             "created": False,
             "skipped": True,
+            "asGoogleSheet": as_google_sheet,
         }
+    body: dict[str, Any] = {"name": drive_name, "parents": [parent_id]}
+    if as_google_sheet:
+        body["mimeType"] = GOOGLE_SHEETS_MIME
     created = gws(
         "drive",
         "files",
         "create",
         params={"fields": "id,name,mimeType,webViewLink,modifiedTime", "supportsAllDrives": True},
-        body={"name": path.name, "parents": [parent_id]},
+        body=body,
         upload=path,
         upload_content_type=upload_mime_type(path),
         dry_run=dry_run,
     )
     if dry_run:
-        created = {"id": dryrun_id("file", path.name), "name": path.name}
+        created = {"id": dryrun_id("sheet" if as_google_sheet else "file", drive_name), "name": drive_name}
     return {
         "label": label,
         "localPath": str(path),
         "driveFile": created,
         "created": True,
         "skipped": False,
+        "asGoogleSheet": as_google_sheet,
     }
 
 
@@ -245,7 +263,145 @@ def ensure_relative_drive_folder(base: dict[str, Any], base_local_dir: Path, fil
     return parent
 
 
-def upload_session_materials(session_dir: Path, session_folder: dict[str, Any], *, dry_run: bool) -> dict[str, Any]:
+INVALID_SHEET_NAME_CHARS = set(r":\/?*[]")
+
+
+def column_ref(index0: int) -> str:
+    """0-based column index -> spreadsheet column letters (A, B, ..., AA)."""
+    letters = ""
+    n = index0
+    while True:
+        letters = chr(ord("A") + n % 26) + letters
+        n = n // 26 - 1
+        if n < 0:
+            break
+    return letters
+
+
+def sanitize_sheet_tab_name(raw: str, used: set[str]) -> str:
+    cleaned = "".join("_" if ch in INVALID_SHEET_NAME_CHARS else ch for ch in raw)
+    cleaned = cleaned.replace("'", "_").strip().strip("_") or "Sheet"
+    cleaned = cleaned[:31]
+    base = cleaned
+    i = 2
+    while cleaned.lower() in used:
+        suffix = f"_{i}"
+        cleaned = base[: 31 - len(suffix)] + suffix
+        i += 1
+    used.add(cleaned.lower())
+    return cleaned
+
+
+def read_delimited_rows(path: Path) -> list[list[str]]:
+    delimiter = "\t" if path.suffix.lower() == ".tsv" else ","
+    text = path.read_text(encoding="utf-8-sig")
+    return [list(row) for row in csvmod.reader(text.splitlines(), delimiter=delimiter)]
+
+
+def xlsx_sheet_xml(rows: list[list[str]]) -> str:
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>',
+    ]
+    for r_idx, row in enumerate(rows, start=1):
+        parts.append(f'<row r="{r_idx}">')
+        for c_idx, value in enumerate(row):
+            ref = f"{column_ref(c_idx)}{r_idx}"
+            parts.append(
+                f'<c r="{ref}" t="inlineStr"><is><t xml:space="preserve">{xml(str(value))}</t></is></c>'
+            )
+        parts.append("</row>")
+    parts.append("</sheetData></worksheet>")
+    return "".join(parts)
+
+
+def xlsx_workbook_xml(sheet_names: list[str]) -> str:
+    sheets = "".join(
+        f'<sheet name="{xml(name)}" sheetId="{i}" r:id="rId{i}"/>'
+        for i, name in enumerate(sheet_names, start=1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        f"<sheets>{sheets}</sheets></workbook>"
+    )
+
+
+def xlsx_workbook_rels(count: int) -> str:
+    rels = "".join(
+        f'<Relationship Id="rId{i}" '
+        'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+        f'Target="worksheets/sheet{i}.xml"/>'
+        for i in range(1, count + 1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        f"{rels}</Relationships>"
+    )
+
+
+def xlsx_content_types(count: int) -> str:
+    overrides = "".join(
+        f'<Override PartName="/xl/worksheets/sheet{i}.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        for i in range(1, count + 1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        f"{overrides}</Types>"
+    )
+
+
+def xlsx_root_rels() -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" '
+        'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
+        'Target="xl/workbook.xml"/></Relationships>'
+    )
+
+
+def build_exercise_workbook(csv_paths: list[Path], base_dir: Path, out_path: Path) -> list[str]:
+    """Combine session CSV/TSV files into one xlsx, one tab per source file.
+
+    Returns the ordered list of tab names. The workbook is later uploaded as a
+    single native Google Sheet (each source file becomes a sheet/tab).
+    """
+    used: set[str] = set()
+    tabs: list[tuple[str, list[list[str]]]] = []
+    for path in csv_paths:
+        rel = path.relative_to(base_dir).as_posix()
+        raw_name = rel[: -len(path.suffix)] if path.suffix else rel
+        tab_name = sanitize_sheet_tab_name(raw_name, used)
+        rows = read_delimited_rows(path) or [[""]]
+        tabs.append((tab_name, rows))
+    with zipfile.ZipFile(out_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("[Content_Types].xml", xlsx_content_types(len(tabs)))
+        zf.writestr("_rels/.rels", xlsx_root_rels())
+        zf.writestr("xl/workbook.xml", xlsx_workbook_xml([name for name, _ in tabs]))
+        zf.writestr("xl/_rels/workbook.xml.rels", xlsx_workbook_rels(len(tabs)))
+        for i, (_, rows) in enumerate(tabs, start=1):
+            zf.writestr(f"xl/worksheets/sheet{i}.xml", xlsx_sheet_xml(rows))
+    return [name for name, _ in tabs]
+
+
+def upload_session_materials(
+    session_dir: Path,
+    session_folder: dict[str, Any],
+    *,
+    dry_run: bool,
+    exercise_csv_as_sheets: bool = False,
+    replace_exercise_sheets: bool = False,
+    tmp_dir: str = "書き出し/gws-ai-training-slide-exporter/tmp",
+) -> dict[str, Any]:
     uploaded: list[dict[str, Any]] = []
     warnings: list[str] = []
     session_folder_id = session_folder.get("id")
@@ -264,7 +420,64 @@ def upload_session_materials(session_dir: Path, session_folder: dict[str, Any], 
     exercise_folder: dict[str, Any] | None = None
     if exercise_files:
         exercise_folder = ensure_folder("演習データ", session_folder_id, dry_run=dry_run)
-        for path in exercise_files:
+        exercise_folder_id = exercise_folder.get("id")
+        csv_files = [p for p in exercise_files if p.suffix.lower() in SHEET_CONVERTIBLE_SUFFIXES]
+        other_files = [p for p in exercise_files if p.suffix.lower() not in SHEET_CONVERTIBLE_SUFFIXES]
+
+        if exercise_csv_as_sheets and csv_files:
+            # One spreadsheet per session: every CSV becomes a tab in a single
+            # native Google Sheet named after the session.
+            combined_name = f"{session_folder.get('name', '演習データ')}_演習データ"
+            if replace_exercise_sheets:
+                # Remove legacy artifacts: per-file Sheets (stem), raw CSV files,
+                # and any stale combined workbook, so reruns converge cleanly.
+                stale_targets: list[tuple[str, str | None]] = [(combined_name, GOOGLE_SHEETS_MIME)]
+                for p in csv_files:
+                    stale_targets.append((p.stem, GOOGLE_SHEETS_MIME))
+                    stale_targets.append((p.name, None))
+                for stale_name, stale_mime in stale_targets:
+                    for found in find_files(stale_name, exercise_folder_id, dry_run=dry_run, mime_type=stale_mime):
+                        delete_drive_file(found["id"], dry_run=dry_run)
+            existing_combined = (
+                None
+                if replace_exercise_sheets
+                else find_existing_file(combined_name, exercise_folder_id, dry_run=dry_run, mime_type=GOOGLE_SHEETS_MIME)
+            )
+            if existing_combined:
+                uploaded.append(
+                    {
+                        "label": "演習データ/" + combined_name,
+                        "localPath": "",
+                        "driveFile": existing_combined,
+                        "created": False,
+                        "skipped": True,
+                        "asGoogleSheet": True,
+                        "sheetTabs": [p.stem for p in csv_files],
+                    }
+                )
+            else:
+                tmp_root = temp_parent_dir(tmp_dir)
+                with tempfile.TemporaryDirectory(prefix="ai-training-xlsx-", dir=tmp_root) as tmp:
+                    xlsx_path = Path(tmp) / f"{combined_name}.xlsx"
+                    if dry_run:
+                        tabs = [sanitize_sheet_tab_name(p.relative_to(exercise_dir).as_posix()[: -len(p.suffix)], set()) for p in csv_files]
+                    else:
+                        tabs = build_exercise_workbook(csv_files, exercise_dir, xlsx_path)
+                    result = upload_file_if_missing(
+                        xlsx_path,
+                        exercise_folder_id,
+                        dry_run=dry_run,
+                        label="演習データ/" + combined_name,
+                        as_google_sheet=True,
+                        drive_name=combined_name,
+                    )
+                    result["sheetTabs"] = tabs
+                    uploaded.append(result)
+            upload_targets = other_files
+        else:
+            upload_targets = exercise_files
+
+        for path in upload_targets:
             parent = ensure_relative_drive_folder(exercise_folder, exercise_dir, path, dry_run=dry_run)
             uploaded.append(
                 upload_file_if_missing(
@@ -819,7 +1032,14 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
             root = ensure_folder(args.root_folder_name, None, dry_run=args.dry_run)
     course_folder = ensure_folder(course_title(course_dir), root.get("id"), dry_run=args.dry_run)
     session_folder = ensure_folder(session_title(session_dir), course_folder.get("id"), dry_run=args.dry_run)
-    materials = upload_session_materials(session_dir, session_folder, dry_run=args.dry_run)
+    materials = upload_session_materials(
+        session_dir,
+        session_folder,
+        dry_run=args.dry_run,
+        exercise_csv_as_sheets=args.exercise_csv_as_sheets,
+        replace_exercise_sheets=args.replace_exercise_sheets,
+        tmp_dir=args.tmp_dir,
+    )
 
     canva_bundle_path: Path | None = None
     warnings = []
@@ -909,6 +1129,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--root-folder-id", help="Known Drive folder ID to use as root")
     parser.add_argument("--deck-title", help="Override Google Slides title for a single session")
     parser.add_argument("--allow-missing-notes", action="store_true", help="Continue even when Sxx image has no script block")
+    parser.add_argument(
+        "--exercise-csv-as-sheets",
+        action="store_true",
+        help="Combine each session's 演習データ CSV/TSV files into ONE native Google Sheet (one tab per file)",
+    )
+    parser.add_argument(
+        "--replace-exercise-sheets",
+        action="store_true",
+        help="With --exercise-csv-as-sheets, delete legacy per-file Sheets/raw CSVs and stale combined sheets first",
+    )
     parser.add_argument(
         "--canva-pptx-dir",
         help="Write per-session PPTX bundle here for Canva single-presentation import workflows",
