@@ -44,6 +44,8 @@ Use this gate when the user asks to rebuild an existing course by matching anoth
 
 If the user names the Google Workspace/GAS course, or says "Google Workspace講座くらいの情報量", use `講座/生成AI・GASで実践する業務変革・DX推進講座/` as the repository density benchmark. The target course must match that course's per-slide density: concrete output names, comparison tables, Before/After, process flows, industry examples, exercise instructions, review criteria, screenshot/material notes, and risk checks. Do not proceed to image generation or export while target slides still look like repeated generic bullets.
 
+Use the same GAS course as the default design and delivery benchmark when the user says "デザインを参考に", "GASのやつみたいに", or gives no separate visual direction. The benchmark covers slide composition, visual density, image-prompt specificity, pamphlet completeness, and natural video-lecture script flow. Copy only the production pattern: white or very pale background, navy/teal card hierarchy, conclusion sentence at the top, structured 3-6 blocks, table/process/checklist/canvas layouts, exercise/output/risk bands, and mouse-pointable narration. Do not copy GAS-specific topics, examples, code, datasets, Forms/Sheets/GAS explanations, or session order.
+
 For slide images, also use the recent S02 "導入判断キャンバス" sample level as the minimum acceptance benchmark: a finished white-background Google Workspace-style slide with a clear headline, multiple structured content cards or a decision canvas, visible learner exercise/output, risk or confirmation notes where relevant, and a composed isometric business scene. A title-only image, blank template, or generic diagram does not pass even if it looks clean.
 
 ### Intake Pattern

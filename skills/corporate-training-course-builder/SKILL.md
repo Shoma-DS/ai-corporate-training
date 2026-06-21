@@ -89,6 +89,8 @@ Use the repository slide template files as the source of truth for visual style.
 
 This repository currently uses only the Google Workspace course-style `isometric-corporate-clean` template for slide plans, image prompts, and slide images. Do not select, recreate, or introduce other image prompt templates unless the user explicitly changes this repository rule.
 
+For any course other than the canonical GAS course, use `講座/生成AI・GASで実践する業務変革・DX推進講座/` as the default production benchmark for design, composition, slide density, pamphlet completeness, and instructor-script tone. Transfer only production qualities: white-background navy/teal card layouts, a large conclusion-style top sentence, 3-6 concrete content blocks, tables/processes/checklists/decision canvases, bottom bands for exercise/output/risk, practical examples, and narration that lets the instructor point naturally at the slide while recording. Do not copy the GAS course's chapter order, wording, exercises, datasets, examples, or tool explanations into another course.
+
 - Template catalog: `スライド/テンプレート/カタログ.yml`
 - Selection flow: `スライド/スライド生成テンプレート選択フロー.md`
 - Current main template: `スライド/テンプレート/アイソメトリック法人向けクリーン.md`
