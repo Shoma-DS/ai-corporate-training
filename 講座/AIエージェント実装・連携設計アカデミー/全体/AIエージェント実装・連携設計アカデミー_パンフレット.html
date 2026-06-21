@@ -70,50 +70,18 @@
 
     .hero {
       width: 100%;
-      min-height: 72mm;
       border: 1px solid #cfdceb;
       border-radius: 10px;
-      padding: 15mm 13mm 12mm;
-      background:
-        linear-gradient(135deg, rgba(18, 58, 90, .97), rgba(18, 58, 90, .88) 50%, rgba(31, 159, 154, .84)),
-        linear-gradient(45deg, #f9fbfd, #dcecf8);
-      color: #ffffff;
-      position: relative;
+      padding: 0;
+      background: #ffffff;
+      color: var(--ink);
       overflow: hidden;
     }
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: 12mm;
-      top: 39mm;
-      width: 47mm;
-      height: 36mm;
-      border: 1px solid rgba(255, 255, 255, .35);
-      border-radius: 8px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.95), rgba(234,244,251,.9));
-      box-shadow: 0 18px 35px rgba(0, 0, 0, .18);
-    }
-
-    .screen-lines {
-      position: absolute;
-      right: 17mm;
-      top: 45mm;
-      width: 37mm;
-      color: #123a5a;
-      font-size: 8px;
-      font-weight: 800;
-      z-index: 1;
-    }
-
-    .screen-lines span {
+    .hero-image {
       display: block;
-      margin: 4px 0;
-      padding: 4px 5px;
-      border-radius: 5px;
-      background: #ffffff;
-      border-left: 4px solid var(--teal);
+      width: 100%;
+      height: auto;
     }
 
     .eyebrow {
@@ -143,17 +111,33 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      width: 72%;
       margin-top: 12px;
     }
 
     .chips span {
       padding: 5px 8px;
-      border: 1px solid rgba(255, 255, 255, .42);
+      border: 1px solid #b9d2e4;
       border-radius: 999px;
-      background: rgba(255, 255, 255, .12);
+      background: #f5fbff;
+      color: var(--navy);
       font-size: 8.8px;
       font-weight: 800;
+    }
+
+    .cover-facts {
+      margin-top: 8px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     h2 {
@@ -351,22 +335,19 @@
   <main>
     <section class="page">
       <div class="hero">
-        <p class="eyebrow">AI法人研修 / 高度デジタル人材向け eラーニング</p>
-        <h1>AIエージェント実装・連携設計アカデミー</h1>
-        <p class="cover-lead">CodexとMCPで学ぶプロトタイプ検証・運用設計・DX導入提案</p>
-        <div class="chips">
+        <img class="hero-image" src="AIエージェント実装・連携設計アカデミー_見出し画像.png" alt="AIエージェント実装・連携設計アカデミー CodexとMCPで学ぶプロトタイプ検証・運用設計・DX導入提案">
+        <div class="sr-only">
+          <p>AI法人研修 / 高度デジタル人材向け eラーニング</p>
+          <h1>AIエージェント実装・連携設計アカデミー</h1>
+          <p>CodexとMCPで学ぶプロトタイプ検証・運用設計・DX導入提案</p>
+        </div>
+      </div>
+      <div class="chips cover-facts">
           <span>6回 各120分 合計約12時間</span>
           <span>LMSで受講状況・受講時間を記録</span>
           <span>Codexタスクブリーフ</span>
           <span>MCP連携設計書</span>
           <span>DX導入提案書</span>
-        </div>
-        <div class="screen-lines" aria-hidden="true">
-          <span>業務課題を整理</span>
-          <span>小さく試作・検証</span>
-          <span>権限・承認・ログを設計</span>
-          <span>導入提案へ統合</span>
-        </div>
       </div>
 
       <div class="section">

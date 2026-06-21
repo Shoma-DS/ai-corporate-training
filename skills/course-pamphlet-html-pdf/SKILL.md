@@ -17,6 +17,8 @@ This is a downstream helper. For course creation, start from `skills/corporate-t
 - The deliverable PDF is `講座/<講座名>/全体/<講座名>_パンフレット.pdf`.
 - Legacy `パンフレット.html` / `パンフレット.pdf` names are read as fallback only; when touching a course that still uses them, rename to the `<講座名>_パンフレット.*` form with `git mv`.
 - Existing `パンフレット原稿.md` or `パンフレット.md` files are legacy sources. If one exists and is newer than the pamphlet HTML, refresh the HTML from Markdown before PDF conversion.
+- Opening, cover, and major header visuals that include a course title must be generated as one complete raster image through the system `imagegen` / Codex App Server path by default. Match the course slide style, put the exact Japanese title/subtitle and short labels directly inside the image, save the PNG in `全体/`, and reference it from the pamphlet HTML with `<img>`.
+- Do not replace these header images with HTML/CSS overlays, SVG, canvas, browser screenshots, local drawing, or local compositing. If Japanese text in the image is wrong, regenerate the complete raster image with simpler text.
 - For subsidy screening, the pamphlet PDF is one of the core pass/fail artifacts together with the slides. It must stand alone without instructor comments, internal notes, or verbal explanation.
 - For e-learning reskilling courses, public-facing delivery text should state e-learning only unless the user explicitly says otherwise. Do not leave stale `オンラインワークショップ` or `ハイブリッド` wording in the PDF.
 - Use LMS wording that explains `LMS(学習管理システム:Learning Management System)` and that each learner's attendance status and learning time are recorded. The stakeholder-approved wording is: `eラーニング。本研修は、LMS(学習管理システム:Learning Management System)を利用し、各自の受講状況や受講時間を全て記録することで、受講者の学習状況の把握を行い、適切なスキルアップをサポートいたします。`
@@ -61,11 +63,12 @@ After generation:
 
 1. Confirm `<講座名>_パンフレット.html` and `<講座名>_パンフレット.pdf` exist and the PDF is non-empty.
 2. Verify the generated PDF itself, not only the HTML. Use `pdftotext` or a visual preview to confirm corrected wording appears in the pamphlet PDF.
-3. Search HTML and extracted PDF text for stale wording: `オンラインワークショップ`, `ハイブリッド`, `レベル3相当の評価観点`, mismatched minute totals such as `140分`, and any old stakeholder-rejected phrasing.
-4. For submission artifacts, read the PDF as a reviewer would and confirm the course purpose, target learners, delivery/LMS management, curriculum, exercises, outputs, and precautions are understandable without scripts.
-5. Run `git diff --check`.
-6. Run `python3 scripts/validate_local_skills.py` if skill files changed.
-7. Before commit or push, confirm no `非公開/`, source PDFs, `.DS_Store`, credentials, real contact details, or private URLs are staged.
+3. If a generated raster header image is used, inspect the saved image and PDF preview enough to confirm the image appears and the Japanese title/subtitle are readable without mojibake, fake logos, placeholders, or stale course names.
+4. Search HTML and extracted PDF text for stale wording: `オンラインワークショップ`, `ハイブリッド`, `レベル3相当の評価観点`, mismatched minute totals such as `140分`, and any old stakeholder-rejected phrasing.
+5. For submission artifacts, read the PDF as a reviewer would and confirm the course purpose, target learners, delivery/LMS management, curriculum, exercises, outputs, and precautions are understandable without scripts.
+6. Run `git diff --check`.
+7. Run `python3 scripts/validate_local_skills.py` if skill files changed.
+8. Before commit or push, confirm no `非公開/`, source PDFs, `.DS_Store`, credentials, real contact details, or private URLs are staged.
 
 ## Notes
 

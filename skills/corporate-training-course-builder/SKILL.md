@@ -299,10 +299,14 @@ Course pamphlets are client-facing submission artifacts, so they must be availab
 
 - New pamphlets are authored directly as `全体/<講座名>_パンフレット.html`. The file name must identify the course on its own (course folder name + `_パンフレット`).
 - Always generate or refresh `全体/<講座名>_パンフレット.pdf` from the HTML before delivery.
+- For pamphlet opening, cover, or section-header visuals that carry the course title, create one complete raster image with the system `imagegen` / Codex App Server path by default. Match the repository slide style `isometric-corporate-clean`, put the exact Japanese course title, subtitle, and short visible labels directly inside the generated image, save it under the course `全体/` folder, and reference it from the pamphlet HTML with `<img>`.
+- Do not substitute HTML/CSS text overlays, SVG, canvas, browser screenshots, local drawing, or local compositing for these title/header images. If the generated Japanese text is wrong, regenerate a simpler complete raster image instead of fixing it with overlays.
+- Do not ask image generation to invent real service logos or real UI screens for pamphlet header visuals. Use abstract workflow/dashboard scenes unless official assets have been obtained and checked.
 - For e-learning reskilling courses, describe the delivery format as e-learning only unless the user explicitly says otherwise. Use LMS wording that explains `LMS(学習管理システム:Learning Management System)` and that each learner's attendance status and learning time are recorded.
 - Do not label learner outcomes in public-facing pamphlets or slides as `レベル3相当の評価観点`. Use learner-centered wording such as `本講座受講後の到達点` so the material does not look like it was made only for Manabi DX screening.
 - Check that every curriculum table row group totals the stated session duration, usually 120 minutes per session. If a table totals 140 minutes or another mismatched value, adjust before PDF generation.
 - After generating PDF, verify the PDF text or preview itself, not only the HTML. Use `pdftotext` or a visual preview to confirm corrected wording is actually reflected in the pamphlet PDF.
+- When a generated raster header image is used, inspect the saved image and the regenerated PDF visually enough to confirm that the header image appears, the Japanese title/subtitle are readable, and no placeholder, fake logo, stale course name, or mojibake remains.
 - Search the final HTML/PDF text for stale public-facing delivery words such as `オンラインワークショップ`, `ハイブリッド`, and stale screening labels such as `レベル3相当の評価観点`.
 - Existing `パンフレット原稿.md` or `パンフレット.md` files are legacy migration sources. If their content changes, run the pamphlet helper to regenerate HTML and PDF.
 - Standard build command:
