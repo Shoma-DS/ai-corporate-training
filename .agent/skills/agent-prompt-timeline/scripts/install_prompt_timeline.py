@@ -118,6 +118,8 @@ def ensure_site_metadata(repo: pathlib.Path) -> None:
         except json.JSONDecodeError:
             payload = {}
     payload.setdefault("repo_name", repo.name)
+    payload.setdefault("repo_label", repo.name)
+    payload.setdefault("events_api_path", "/api/timeline/events")
     payload.setdefault("vercel_url", "")
     data_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     assets_path.parent.mkdir(parents=True, exist_ok=True)

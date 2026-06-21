@@ -9,6 +9,8 @@ description: Record and maintain a chronological learning log of agent prompts, 
 
 Use this skill to keep `prompt-timeline/` useful as a study log. The automatic hook records raw user prompts. The agent should add a short summary after meaningful work so the site shows both "what was asked" and "what was done". The same skill can install the timeline site and hooks into other repositories.
 
+By default, the hook writes locally first. If a repository opts in with environment variables, it may also send events to the shared Neon-backed ingest API so multiple repositories can share one database while each URL shows only its own `repo_label`.
+
 ## Standard workflow
 
 1. Read the latest prompt event when needed:
@@ -62,7 +64,7 @@ The installer copies:
 
 It preserves `prompt-timeline/data/events.jsonl` if it already exists and does not edit `.gitignore`.
 
-## Repository-specific public URL
+## Repository-specific public URL and label
 
 Each repository must have its own prompt timeline Vercel URL. Do not reuse one
 repository's prompt timeline URL as the canonical URL for another repository.
@@ -78,13 +80,17 @@ Minimum shape:
 ```json
 {
   "repo_name": "team-info",
+  "repo_label": "team-info",
+  "events_api_path": "/api/timeline/events",
   "vercel_url": "https://prompt-timeline.vercel.app"
 }
 ```
 
 When installing into another repository, create `site.json` if it is missing.
 After publishing that repository's timeline on Vercel, update `vercel_url` with
-the verified production URL and rebuild the static site snapshot.
+the verified production URL and rebuild the static site snapshot. The public
+page reads `/api/timeline/events?repo=<repo_label>` and falls back to the local
+`assets/events.js` snapshot if the API is unavailable.
 
 ## Publish on Vercel
 
@@ -108,7 +114,23 @@ The shared Claude/Codex hooks call `scripts/record_event.py` on `UserPromptSubmi
 - `prompt-timeline/data/events.jsonl`: append-only source log
 - `prompt-timeline/assets/events.js`: browser-friendly snapshot for `index.html`
 
-The hook must stay local-only. Do not add network calls, API calls, model calls, Docker, long-running work, or secret-reading behavior to the hook.
+The hook must always complete local recording first. Network sync is allowed only when explicitly enabled:
+
+```bash
+export PROMPT_TIMELINE_SYNC_ON_HOOK=1
+export PROMPT_TIMELINE_INGEST_URL="https://<timeline-url>/api/timeline/events"
+export PROMPT_TIMELINE_INGEST_TOKEN="<shared ingest token>"
+```
+
+Keep hook network work short and best-effort. The script uses a small timeout and must not fail the local prompt record when remote sync is unavailable. Do not put database URLs in browser JavaScript or committed files.
+
+For a manual backfill to Neon:
+
+```bash
+python "$TEAM_INFO_ROOT/.agent/skills/agent-prompt-timeline/scripts/sync_to_neon.py"
+```
+
+Set `DATABASE_URL` or `NEON_DATABASE_URL` and `PROMPT_TIMELINE_INGEST_TOKEN` in the Vercel project that serves the timeline API.
 
 ## Summary quality
 

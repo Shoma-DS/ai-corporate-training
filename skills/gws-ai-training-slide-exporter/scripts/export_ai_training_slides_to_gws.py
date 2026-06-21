@@ -534,6 +534,8 @@ def parse_speaker_notes(script_path: Path) -> dict[str, str]:
     slide_re = re.compile(r"^(S\d{2,3})「(.+?)」\s*$")
     for raw in script_path.read_text(encoding="utf-8").splitlines():
         line = raw.rstrip()
+        if line.startswith("## スライド切替タイムライン") or line.startswith("## 作業風景タイムライン"):
+            break
         match = slide_re.match(line)
         if match:
             if current:

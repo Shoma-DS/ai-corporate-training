@@ -10,6 +10,8 @@
     filter: "all",
     query: "",
     visibleLimit: 120,
+    dataSource: "local-snapshot",
+    dataSourceMessage: "ローカルスナップショットを表示中",
   };
 
   const INITIAL_VISIBLE_LIMIT = 120;
@@ -31,7 +33,36 @@
     categoryStrip: document.querySelector("#categoryStrip"),
     timelineList: document.querySelector("#timelineList"),
     resultCount: document.querySelector("#resultCount"),
+    dataSourceStatus: document.querySelector("#dataSourceStatus"),
   };
+
+  function repoLabelForApi() {
+    return String(state.site.repo_label || state.site.repo_name || "").trim();
+  }
+
+  function eventsApiPath() {
+    return String(state.site.events_api_path || "/api/timeline/events").trim() || "/api/timeline/events";
+  }
+
+  async function loadRemoteEvents() {
+    if (window.location.protocol === "file:") return;
+    const repoLabel = repoLabelForApi();
+    if (!repoLabel || typeof window.fetch !== "function") return;
+    const url = new URL(eventsApiPath(), window.location.origin);
+    url.searchParams.set("repo", repoLabel);
+    try {
+      const response = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      if (!payload || !Array.isArray(payload.events)) throw new Error("Invalid timeline response");
+      state.events = payload.events;
+      state.dataSource = "neon";
+      state.dataSourceMessage = `Neon DB: ${payload.repo_label || repoLabel}`;
+    } catch (error) {
+      state.dataSource = "local-snapshot";
+      state.dataSourceMessage = `DB未接続: ローカルスナップショットを表示中`;
+    }
+  }
 
   function normalizeEvents(events) {
     const prompts = [];
@@ -210,6 +241,10 @@
     nodes.statFirst.textContent = allPrompts[0] ? formatDate(allPrompts[0].timestamp, "day") : "-";
     nodes.statLatest.textContent = allPrompts.at(-1) ? formatDate(allPrompts.at(-1).timestamp, "day") : "-";
     nodes.resultCount.textContent = `${prompts.length}件`;
+    if (nodes.dataSourceStatus) {
+      nodes.dataSourceStatus.textContent = `データ: ${state.dataSourceMessage}`;
+      nodes.dataSourceStatus.classList.toggle("is-db", state.dataSource === "neon");
+    }
   }
 
   function renderToc(prompts) {
@@ -363,5 +398,11 @@
     render();
   });
 
-  render();
+  async function init() {
+    render();
+    await loadRemoteEvents();
+    render();
+  }
+
+  init();
 })();

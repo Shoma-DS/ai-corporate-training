@@ -57,7 +57,16 @@ Use this checklist when turning a session request into complete materials.
 
 ## Instructor Script
 
+The script is a slides-first deliverable: write or finalize `講師台本.md` **after** the `スライド画像/Sxx.png` for the session exist (see "Image Prompts And Slide Images" below). Order: slide plan → image prompts → slide images → read the rendered images → script. An early draft is allowed for pacing, but finalize positional references only once the images are in place.
+
 - Write exactly what the instructor says.
+- Before writing each slide's read-aloud text, open the matching `スライド画像/Sxx.png` and note where every element sits: headline, content cards, table, process flow, checklist, right-side/corner isometric scene, and the bottom exercise/output/risk band.
+- Add on-slide positional cues so the instructor can point at the screen while recording, e.g. 「右側の図解を見てください」「中央の3つのカードのうち左から…」「下のオレンジの帯に今日の成果物が書いてあります」. Use concrete directions (右側/左側/中央/上段/下段/色付きの帯やカード).
+- In the actual read-aloud text, avoid production labels that learners would not naturally use, such as `ヘッドライン`, `内容ブロック`, `中央の本文`, and `本文カード`. Convert them into natural video-lecture phrases: 「このスライドでは、まず上の大きな一文をご覧ください」「ひとつ目の枠から見ていきます」「右側の図で確認します」「下の確認ポイントを見ます」.
+- Assume the lecturer is recording while moving the mouse over the relevant slide part. Write learner-facing narration, not stage directions: prefer 「ここは左から右へ順番に見ていきます」, not 「マウスで指してください」.
+- Keep specialist-term explanations, metaphors, and applied business comments. Do not remove them to make the script shorter; introduce them naturally with phrases such as 「ここで、言葉の確認をしておきます」.
+- Avoid one repeated closing sentence across all slides. Vary the closing by connecting to the next work, asking learners to map the point to their own job, or noting which output/review point the slide supports.
+- Only reference elements that actually appear on the rendered slide. If the script says 「右側の図解」 but the image has none, fix the script or regenerate the slide so they agree. Re-check affected blocks whenever a slide is regenerated.
 - Include slide-change markers, demo actions, screen-share instructions, exercise timing, and fallback paths.
 - Include setup notes for files to open before class.
 - Keep examples practical and reusable for business learners.

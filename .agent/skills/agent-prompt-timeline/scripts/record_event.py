@@ -12,6 +12,8 @@ import pathlib
 import re
 import sys
 import time
+import urllib.error
+import urllib.request
 import uuid
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
@@ -41,7 +43,35 @@ REPO_ROOT = find_repo_root()
 TIMELINE_DIR = REPO_ROOT / "prompt-timeline"
 DATA_PATH = TIMELINE_DIR / "data" / "events.jsonl"
 EVENTS_JS_PATH = TIMELINE_DIR / "assets" / "events.js"
+SITE_PATH = TIMELINE_DIR / "data" / "site.json"
 LOCK_PATH = TIMELINE_DIR / ".record_event.lock"
+
+
+def load_dotenv_file(path: pathlib.Path) -> None:
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", key):
+            continue
+        if key in os.environ:
+            continue
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+            value = value[1:-1]
+        os.environ[key] = value
+
+
+def load_local_env() -> None:
+    load_dotenv_file(REPO_ROOT / ".env")
+    load_dotenv_file(TIMELINE_DIR / ".env.local")
+
+
+load_local_env()
 
 
 def utc_now() -> datetime:
@@ -64,6 +94,26 @@ def safe_json_loads(value: str) -> object | None:
         return json.loads(value)
     except json.JSONDecodeError:
         return None
+
+
+def truthy(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def load_site_metadata() -> dict:
+    if not SITE_PATH.exists():
+        return {}
+    try:
+        payload = json.loads(SITE_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def current_repo_label(site: dict | None = None) -> str:
+    payload = site if isinstance(site, dict) else load_site_metadata()
+    label = str(payload.get("repo_label") or payload.get("repo_name") or REPO_ROOT.name).strip()
+    return label or REPO_ROOT.name
 
 
 def first_string(payload: object, keys: tuple[str, ...]) -> str:
@@ -245,8 +295,50 @@ def build_event(args: argparse.Namespace, payload: object, raw_stdin: str, event
         "parent_id": parent_id,
         "tags": [item.strip() for item in args.tags if item.strip()],
         "meta": extract_meta(payload),
+        "repo_label": current_repo_label(),
     }
     return event
+
+
+def default_ingest_url(site: dict) -> str:
+    explicit_url = os.environ.get("PROMPT_TIMELINE_INGEST_URL", "").strip()
+    if explicit_url:
+        return explicit_url
+    vercel_url = str(site.get("vercel_url") or "").strip()
+    if not vercel_url.startswith(("http://", "https://")):
+        return ""
+    return f"{vercel_url.rstrip('/')}/api/timeline/events"
+
+
+def maybe_sync_event_to_ingest_api(event: dict) -> None:
+    if not truthy(os.environ.get("PROMPT_TIMELINE_SYNC_ON_HOOK")):
+        return
+    site = load_site_metadata()
+    url = default_ingest_url(site)
+    token = os.environ.get("PROMPT_TIMELINE_INGEST_TOKEN", "").strip()
+    if not url or not token:
+        print("prompt-timeline: skip remote sync; PROMPT_TIMELINE_INGEST_URL/vercel_url or PROMPT_TIMELINE_INGEST_TOKEN is missing", file=sys.stderr)
+        return
+    payload = json.dumps(
+        {"repo_label": current_repo_label(site), "events": [event]},
+        ensure_ascii=False,
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "agent-prompt-timeline/1",
+        },
+        method="POST",
+    )
+    timeout = float(os.environ.get("PROMPT_TIMELINE_SYNC_TIMEOUT", "1.5"))
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            response.read()
+    except (OSError, urllib.error.URLError, urllib.error.HTTPError) as exc:
+        print(f"prompt-timeline: remote sync failed: {exc}", file=sys.stderr)
 
 
 def print_latest(events: list[dict]) -> int:
@@ -285,6 +377,7 @@ def main() -> int:
     raw_stdin = read_stdin()
     payload = safe_json_loads(raw_stdin) if args.stdin_json and raw_stdin.strip() else {}
 
+    event_to_sync: dict | None = None
     with FileLock(LOCK_PATH):
         events = load_events()
         if args.rebuild:
@@ -302,6 +395,10 @@ def main() -> int:
         events.append(event)
         write_events_js(events)
         print(event["id"])
+        event_to_sync = event
+
+    if event_to_sync:
+        maybe_sync_event_to_ingest_api(event_to_sync)
     return 0
 
 

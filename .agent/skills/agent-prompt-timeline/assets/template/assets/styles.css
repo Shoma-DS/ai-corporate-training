@@ -153,6 +153,18 @@ h1 {
   color: inherit;
 }
 
+.public-url.data-source {
+  margin-left: 8px;
+  border-color: rgba(20, 74, 112, 0.2);
+  color: var(--navy);
+}
+
+.public-url.data-source.is-db {
+  border-color: rgba(29, 140, 135, 0.34);
+  background: rgba(230, 247, 241, 0.86);
+  color: #116848;
+}
+
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
