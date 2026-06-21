@@ -275,6 +275,26 @@ def visible_items(slide: Slide) -> list[tuple[str, str]]:
     return [(k, v) for k, v in slide.items if not k.startswith(skip)]
 
 
+def speech_label(label: str, index: int) -> str:
+    if label.startswith("内容ブロック"):
+        return ["ひとつ目の枠", "ふたつ目の枠", "三つ目の枠", "四つ目の枠"][min(index, 3)]
+    if label.startswith("|") or re.fullmatch(r"\d+|0|1|2|3|4|5|6", label):
+        return ["ひとつ目の行", "次の行", "その次の行", "下の行"][min(index, 3)]
+    return f"「{label}」のところ"
+
+
+def natural_items(slide: Slide, limit: int = 3) -> list[tuple[str, str]]:
+    items: list[tuple[str, str]] = []
+    for key, value in visible_items(slide):
+        cleaned = short(value, 130)
+        if not cleaned:
+            continue
+        items.append((speech_label(key, len(items)), cleaned))
+        if len(items) >= limit:
+            break
+    return items
+
+
 def find_item(slide: Slide, *keys: str) -> str:
     for key, value in slide.items:
         if any(token in key for token in keys):
@@ -295,31 +315,33 @@ def detect_terms(slide: Slide) -> list[tuple[str, str, str, str]]:
 
 
 def position_sentence(slide: Slide) -> str:
-    first_items = visible_items(slide)[:2]
+    first_items = natural_items(slide, 2)
     if "画面共有" in slide.title or "実演" in slide.title:
-        return "画面上部のタイトルで実演の目的を確認し、中央の手順カードを左から順に追います。下部の確認観点は、画面共有で何を見るかのチェックリストとして使います。"
+        return "画面上の手順に沿って、どの画面を開き、何を確認するのかを順番に見ていきます。下の確認ポイントは、画面共有中に見落としやすいところです。"
     if "比較" in slide.title or "Before" in slide.title or "After" in slide.title or "Before" in slide.headline:
-        return "画面中央の比較表を左から右へ見てください。左側が現状、右側が改善後、下段が判断や持ち帰りのポイントです。"
+        return "ここは、左側から右側へ順番に見ていきます。左が今のやり方、右が改善後のやり方です。最後に、下の欄で持ち帰る判断ポイントを確認します。"
     if "流れ" in slide.title or "プロセス" in slide.title or "ステップ" in slide.title or "フロー" in slide.headline:
-        return "画面中央のフローを左から右へ追い、各ステップで入力、処理、確認、出力がどう変わるかを見ます。"
+        return "このスライドは、矢印の流れに沿って左から右へ見ていきます。入力、処理、確認、出力がどこで出てくるかを、ひとつずつ確認します。"
     if "リスク" in slide.title or "権限" in slide.title or "確認" in slide.title:
-        return "画面中央のカードで注意点を確認し、下段の確認帯で実務に持ち込む前の条件を押さえます。"
+        return "ここは、便利さよりも先に確認しておきたい注意点です。各項目を順番に見ながら、実務に持ち込む前に止める条件、確認する条件を押さえます。"
     if first_items:
         first = first_items[0][0]
-        second = first_items[1][0] if len(first_items) > 1 else "下段の確認ポイント"
-        return f"画面上部のヘッドラインを読んだあと、中央の「{first}」、続いて「{second}」の順に見てください。"
-    return "画面上部のヘッドライン、中央の本文カード、下部の確認観点の順に確認します。"
+        second = first_items[1][0] if len(first_items) > 1 else "下の確認ポイント"
+        return f"まず{first}から見ていきます。続いて、{second}に移ります。"
+    return "このスライドは、上から順に読むだけではなく、実務で使う順番に確認していきます。"
 
 
 def content_sentence(slide: Slide) -> str:
-    points: list[str] = []
-    for key, value in visible_items(slide)[:3]:
-        points.append(f"{key}では「{short(value)}」")
+    points = natural_items(slide, 3)
     if points:
-        return "このスライドでは、" + "、".join(points) + "を扱います。"
+        if len(points) == 1:
+            label, value = points[0]
+            return f"{label}では、「{value}」という点を押さえます。"
+        chunks = [f"{label}で「{value}」" for label, value in points]
+        return "ここでは、" + "、".join(chunks) + "を順番に確認します。"
     if slide.headline:
-        return f"このスライドの要点は「{slide.headline}」です。"
-    return "このスライドでは、次の作業へ進むための判断材料を確認します。"
+        return f"このスライドで伝えたいことは、「{slide.headline}」です。"
+    return "ここでは、次の作業へ進むために何を確認すればよいかを押さえます。"
 
 
 def applied_sentence(info: SessionInfo, slide: Slide) -> str:
@@ -342,7 +364,18 @@ def term_sentence(slide: Slide) -> str:
     chunks: list[str] = []
     for _, _, simple, advanced in terms:
         chunks.append(simple + " " + advanced)
-    return "専門用語の補足です。" + " ".join(chunks)
+    return "ここで、言葉の確認をしておきます。" + " ".join(chunks)
+
+
+def closing_sentence(info: SessionInfo, slide: Slide) -> str:
+    number = int(slide.no[1:])
+    variants = [
+        "聞きながら、自分の業務ではどこが入力で、どこが処理で、どこを人が確認するのかを当てはめてみてください。",
+        "あとで見返すときは、ツール名よりも、業務の流れのどこを変える話だったかを思い出すと整理しやすくなります。",
+        f"この考え方は、{info.example}のような業務にも置き換えられます。自社で近い作業がないかを考えながら見てください。",
+        "ここで確認したことは、このあとの画面共有やワークでそのまま使います。いったん全体像をつかむことを優先しましょう。",
+    ]
+    return variants[number % len(variants)]
 
 
 def work_instruction(info: SessionInfo, slide: Slide) -> str:
@@ -443,16 +476,14 @@ def build_reading(info: SessionInfo, slide: Slide, is_first: bool) -> str:
             f"この回では、{info.output}を持ち帰れる状態を目指します。"
         )
     if slide.headline:
-        paragraphs.append(f"まず、画面上部のヘッドラインを見てください。「{slide.headline}」とあります。")
+        paragraphs.append(f"このスライドでは、まず上の大きな一文をご覧ください。「{slide.headline}」というところです。")
     paragraphs.append(position_sentence(slide))
     paragraphs.append(content_sentence(slide))
     term = term_sentence(slide)
     if term:
         paragraphs.append(term)
     paragraphs.append(applied_sentence(info, slide))
-    paragraphs.append(
-        "ここで大事なのは、ツール名を覚えることではなく、入力、処理、出力、確認、運用改善のどこを変えるのかを言葉にできることです。"
-    )
+    paragraphs.append(closing_sentence(info, slide))
     return " ".join(paragraphs)
 
 
