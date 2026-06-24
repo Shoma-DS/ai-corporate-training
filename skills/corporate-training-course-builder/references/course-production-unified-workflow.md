@@ -5,7 +5,7 @@ Use this workflow when creating, rebuilding, or coordinating a whole corporate t
 ## Role Split
 
 - `corporate-training-course-builder`: the single entrypoint and source of truth for course/session production.
-- `imagegen`: final raster image generation only. Use GPT image 2 / built-in image generation for complete bitmap slide images.
+- `imagegen`: final raster image generation only. Use Codex App Server / GPT image 2 through the `imagegen` skill for complete bitmap slide images. If the user writes `imagen`, treat it as this same path.
 - `course-pamphlet-html-pdf`: downstream pamphlet builder for `<講座名>_パンフレット.html` and `<講座名>_パンフレット.pdf`.
 - `gws-ai-training-slide-exporter`: downstream export only, after local slide images and scripts are complete.
 - `codex-dynamic-workflows`: optional coordination layer for large, risky, or parallel work. It must not define a separate content standard.
@@ -34,7 +34,7 @@ If a new helper cannot be placed in one of these phases, it probably should be a
 6. Select one slide template for the course or a justified template per session. Record the template ID in slide plans and image prompts.
 7. Build or revise course-level files: overview, syllabus, all-session worksheet, instructor notes, exercise-data index, `<講座名>_パンフレット.html`, `<講座名>_パンフレット.pdf`, and source memo. Do not create new pamphlets as Markdown-first deliverables; migrate existing `パンフレット原稿.md` or `パンフレット.md` only when needed. Treat the submitted pamphlet title or the user's latest explicit correction as the public-facing training-name source of truth.
 8. Produce each session with `session-production-workflow.md`: slide plan, instructor script, worksheet, handouts, exercise data, image prompts, and final slide images.
-9. Generate all final slide images as complete raster images with GPT image 2 / built-in image generation. Save only final PNGs in each session's `スライド画像/`. Each image must meet the repository dense-slide benchmark: So What headline, compact course/session context, structured cards/table/process/checklist/canvas, learner output or review point, and needed risk/source/screenshot handling.
+9. Generate all final slide images as complete raster images with Codex App Server / GPT image 2 through the `imagegen` skill. Save only final PNGs in each session's `スライド画像/`. Each image must meet the repository dense-slide benchmark: So What headline, compact course/session context, structured cards/table/process/checklist/canvas, learner output or review point, and needed risk/source/screenshot handling.
 10. Verify every session: slide count, prompt count, script slide markers, data references, logo/source notes, public-safety risks, image readability, course-name consistency, and whether the session still has theme-specific content rather than generic copied structure.
 11. Only after local production is complete, use downstream helpers: `course-pamphlet-html-pdf` for pamphlet PDF refresh, then `gws-ai-training-slide-exporter` for Google Slides, Drive, PPTX, or Canva-ready output.
 
@@ -166,7 +166,7 @@ Allowed:
 
 - Writing `スライド案.md`, `講師台本.md`, and `画像生成プロンプト.md`.
 - Using official logos/screenshots as references when license and source notes are acceptable.
-- Generating one complete bitmap image per slide with GPT image 2 / built-in image generation.
+- Generating one complete bitmap image per slide with Codex App Server / GPT image 2 through the `imagegen` skill.
 - Moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
 - Inspecting the generated bitmap and regenerating the whole image when text, density, placeholders, or layout fail.
 
@@ -183,7 +183,7 @@ When the user says "全部削除して画像生成からやり直して", "再�
 1. Identify the exact course/session scope.
 2. Delete only the stale generated slide images in `スライド画像/` unless the user explicitly asks to delete plans, scripts, prompts, or handouts too.
 3. Keep `スライド案.md`, `講師台本.md`, and `画像生成プロンプト.md` as source artifacts unless they contain the same flawed approach.
-4. Regenerate final images with GPT image 2 / built-in image generation only.
+4. Regenerate final images with Codex App Server / GPT image 2 through the `imagegen` skill only.
 5. Inspect and report any slides not yet regenerated.
 
 ## Export Handoff

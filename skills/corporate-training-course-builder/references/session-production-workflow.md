@@ -95,9 +95,11 @@ The script is a slides-first deliverable: write or finalize `講師台本.md` **
 - Each prompt should describe the complete finished slide, not a blank design template. Include exact card labels, table columns, process steps, exercise/output/review text, risk/source notes, and where the isometric scene or official material appears.
 - Do not use prompt boilerplate that only changes the title. If the prompt does not specify the content blocks and layout, repair it before image generation.
 - For official logos, use local reference assets from repository-level `素材/ロゴ/`; do not invent them from memory.
+- Image generation for this repository uses Codex App Server / GPT image 2 through the `imagegen` skill. If the user writes `imagen`, treat it as this same `imagegen` skill path. Do not switch normal course-image work to `OPENAI_API_KEY`, OpenAI API CLI fallback, one-off SDK scripts, or API-key checks, and do not stop to ask for an API key. If generated images are not saved where expected, troubleshoot the Codex App Server / `imagegen` save path and file verification instead.
 - When regenerating a flawed slide image, create a whole new raster image with `imagegen` if the user asks for regeneration or GPT image 2. Do not patch over the old image with overlays or deterministic redraws unless explicitly requested.
 - If the request specifically says GPT image 2, one complete image, or no overlay/local conversion, generate the final visual as a bitmap image. Do not create SVG, HTML/CSS, canvas, screenshots, ImageMagick/rsvg/PIL conversions, tracing, or local compositing as intermediates.
 - Copy or move the generated bitmap into `スライド画像/Sxx.png` without modifying its pixels.
+- When multiple image workers are active, copy only from the current worker's `$CODEX_HOME/generated_images/<session-id>/` directory, where `<session-id>` is the `session id` shown in that worker's Codex startup banner. Never pick the newest file from the global `$CODEX_HOME/generated_images` tree.
 - Load relevant logo files from `素材/ロゴ/` as image references before generating. If logo files exist, do not include `素材配置枠`, `公式ロゴ`, dashed logo boxes, or empty placeholder slots.
 - Use the user's latest wording exactly. Remove stale labels and old product pairings from the prompt and inspect the final image for those terms before saving.
 - For UI/screens, use session-local `スクリーンショット/`.
@@ -106,7 +108,18 @@ The script is a slides-first deliverable: write or finalize `講師台本.md` **
 - Reject and regenerate the whole image if it has important Japanese text errors, wrong service/output names, empty placeholders, missing exercise/output/risk content, sparse title-only composition, unreadable tiny text, or visible overlap. Do not repair with local text overlays.
 - If the user objects to SVG/HTML generation, asks for GPT image 2, or asks to rebuild from image generation, delete stale generated slide images only after confirming the scope, then regenerate complete bitmap images. Keep plans/scripts/prompts unless explicitly told to delete them.
 - Never create slide images through SVG, HTML/CSS, canvas, browser screenshots, ImageMagick, PIL, rsvg conversion, local rasterization, tracing, local compositing, or post-generation text/logo overlays.
-- The only acceptable final-image path for generated training slides is GPT image 2 / built-in image generation as a complete raster slide, followed by moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
+- The only acceptable final-image path for generated training slides is Codex App Server / GPT image 2 through the `imagegen` skill as a complete raster slide, followed by moving or copying the generated bitmap into `スライド画像/Sxx.png` without pixel modification.
+
+## Editable Google Slides For Submission Review
+
+- Use `editable-google-slides-workflow.md` when a reviewer complains about inconsistent templates, missing course/text names, missing Sxx numbers, unclear section boundaries, or session-output inconsistency.
+- Keep the current information density. Do not solve review-format comments by making slides sparse.
+- Generate `Googleスライド編集用アウトライン.md` so course name, session/text name, Sxx number, section name, title, headline, and body text can be placed as editable Google Slides text.
+- Generate `図解パーツ生成プロンプト.md` for supplemental visuals only. It must explicitly say not to render course headers, Sxx numbers, long body text, full tables, or full slide bodies inside the image.
+- When diagrams are requested, generate and inspect one supplemental PNG per slide as `図解パーツ/Sxx.png`. The image may contain short Japanese labels when labels help it function as a slide element, but must not contain fake UI/logos, stale course names, full slide text, recruitment-ad/poster layouts, or placeholders. Do not mark a slide as generated if the image cannot be saved locally and inspected.
+- Re-export editable Google Slides with `--embed-diagram-parts` only after the expected `図解パーツ/Sxx.png` files exist. The embedded diagrams must supplement the native editable text, not replace it or cover it.
+- Mark existing full-raster `画像生成プロンプト.md` as reference-only while this workflow is active, so the next export does not accidentally create full image pages again.
+- Export via `skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_training_slides_to_gws.py` after the editable outlines exist.
 
 ## Canva Delivery
 
@@ -125,7 +138,8 @@ The script is a slides-first deliverable: write or finalize `講師台本.md` **
 
 - When the user asks for subagents or parallelization, the main agent chooses one fixed template ID for the session before assigning work.
 - Split parallel slide image generation into disjoint `Sxx` batches and make each image worker responsible only for its assigned files.
-- Image workers must generate complete raster slide images with GPT image 2 / built-in image generation only. Do not use SVG, HTML/CSS, canvas, browser screenshots, local conversion, local compositing, or overlays.
+- Image workers must generate complete raster slide images with Codex App Server / GPT image 2 through the `imagegen` skill only. Do not use SVG, HTML/CSS, canvas, browser screenshots, local conversion, local compositing, or overlays.
+- Each image worker must use only its own `$CODEX_HOME/generated_images/<session-id>/` as the copy source. Selecting the newest image across all generated-image folders is forbidden during parallel generation.
 - For Canva or other browser operations, use a separate browser-control worker when the environment supports subagents and model selection, even if the user did not explicitly ask for parallelization. Prefer `codex-5.3spark` / `GPT-5.3 Codex Spark` for repetitive Kimi WebBridge navigation, clicking, waiting, screenshots, and first-pass visual checks so the Spark usage allowance is used. Keep the main agent responsible for acceptance decisions, public-safety judgment, wording, and integration. Use image-capable high-accuracy generation only when a slide image must be regenerated.
 - The main agent keeps progress visible, reconciles subagent outputs, and checks that scripts, prompts, handouts/data, filenames, and generated images match.
 
@@ -135,6 +149,7 @@ The script is a slides-first deliverable: write or finalize `講師台本.md` **
 - Confirm the session has at least one theme-specific concept, example, dataset, official-source point, or exercise that would not fit unchanged in another course.
 - Confirm public course-outline research, if used, influenced the structure only as abstracted themes/gaps and did not copy paid or copyrighted course content.
 - For submission-facing decks, sample the slides without reading `講師台本.md` and confirm a first-time reviewer can identify the topic, learning action, expected output, and reason for the slide.
+- For editable Google Slides diagram parts, run `python3 scripts/check_diagram_integrity.py` to catch missing PNGs, suspicious dimensions, and duplicate hashes caused by copying another worker's generated image.
 - Perform a reviewer-only pass: open only `<講座名>_パンフレット.pdf` and the slide deck/images, then answer "what course is this?", "what does each session do?", "what outputs are created?", and "how are learning hours/LMS/completion handled?". If any answer requires `講師台本.md`, revise the submitted materials.
 - Search for public-facing labels such as `レベル3相当の評価観点`; replace them with learner-centered wording such as `本講座受講後の到達点` unless the user explicitly wants internal mapping language.
 - Confirm delivery format language. For e-learning reskilling courses, use e-learning and LMS recording language; do not leave `オンラインワークショップ` or `ハイブリッド` in public-facing pamphlet text unless explicitly requested.

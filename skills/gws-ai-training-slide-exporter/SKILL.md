@@ -15,11 +15,22 @@ Before export or replacement, read `クライアント指示コンテキスト.m
 
 Do not define course content, curriculum standards, slide-image rules, or Canva policy independently here. Those live in `skills/corporate-training-course-builder/SKILL.md` and its references. This skill only executes the delivery phase selected by that workflow.
 
-This skill is for repository sessions that contain:
+This skill is for repository sessions that contain either image-first deck assets or editable Google Slides source assets.
+
+Image-first sessions contain:
 
 - `スライド画像/Sxx.png`
 - `講師台本.md`
 - `スライド案.md`
+- `演習データ/`
+
+Editable Google Slides sessions contain:
+
+- `スライド案.md`
+- `講師台本.md`
+- `Googleスライド編集用アウトライン.md`
+- `図解パーツ生成プロンプト.md`
+- `図解パーツ/Sxx.png` when supplemental diagrams should be embedded into the editable deck
 - `演習データ/`
 
 It creates or reuses this Drive hierarchy and avoids creating duplicate files when the same name already exists:
@@ -36,7 +47,57 @@ AI法人研修/
         <回フォルダ名>_演習データ  (--exercise-csv-as-sheets 指定時、CSVを1タブずつ統合したGoogle Sheets)
 ```
 
-The deck contains one local slide image per Google Slides page. Speaker notes are populated from the matching `Sxx` block in `講師台本.md`.
+The default image-first deck contains one local slide image per Google Slides page. Speaker notes are populated from the matching `Sxx` block in `講師台本.md`.
+
+## Editable Google Slides Route: 審査用テキスト編集可能デッキ
+
+Use this route when Manabi DX or another reviewer needs consistent visible headers, Sxx numbers, section/block names, and editable text. It keeps the information density from `スライド案.md` but places course title, session/text name, Sxx number, section name, title, headline, and body text as native Google Slides text boxes.
+
+Prepare or refresh editable source files first:
+
+```bash
+python3 scripts/build_editable_google_slides_sources.py
+```
+
+Dry run:
+
+```bash
+python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_training_slides_to_gws.py \
+  --course-dir '講座/COURSE' \
+  --all-sessions \
+  --replace-existing-decks \
+  --write-link-index \
+  --report-json '非公開/gws-export/editable-slides-dry-run.json' \
+  --dry-run
+```
+
+Live export:
+
+```bash
+python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_training_slides_to_gws.py \
+  --course-dir '講座/COURSE' \
+  --all-sessions \
+  --replace-existing-decks \
+  --write-link-index \
+  --report-json '非公開/gws-export/editable-slides-report.json'
+```
+
+Live export with generated diagram parts embedded:
+
+```bash
+python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_training_slides_to_gws.py \
+  --course-dir '講座/COURSE' \
+  --all-sessions \
+  --replace-existing-decks \
+  --embed-diagram-parts \
+  --make-diagram-images-readable-by-link \
+  --write-link-index \
+  --report-json '非公開/gws-export/editable-slides-with-diagrams-report.json'
+```
+
+This route replaces only same-name Google Slides decks inside the target session folders when `--replace-existing-decks` is used. It also uploads `Googleスライド編集用アウトライン.md`, `図解パーツ生成プロンプト.md`, `画像生成プロンプト.md`, `ワークシート.md`, `講師台本.md`, `スライド案.md`, and exercise data where present. URLs and detailed reports should stay in `非公開/` unless the user asks for a public link index.
+
+`--embed-diagram-parts` uploads inspected `図解パーツ/Sxx.png` files into a Drive `図解パーツ` folder and inserts them as right-side supplemental visuals while keeping body text editable. Missing diagram files are warnings, not placeholders. `--make-diagram-images-readable-by-link` is required because the Slides API fetches inserted images by URL; use it only for public-safe generated diagram PNGs and keep raw API reports under `非公開/`.
 
 `演習データ` の表計算は、回ごとに1つのGoogle Sheetsへまとめるのを標準とする。`--exercise-csv-as-sheets` を付けると、その回の `演習データ/` 内 CSV/TSV を1つのxlsxへ束ね（各CSV=1タブ）、ネイティブGoogle Sheets 1ファイルとしてアップロードする。CSVを1枚ずつ別スプレッドシートにしない。`.md` などCSV以外は個別ファイルのまま残す。既に旧方式（CSVごとの個別シートや生CSV）でアップロード済みのDriveを作り直すときは `--replace-exercise-sheets` を併用する。
 
@@ -157,7 +218,7 @@ session_no,page_no,slide_file,status,retry_count,issues,action,checked_at,notes
 
 - 司令塔: 高精度モデルのまま、対象ページ、合否基準、最終判断、ログ統合を担当する。
 - ブラウザ操作担当: `codex-5.3spark` / `GPT-5.3 Codex Spark` 相当の低コストモデルを最優先で使い、Spark利用枠を積極的に消費する。Kimi WebBridgeのクリック、待機、スクリーンショット、ページ移動、単純な表示確認だけを担当する。
-- 画像再生成担当: Magic Layersでは直せず、元スライド画像の再生成が必要な場合だけ、GPT image 2を使える高精度・画像対応モデルで再生成する。
+- 画像再生成担当: Magic Layersでは直せず、元スライド画像の再生成が必要な場合だけ、Codex App Server / GPT image 2 / `imagegen` スキルを使える高精度・画像対応モデルで再生成する。通常の講座画像生成ではAPIキー確認、`OPENAI_API_KEY`、OpenAI API CLI fallback、独自SDKスクリプトへ進まない。
 
 モデル指定やサブエージェント呼び出しができない環境では、同じ役割を手順として分け、スクリーンショット回数、`snapshot` 回数、ページ移動回数を抑える。モデル指定が可能な環境で、ブラウザ操作を高精度モデル単体で長時間抱え込まない。
 
