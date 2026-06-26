@@ -4567,5 +4567,26 @@ window.PROMPT_TIMELINE_EVENTS = [
     "tags": [],
     "timestamp": "2026-06-26T00:06:42.539819Z",
     "timestamp_jst": "2026-06-26T09:06:42+09:00"
+  },
+  {
+    "actions": [],
+    "actor": "agent",
+    "id": "20260626T001300Z-edb365ae",
+    "kind": "prompt",
+    "meta": {
+      "cwd": "/home/user/ai-corporate-training",
+      "hook_event_name": "UserPromptSubmit",
+      "session_id": "19dd5a6d-0dd3-5e7e-b7a9-d54acc082a28",
+      "transcript_path": "/root/.claude/projects/-home-user-ai-corporate-training/19dd5a6d-0dd3-5e7e-b7a9-d54acc082a28.jsonl"
+    },
+    "parent_id": "",
+    "prompt_original": "スライド画像の完成チェックタスクの続き: バックグラウンドで起動した不足スライド画像調査エージェントの結果を確認し、image_gen ツールが利用不可であることと合わせて、不足ファイル一覧を報告してタスクを終了する。",
+    "prompt_preview": "スライド画像の完成チェックタスクの続き: バックグラウンドで起動した不足スライド画像調査エージェントの結果を確認し、image_gen ツールが利用不可であることと合わせて、不足ファイル一覧を報告してタスクを終了する。",
+    "repo_label": "ai-corporate-training",
+    "source": "claude-user-prompt",
+    "summary": "",
+    "tags": [],
+    "timestamp": "2026-06-26T00:13:00.694928Z",
+    "timestamp_jst": "2026-06-26T09:13:00+09:00"
   }
 ];
