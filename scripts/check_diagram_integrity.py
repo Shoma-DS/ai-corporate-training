@@ -68,11 +68,19 @@ def main() -> int:
             hashes[sha256(image)].append(image)
 
         status = "ok" if not (missing or bad_png or odd_size) else "needs_fix"
+        def summarize(items: list[str], limit: int = 8) -> str:
+            if not items:
+                return "-"
+            head = ",".join(items[:limit])
+            if len(items) > limit:
+                return f"{head},...(+{len(items) - limit})"
+            return head
+
         print(
             f"{session_dir.name}: {len(expected) - len(missing)}/{len(expected)} {status}"
-            f" missing={','.join(missing[:8]) or '-'}"
-            f" bad_png={','.join(bad_png[:8]) or '-'}"
-            f" odd_size={','.join(odd_size[:8]) or '-'}"
+            f" missing={summarize(missing)}"
+            f" bad_png={summarize(bad_png)}"
+            f" odd_size={summarize(odd_size)}"
         )
         if missing or bad_png or odd_size:
             all_ok = False

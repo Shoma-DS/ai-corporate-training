@@ -82,7 +82,7 @@ Each session folder:
 - `演習データ/`
 - `Googleスライド編集用アウトライン.md` when a reviewer/submission workflow requires editable Google Slides text
 - `図解パーツ生成プロンプト.md` when slide body text remains editable and only supplemental diagrams are image-generated
-- `図解パーツ/` when the editable Google Slides workflow embeds one supplemental generated diagram PNG per slide as `Sxx.png`
+- `図解パーツ/` when the HTML/editable Google Slides workflow embeds one supplemental generated diagram or reference-sheet PNG per slide as `Sxx.png`
 
 Do not create per-session `素材/ロゴ/`, `素材/スクリーンショット/`, `素材/作業風景/`, or `調査/` folders. Official logos are shared across courses, so keep them in repository-level `素材/ロゴ/`. Research normally belongs to the course, not to one session, so keep source notes in `全体/調査/`.
 
@@ -113,7 +113,7 @@ For the current `isometric-corporate-clean` style, keep the visual direction cle
 
 ## Dense Slide Image Standard
 
-All future slide images in this repository must match the recent S02 "導入判断キャンバス" sample as the minimum visual and information-density benchmark. This applies to every course, not only Google Workspace/GAS.
+All future slide images and editable-template diagram/reference images in this repository must match the recent S02 "導入判断キャンバス" and S04 "DXは大きなシステム導入だけではない" samples as the minimum visual and information-density benchmark. This applies to every course, not only Google Workspace/GAS.
 
 A production-ready slide image normally includes:
 
@@ -122,7 +122,7 @@ A production-ready slide image normally includes:
 - 3-6 meaningful content blocks, or a structured table/process/checklist/canvas. Complex exercise or decision slides may use up to 8 compact cards when readability is preserved.
 - A visible learner action, practical output, review criterion, or business decision point.
 - Risk, governance, source, or confirmation notes when the slide involves AI output, official services, personal data, screenshots, or operational adoption.
-- A concrete visual composition using the `isometric-corporate-clean` style: white background, navy/teal cards, thin borders, readable short Japanese labels, right-side or corner isometric business scene where useful, and a bottom band for exercise/output/risk notes when it clarifies the slide.
+- A concrete visual composition using the `isometric-corporate-clean` style: white background, navy/teal cards, thin borders, readable Japanese headings, table cells, card text, concrete examples, and a bottom band for exercise/output/risk notes when it clarifies the slide. Do not force sparse labels; when the source slide is dense, use combined structures such as a Before/After table plus a hierarchy diagram plus industry examples.
 - Concrete proper nouns wherever the learner is supposed to act: recommended service names (e.g. Codex, Claude Code, NotebookLM, Gamma, Dify, ラッコキーワード), recommended MCP servers (e.g. GitHub MCP, Slack MCP, Notion MCP, Google Drive MCP, Playwright MCP, ラッコキーワードMCP, Adobe Express MCP, Canva MCP), and fictional-but-numeric business cases. Use `references/concrete-tools-mcp-case-bank.md` as the source of truth for names, fictional companies, and per-course emphasis. Abstract frameworks (入力→処理→出力→確認 etc.) are allowed only as the surrounding structure; the slide itself must let learners map the framework to a named tool or a numbered case on the spot.
 - A caution near tool/MCP slides that availability, terms, and pricing change and must be re-checked against official sources at adoption time. Never render logos or real UI without reference assets.
 
@@ -130,13 +130,31 @@ Do not treat these as complete:
 
 - Blank slide templates that expect text to be added later.
 - Mood images, title-only section dividers, or abstract diagrams with no useful slide content.
+- For HTML/editable template decks, text-free decorative diagram parts, missing diagram attachments, or diagrams that contain no learner action/output/review information.
 - Repeated generic prompt boilerplate with only the slide title changed, including "judgment table" or "content block" templates whose sentences just embed the slide title into a fixed phrase across many slides.
 - Prompts that say "show cards", "show workflow", or "safe trial boundary" without naming the exact cards, labels, output, checks, and layout.
 - Tool/use-case/exercise slides that name no concrete service, MCP, or numeric case at all.
 
-Before image generation, `画像生成プロンプト.md` must include the exact short Japanese text to render, the selected diagram pattern, card/table/process layout, material and screenshot/logo handling, and a negative prompt that forbids placeholder slots, fake UI, invented logos, unreadable tiny text, and stale labels. If this is missing, repair the prompt before generating images.
+## Navigation And Section Signposting Standard
 
-After generation, inspect every slide image before accepting it. Reject and regenerate the whole image if important Japanese text is wrong, product/service names are wrong, content blocks are missing, there are empty placeholders, the slide is visibly sparser than the S02 sample, text overlaps, or the exercise/risk/output element disappeared. Do not fix these failures with local overlays or raster edits.
+Every future course, including non-GAS courses, must make the session structure obvious inside the slides themselves.
+
+- Each session needs an early `目次` / `全体像` slide, normally around S03. It should show the 3-6 major sections, approximate time allocation, learner outputs, and where exercises or demos occur.
+- Each major section should start with a `章見出し` / `現在位置` slide. This slide should prominently show the current section, the surrounding agenda items, what decision axis or workflow will be covered next, and which output it supports.
+- Section dividers are not decorative title cards. They must include at least: current section name, agenda position, 2-4 upcoming points, learner output or review point, and a short connection from the previous section.
+- Normal explanation slides must still expose current location through the common header or slide body: course title, session/text name, Sxx number, and section name should remain editable whenever using the HTML/Google Slides template route.
+- Slide plans that have only a flow slide at the beginning and no section-start signposts are incomplete for review-facing decks.
+
+For editable-template diagram/reference images:
+
+- Generate wide landscape reference images that are slightly shorter vertically than a full 16:9 slide, so the editable template has room for title, Sxx number, section name, and current-location labels.
+- Keep the image width visually consistent with existing course images, but avoid making the image a full-slide screenshot that consumes the editable title/header area.
+- The image may include concise internal headings and dense table/card text, but course title, session name, Sxx number, section header, and full slide title should remain template text unless the user explicitly asks for a complete bitmap slide.
+
+Before image generation, `画像生成プロンプト.md` must include the exact Japanese text to render, including headings, table cells, card text, examples, output names, and review criteria where needed, plus the selected diagram pattern, card/table/process layout, material and screenshot/logo handling, and a negative prompt that forbids placeholder slots, fake UI, invented logos, unreadable tiny text, and stale labels. If this is missing, repair the prompt before generating images.
+
+After generation, the standard acceptance path is lightweight checks for every image, not full visual inspection of every page. Run low-cost checks for missing Sxx files, valid bitmap/MIME, dimensions/aspect, abnormal file size, duplicate hashes, generation-log pending/error states, and known stale course names or forbidden terms by filename/OCR/search where available. Full visual inspection is required only for images flagged by those checks, images with suspicious OCR, images using official logos/screenshots/new UI material, or images the user specifically asks to inspect. If an inspected image has wrong Japanese text, wrong product/service/output names, missing content blocks, empty placeholders, visibly sparse composition, text overlap, or missing exercise/risk/output elements, reject and regenerate the whole image. Do not fix failures with local overlays or raster edits.
+
 
 When the user asks to revise **image prompts only**, keep the scope narrow: edit `画像生成プロンプト.md` and supporting repository rules/reference files only. Do not change pamphlet HTML/PDF, slide plans, scripts, handouts, exercise data, or generated slide images unless the user explicitly expands the scope. If a course is marked as submitted or frozen, such as the Google Workspace/GAS course during a submission window, use it only as a density benchmark and do not edit its course files.
 
@@ -209,15 +227,16 @@ Good differentiation examples:
    - Follow the **Subsidy Review Submission Principle**. Slides must be understandable without instructor comments and must show enough content for a reviewer to understand what the course teaches and what learners do.
    - Each submission-facing slide should have a conclusion-style headline, enough body text to identify the learning content, and a visible structure such as process, comparison, checklist, table, issue-to-solution flow, or output map. Avoid sparse mood slides and bullet-only lists.
    - For high-density rebuilds, every slide should normally include `**ヘッドライン:**`, 3-6 meaningful content blocks, a selected template ID, a diagram/material pattern, and a screenshot/source instruction when useful. Add industry-specific examples, Before/After, numeric sense, output names, review points, and exercise steps. Do not copy a reference course's topics, chapter order, or examples.
+   - Add or repair the session-level `目次/全体像` slide and major-section `章見出し/現在位置` slides. These slides must show where the learner is in the session, not only list topics.
 9. Draft `講師台本.md`, but treat the word-for-word instructor script as a **slides-first deliverable**: the production order is slide plan → image prompts → generated `スライド画像/Sxx.png` (steps 11-13) → then write or finalize the script against the rendered images. Read each finished slide image, understand where every block sits (headline, cards, table, right-side isometric scene, bottom band), and write the read-aloud text so the instructor can point at on-slide positions while recording. See **Script-After-Slides Ordering** below. Include when to change slides, when to show work screens, what the instructor says, exercise instructions, time marks, and fallback explanations. Follow the **Instructor Script Rules** section below for block types, screen-share format, and SME metaphors.
 10. Create all required `配布資料/`, `演習データ/`, CSV files, sample text, and worksheets inside the target session folder.
 11. Create `画像生成プロンプト.md` for every slide. Include selected template ID, exact in-image text, visual pattern, card/table/process layout, learner output or review point, official-logo inputs, screenshot inputs, screen-share transition slides, and negative prompt. Apply the **Dense Slide Image Standard** before generation.
-    - If Manabi DX or another reviewer asks for editable text, consistent text names, visible Sxx numbers, section/block names, Google Slides-side editing, or separate diagram images, also read `references/editable-google-slides-workflow.md`. In that branch, keep `スライド案.md` dense, generate `Googleスライド編集用アウトライン.md` and `図解パーツ生成プロンプト.md`, generate inspected supplemental diagrams as `図解パーツ/Sxx.png` when requested, embed those diagrams into the editable Google Slides deck, and treat `画像生成プロンプト.md` as reference-only for the full-raster path unless the user explicitly requests full bitmap slides.
-    - For editable Google Slides diagram parts, do not treat text-free output as a universal quality rule. Use no text when the icon/process visual is clear; use short accurate Japanese labels when labels make the diagram work as a slide element. Keep course headers, Sxx numbers, full slide titles/headlines, long body text, and full tables editable in Google Slides, not baked into the diagram image.
+    - If Manabi DX or another reviewer asks for editable text, consistent text names, visible Sxx numbers, section/block names, Google Slides-side editing, HTML/editable slide templates, or separate diagram images, also read `references/editable-google-slides-workflow.md`. In that branch, keep `スライド案.md` dense, generate `Googleスライド編集用アウトライン.md` and `図解パーツ生成プロンプト.md`, generate inspected supplemental diagrams/reference-sheet images as `図解パーツ/Sxx.png`, embed those diagrams into the HTML/editable Google Slides deck, and treat `画像生成プロンプト.md` as reference-only for the full-raster path unless the user explicitly requests full bitmap slides.
+    - For HTML/editable template diagram parts, do not treat text-free output or short-label-only output as a quality rule. Each required `図解パーツ/Sxx.png` should normally include readable Japanese headings, table cells, card text, process names, output names, decision axes, learner actions, concrete examples, or review/risk notes so it functions as supplemental material on its own. When the source slide has S04-level density, preserve comparable density with 2-4 structured zones and roughly 8-20 readable text cells/short phrases. Keep course headers, Sxx numbers, session names, speaker notes, and long paragraphs editable in Google Slides, but allow core comparison/process/example table cells inside the diagram image. Prefer wide, vertically compact reference images that leave room in the editable template for title/current-location text.
 12. Use official logos/screenshots as reference assets when needed. Save official logos in repository-level `素材/ロゴ/` with source notes. Save screen captures for a session in that session's `スクリーンショット/`. Do not ask image generation to invent brand marks from memory.
 13. Use the `imagegen` skill and its rules for raster slide images. Save final images in the target session's `スライド画像/Sxx.png`.
     - For generated training slide images, use Codex App Server / GPT image 2 through the `imagegen` skill as a complete bitmap image. Do not create SVG, HTML, CSS, canvas, browser screenshots, or local conversion outputs as slide-image intermediates.
-    - Inspect each generated image against the Dense Slide Image Standard. If it is too sparse, has wrong Japanese text, contains placeholders, loses the exercise/output/risk block, or looks like a blank template, mark it rejected and regenerate the whole image.
+    - Run lightweight checks on all generated images against the Dense Slide Image Standard, and visually inspect only images flagged by those checks or specifically requested by the user. If an inspected image is too sparse, has wrong Japanese text, contains placeholders, loses the exercise/output/risk block, or looks like a blank template, mark it rejected and regenerate the whole image.
 14. For course-level pamphlets, create or update `全体/<講座名>_パンフレット.html` as the source of truth and generate `全体/<講座名>_パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration and HTML-to-PDF conversion. Do not create new pamphlets as Markdown-first deliverables.
 15. Verify text accuracy, slide count, per-session time totals, theme-specific differentiation, asset paths, selected template usage, pamphlet HTML/PDF existence, public-safety constraints, and that scripts/slides/handouts agree.
     - For submission-facing materials, review the pamphlet and slides without reading `講師台本.md`. If the course content is not understandable from those two artifacts alone, revise the slides/pamphlet before delivery.
@@ -237,6 +256,7 @@ If subagents are available and the user asks for parallelization, split the work
 - Prompt/image owner: edits only `画像生成プロンプト.md` and `スライド画像/Sxx.png`, following the selected template and `imagegen` rules.
 - If slide image generation is parallelized, split it into disjoint `Sxx` batches such as `S01-S10`, `S11-S20`, and `S21-S30`. Each image worker uses the same fixed template ID for the session and writes only its assigned `スライド画像/Sxx.png` files.
 - In parallel image generation, each worker must copy outputs only from its own Codex App Server generated image directory, `$CODEX_HOME/generated_images/<session-id>/`, where `<session-id>` is the `session id` printed in that worker's startup banner. Never select the newest file from the global `$CODEX_HOME/generated_images` tree, because that can copy another worker's image into the wrong slide.
+- When the user asks for a shared queue or maximum parallelism for many slide/diagram images, create a file-locked shared queue with explicit `pending`, `claimed`, `complete`, and `failed` states before adding extra workers. Workers must claim exactly one slide at a time, write only that claimed target, mark completion only after PNG/file checks pass, and requeue failures instead of guessing or overwriting another worker's target. Static shards are acceptable only for the first wave or when the user did not ask for shared queue behavior.
 - Handout/data owner: edits only `ワークシート.md`, `配布資料/`, and `演習データ/`.
 - Source/official asset owner: checks official sources, logos, screenshots, and writes only course-level `全体/調査/` notes or repository-level `素材/ロゴ/` assets.
 - Verification owner: read-only review of slide counts, wording, paths, source notes, public-safety risks, and consistency; fixes are applied by the owning agent or main agent.
@@ -266,7 +286,7 @@ When a user says a slide image is wrong and asks to "regenerate", "作り直し�
 - Never save locally drawn placeholder images into `スライド画像/Sxx.png`. If Codex App Server / GPT image 2 / `imagegen` has not generated the image, mark the slide image as missing or pending instead of pretending it is complete.
 - Course-generation scripts may write slide plans, scripts, image prompts, handouts, exercise data, and PPTX decks assembled from already generated images. They must not draw, rasterize, screenshot, convert, or composite final `スライド画像/Sxx.png` files.
 - Copying or moving a generated PNG/WebP into the project is allowed. Converting or redrawing it locally is not.
-- If exact text is required, keep text short and ask GPT image 2 to render it directly. Do not overlay text locally.
+- If exact text is required, keep each text block readable by splitting it into headings, table cells, and short card sentences, then ask GPT image 2 to render it directly. Do not overlay text locally.
 - Prompts must describe a complete slide, not a reusable blank template: include the headline, compact Japanese labels, content cards/table/process/checklist/canvas, exercise/output/review point, and the planned location of each major block.
 - Before generating, inspect repository-level `素材/ロゴ/` and load the needed official logo files as image references. Do not leave logo placeholders when logo assets exist.
 - Use only official logo files already present in the repo when the user asks for real service logos. Do not ask GPT image 2 to invent or redraw real logos from memory.
@@ -274,8 +294,8 @@ When a user says a slide image is wrong and asks to "regenerate", "作り直し�
 - Preserve exact in-slide wording from the user's latest correction. Search for and remove stale wording such as old product pairings or prior draft labels before saving.
 - If `imagegen` cannot save directly to the requested project path, generate first through Codex App Server / GPT image 2, then copy or move the generated bitmap file without modifying its pixels.
 - When multiple image workers are active, the copy source must be the current worker's `$CODEX_HOME/generated_images/<session-id>/` directory only. Do not use global newest-file commands over `$CODEX_HOME/generated_images`.
-- After generation, inspect the image before replacing `スライド画像/Sxx.png`. Check product names, Japanese text, logo placement, card spacing, information density, output/exercise/risk visibility, and whether the output still contains forbidden placeholder text.
-- Keep image inspection transport light. Use `view_image` with low detail for first-pass visual checks, one image at a time. Prefer OCR for text, `shasum` for copy identity, and file metadata for size/aspect checks. Use high-detail `view_image` only for a single ambiguous final judgment. If a `Bad Request`, WebSocket close, or fallback resend error appears after a large image result, treat it as a transient transport/session-state issue until file evidence says otherwise: do not stop, do not repeat the same high-detail request, and continue from the latest generated or copied PNG with a lower-payload check.
+- After generation, run lightweight checks before replacing `スライド画像/Sxx.png`; visually inspect only flagged images or images specifically requested by the user.
+- Keep image inspection transport light. Use `view_image` with low detail for first-pass visual checks, one image at a time. Prefer OCR for text, `shasum` for copy identity, and file metadata for size/aspect checks. Use high-detail `view_image` only for a single ambiguous final judgment. If a `502 Bad Gateway` from `http://127.0.0.1:8787/v1/responses`, `Bad Request`, WebSocket close, response-not-complete, or fallback resend error appears after a large image result, treat it as a transient Codex App Server transport/session-state issue until file evidence says otherwise: do not stop, do not repeat the same high-payload request, check the current worker's `$CODEX_HOME/generated_images/<session-id>/`, and continue from the latest generated or copied PNG with a lower-payload check. If no file appears after a short wait/retry, mark that Sxx pending and continue the remaining batch.
 - If you start considering SVG, HTML/CSS, canvas, screenshots, or local conversion for a GPT image 2 request, stop and switch back to bitmap generation.
 
 ## Canva Delivery Policy
@@ -475,7 +495,7 @@ Before finishing, confirm:
 - Slide numbers and titles match across slide plan, script, prompts, and images.
 - Visible course/training names match the submitted pamphlet or latest user correction; old path names or benchmark labels are not leaking into slide titles, image prompts, generated images, or export-facing text.
 - `画像生成プロンプト.md` records the selected slide template ID and uses a diagram pattern from `スライド/テンプレート/カタログ.yml` or the selected `source_file`.
-- `画像生成プロンプト.md` and generated images satisfy the Dense Slide Image Standard; blank templates, sparse mood images, and text-to-be-added-later prompts do not pass.
+- `画像生成プロンプト.md` and generated images satisfy the Dense Slide Image Standard; blank templates, sparse mood images, and text-to-be-added-later prompts do not pass. Lightweight checks are recorded for all generated images, and only flagged S番号 are escalated to visual inspection.
 - One session uses one template ID and one visual style across prompts and generated images, unless the user explicitly requested mixed templates.
 - `スライド画像/` contains all required images, and those images were generated by Codex App Server / GPT image 2 / `imagegen` or are approved official screenshots/assets. Locally rendered placeholders do not satisfy this check.
 - Asset references point to repository-level `素材/ロゴ/`, course-level `全体/調査/`, or session-local `スクリーンショット/`, `演習データ/`, and `配布資料/`.

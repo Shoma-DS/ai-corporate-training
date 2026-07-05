@@ -1,0 +1,2 @@
+worker-78 /Users/deguchishouma/Desktop/AI法人研修/.workflow/gas-diagram-generation/logs/20260701-194620-fast-screen/run-worker-78.sh
+worker-79 /Users/deguchishouma/Desktop/AI法人研修/.workflow/gas-diagram-generation/logs/20260701-194620-fast-screen/run-worker-79.sh

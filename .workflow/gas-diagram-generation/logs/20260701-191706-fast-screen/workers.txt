@@ -1,0 +1,1 @@
+worker-77 /Users/deguchishouma/Desktop/AI法人研修/.workflow/gas-diagram-generation/logs/20260701-191706-fast-screen/run-worker-77.sh

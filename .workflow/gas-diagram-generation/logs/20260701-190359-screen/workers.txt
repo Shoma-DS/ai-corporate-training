@@ -1,0 +1,1 @@
+worker-61 /Users/deguchishouma/Desktop/AI法人研修/.workflow/gas-diagram-generation/logs/20260701-190359-screen/run-worker-61.sh

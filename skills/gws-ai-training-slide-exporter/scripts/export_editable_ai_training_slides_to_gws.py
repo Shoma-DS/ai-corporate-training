@@ -19,12 +19,21 @@ SLIDE_H = 405.0
 NAVY = {"red": 0.05, "green": 0.16, "blue": 0.28}
 TEAL = {"red": 0.0, "green": 0.47, "blue": 0.52}
 GRAY = {"red": 0.34, "green": 0.39, "blue": 0.45}
+CHIP_BG = {"red": 0.91, "green": 0.94, "blue": 0.96}
+WHITE = {"red": 1.0, "green": 1.0, "blue": 1.0}
 DIAGRAM_DIR_NAME = "図解パーツ"
-DIAGRAM_X = 506.0
-DIAGRAM_Y = 156.0
-DIAGRAM_W = 168.0
-DIAGRAM_H = 140.0
-BODY_W_WITH_DIAGRAM = 458.0
+# 固定ワイヤーフレーム: 全ページ同一の図解ゾーン（スライド案.mdの固定ワイヤーフレーム仕様と一致させる）
+DIAGRAM_X = 60.0
+DIAGRAM_Y = 58.0
+DIAGRAM_W = 600.0
+DIAGRAM_H = 322.0
+BODY_W_WITH_DIAGRAM = 650.0
+# 下端の目次ストリップ（6章チップ）
+TOC_STRIP_Y = 384.0
+TOC_CHIP_H = 16.0
+TOC_STRIP_X = 26.0
+TOC_STRIP_RIGHT = 694.0
+BACKGROUND_IMAGE_RELPATH = Path("全体") / "素材" / "スライド背景ワイヤーフレーム.png"
 
 
 def load_module(path: Path, name: str) -> Any:
@@ -165,6 +174,105 @@ def body_font_size(text: str, *, has_diagram: bool = False) -> float:
     return 7.6
 
 
+def create_toc_chip(
+    object_id: str,
+    page_id: str,
+    label: str,
+    *,
+    x: float,
+    w: float,
+    active: bool,
+) -> list[dict[str, Any]]:
+    fill = TEAL if active else CHIP_BG
+    text_color = WHITE if active else GRAY
+    return [
+        {
+            "createShape": {
+                "objectId": object_id,
+                "shapeType": "ROUND_RECTANGLE",
+                "elementProperties": {
+                    "pageObjectId": page_id,
+                    "size": {
+                        "width": {"magnitude": w, "unit": "PT"},
+                        "height": {"magnitude": TOC_CHIP_H, "unit": "PT"},
+                    },
+                    "transform": {
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "translateX": x,
+                        "translateY": TOC_STRIP_Y,
+                        "unit": "PT",
+                    },
+                },
+            }
+        },
+        {
+            "updateShapeProperties": {
+                "objectId": object_id,
+                "shapeProperties": {
+                    "shapeBackgroundFill": {"solidFill": {"color": {"rgbColor": fill}, "alpha": 1}},
+                    "outline": {"propertyState": "NOT_RENDERED"},
+                    "contentAlignment": "MIDDLE",
+                },
+                "fields": (
+                    "shapeBackgroundFill.solidFill.color,shapeBackgroundFill.solidFill.alpha,"
+                    "outline.propertyState,contentAlignment"
+                ),
+            }
+        },
+        {"insertText": {"objectId": object_id, "insertionIndex": 0, "text": label}},
+        {
+            "updateTextStyle": {
+                "objectId": object_id,
+                "style": text_style(6.3, text_color, bold=active),
+                "fields": "fontFamily,fontSize,foregroundColor,bold",
+            }
+        },
+        {
+            "updateParagraphStyle": {
+                "objectId": object_id,
+                "style": {"alignment": "CENTER"},
+                "fields": "alignment",
+            }
+        },
+    ]
+
+
+def toc_strip_requests(page_id: str, sections: list[Any], current_section: str) -> list[dict[str, Any]]:
+    if not sections:
+        return []
+    count = len(sections)
+    total_w = TOC_STRIP_RIGHT - TOC_STRIP_X
+    gap = 6.0
+    chip_w = (total_w - gap * (count - 1)) / count
+    requests: list[dict[str, Any]] = []
+    for idx, section in enumerate(sections):
+        label = getattr(section, "short_name", "") or f"{idx + 1} {section.name[:6]}"
+        requests += create_toc_chip(
+            f"{page_id}_toc{idx}",
+            page_id,
+            label,
+            x=TOC_STRIP_X + idx * (chip_w + gap),
+            w=chip_w,
+            active=section.name == current_section,
+        )
+    return requests
+
+
+def background_request(page_id: str, background_url: str) -> list[dict[str, Any]]:
+    return [
+        {
+            "updatePageProperties": {
+                "objectId": page_id,
+                "pageProperties": {
+                    "pageBackgroundFill": {"stretchedPictureFill": {"contentUrl": background_url}}
+                },
+                "fields": "pageBackgroundFill.stretchedPictureFill.contentUrl",
+            }
+        }
+    ]
+
+
 def create_image(
     object_id: str,
     page_id: str,
@@ -206,15 +314,12 @@ def slide_requests(
     course_title: str,
     *,
     diagram_url: str | None = None,
+    sections: list[Any] | None = None,
+    background_url: str | None = None,
 ) -> list[dict[str, Any]]:
     body = body_text(slide)
     has_diagram = bool(diagram_url)
     font_size = body_font_size(body, has_diagram=has_diagram)
-    diagram_line = (
-        f"図解: {DIAGRAM_DIR_NAME}/{slide.slide_id}.png / {slide.diagram_pattern}"
-        if has_diagram
-        else f"図解/素材: {slide.diagram_pattern} / {slide.screenshot}"
-    )
     body_width = BODY_W_WITH_DIAGRAM if has_diagram else 650
     prefix = page_id
     requests: list[dict[str, Any]] = [
@@ -225,6 +330,18 @@ def slide_requests(
             }
         }
     ]
+    if background_url:
+        requests += background_request(page_id, background_url)
+    if diagram_url:
+        requests += create_image(
+            f"{prefix}_diagram",
+            page_id,
+            diagram_url,
+            x=DIAGRAM_X,
+            y=DIAGRAM_Y,
+            w=DIAGRAM_W,
+            h=DIAGRAM_H,
+        )
     requests += create_text_box(
         f"{prefix}_course",
         page_id,
@@ -264,9 +381,9 @@ def slide_requests(
         f"{prefix}_section",
         page_id,
         slide.section,
-        x=500,
+        x=470,
         y=31,
-        w=188,
+        w=218,
         h=17,
         font_size=7.4,
         color=GRAY,
@@ -277,9 +394,9 @@ def slide_requests(
         page_id,
         slide.title,
         x=31,
-        y=59,
+        y=57,
         w=658,
-        h=35,
+        h=32,
         font_size=19,
         color=NAVY,
         bold=True,
@@ -289,46 +406,26 @@ def slide_requests(
         page_id,
         slide.headline,
         x=31,
-        y=96,
+        y=89,
         w=658,
-        h=40,
+        h=30,
         font_size=12.5,
         color=TEAL,
         bold=True,
     )
-    requests += create_text_box(
-        f"{prefix}_body",
-        page_id,
-        body,
-        x=35,
-        y=142,
-        w=body_width,
-        h=196,
-        font_size=font_size,
-        color=NAVY,
-    )
-    if diagram_url:
-        requests += create_image(
-            f"{prefix}_diagram",
+    if not diagram_url:
+        requests += create_text_box(
+            f"{prefix}_body",
             page_id,
-            diagram_url,
-            x=DIAGRAM_X,
-            y=DIAGRAM_Y,
-            w=DIAGRAM_W,
-            h=DIAGRAM_H,
+            body,
+            x=35,
+            y=124,
+            w=body_width,
+            h=252,
+            font_size=font_size,
+            color=NAVY,
         )
-    requests += create_line(f"{prefix}_line2", page_id, x=31, y=347, w=658)
-    requests += create_text_box(
-        f"{prefix}_bottom",
-        page_id,
-        diagram_line,
-        x=35,
-        y=356,
-        w=650,
-        h=25,
-        font_size=7.8,
-        color=GRAY,
-    )
+    requests += toc_strip_requests(page_id, sections or [], slide.section)
     return requests
 
 
@@ -443,6 +540,44 @@ def prepare_diagram_assets(
     return diagram_urls, uploaded, warnings
 
 
+def prepare_background_asset(
+    course_dir: Path,
+    course_folder_id: str,
+    args: argparse.Namespace,
+) -> tuple[str | None, dict[str, Any] | None, list[str]]:
+    """Upload the shared wireframe background PNG and return its fetchable URL."""
+    if args.no_background:
+        return None, None, []
+    path = course_dir / BACKGROUND_IMAGE_RELPATH
+    if args.background_image:
+        path = Path(args.background_image)
+    if not path.is_file():
+        return None, None, [f"Missing shared background image: {path}"]
+    try:
+        validate_diagram_png(path)
+    except ValueError as exc:
+        return None, None, [f"Invalid background image: {path.name}: {exc}"]
+    if not args.make_diagram_images_readable_by_link and not args.dry_run:
+        return None, None, [
+            "Background image found but --make-diagram-images-readable-by-link is not set; skipping background."
+        ]
+    uploaded = BASE.upload_file_if_missing(
+        path,
+        course_folder_id,
+        dry_run=args.dry_run,
+        label="slide-background-wireframe",
+    )
+    drive_file = uploaded.get("driveFile") or {}
+    file_id = drive_file.get("id")
+    if not file_id:
+        return None, uploaded, [f"Missing Drive file id for background image: {path.name}"]
+    permission = None
+    if args.make_diagram_images_readable_by_link:
+        permission = make_drive_file_readable_by_link(file_id, dry_run=args.dry_run)
+    uploaded["permission"] = permission
+    return drive_download_url(file_id), uploaded, []
+
+
 def create_native_presentation(title: str, parent_id: str, *, dry_run: bool) -> dict[str, Any]:
     if dry_run:
         return {"id": BASE.dryrun_id("editable-slides", title), "name": title, "webViewLink": "", "dryRun": True}
@@ -544,6 +679,12 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
         session_folder_id,
         args,
     )
+    background_url, background_upload, background_warnings = prepare_background_asset(
+        course_dir,
+        course_folder.get("id", ""),
+        args,
+    )
+    diagram_warnings = list(diagram_warnings) + background_warnings
 
     existing_decks = BASE.find_files(
         deck_title,
@@ -576,6 +717,8 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
                     session_label,
                     SOURCE_BUILDER.COURSE_TITLE,
                     diagram_url=diagram_urls.get(slide.slide_id),
+                    sections=sections,
+                    background_url=background_url,
                 )
             )
         requests.extend(default_slide_deletions)
@@ -617,6 +760,10 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
             "embeddedCount": len(diagram_urls),
             "expectedCount": len(slides),
         },
+        "backgroundWireframe": {
+            "enabled": bool(background_url),
+            "uploadedFile": background_upload,
+        },
         "mode": "editable-google-slides",
         "slideImageCount": len(slides),
         "editableSlideCount": len(slides),
@@ -642,9 +789,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--replace-exercise-sheets", action="store_true", help="Replace legacy exercise sheet uploads")
     parser.add_argument("--embed-diagram-parts", action="store_true", help="Upload and embed 図解パーツ/Sxx.png into editable slides")
     parser.add_argument(
+        "--allow-text-only-template-export",
+        action="store_true",
+        help="Debug exception: allow editable template export without embedding 図解パーツ/Sxx.png",
+    )
+    parser.add_argument(
         "--make-diagram-images-readable-by-link",
         action="store_true",
         help="Grant anyone-with-link reader permission to uploaded diagram PNGs so Slides can fetch them by URL",
+    )
+    parser.add_argument(
+        "--background-image",
+        help="Override path to the shared wireframe background PNG (default: <course>/全体/素材/スライド背景ワイヤーフレーム.png)",
+    )
+    parser.add_argument(
+        "--no-background",
+        action="store_true",
+        help="Do not set the shared wireframe background on slides",
     )
     parser.add_argument("--write-link-index", action="store_true", help="Write course-level Google_Driveリンク一覧.md")
     parser.add_argument("--link-index-path", help="Override link index output path")
@@ -662,6 +823,11 @@ def parse_args() -> argparse.Namespace:
         parser.error("--link-index-path requires --write-link-index")
     if args.write_link_index and not args.all_sessions:
         parser.error("--write-link-index requires --course-dir with --all-sessions")
+    if not args.embed_diagram_parts and not args.allow_text_only_template_export:
+        parser.error(
+            "--embed-diagram-parts is required for finished editable/HTML-template exports. "
+            "Use --allow-text-only-template-export only for temporary text-only debugging."
+        )
     return args
 
 

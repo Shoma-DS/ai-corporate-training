@@ -24,13 +24,13 @@ Image-first sessions contain:
 - `スライド案.md`
 - `演習データ/`
 
-Editable Google Slides sessions contain:
+Editable/HTML-template Google Slides sessions contain:
 
 - `スライド案.md`
 - `講師台本.md`
 - `Googleスライド編集用アウトライン.md`
 - `図解パーツ生成プロンプト.md`
-- `図解パーツ/Sxx.png` when supplemental diagrams should be embedded into the editable deck
+- `図解パーツ/Sxx.png` as supplemental diagrams/reference-sheet images to embed into the editable deck
 - `演習データ/`
 
 It creates or reuses this Drive hierarchy and avoids creating duplicate files when the same name already exists:
@@ -66,21 +66,27 @@ python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_trainin
   --course-dir '講座/COURSE' \
   --all-sessions \
   --replace-existing-decks \
+  --embed-diagram-parts \
+  --make-diagram-images-readable-by-link \
   --write-link-index \
   --report-json '非公開/gws-export/editable-slides-dry-run.json' \
   --dry-run
 ```
 
-Live export:
+Text-only debugging exception:
 
 ```bash
 python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_training_slides_to_gws.py \
   --course-dir '講座/COURSE' \
   --all-sessions \
   --replace-existing-decks \
+  --allow-text-only-template-export \
   --write-link-index \
-  --report-json '非公開/gws-export/editable-slides-report.json'
+  --report-json '非公開/gws-export/editable-slides-text-only-debug.json' \
+  --dry-run
 ```
+
+Use the text-only exception only to inspect header/body placement before diagram images exist. Do not use it for a finished Google Slides deck.
 
 Live export with generated diagram parts embedded:
 
@@ -97,7 +103,9 @@ python3 skills/gws-ai-training-slide-exporter/scripts/export_editable_ai_trainin
 
 This route replaces only same-name Google Slides decks inside the target session folders when `--replace-existing-decks` is used. It also uploads `Googleスライド編集用アウトライン.md`, `図解パーツ生成プロンプト.md`, `画像生成プロンプト.md`, `ワークシート.md`, `講師台本.md`, `スライド案.md`, and exercise data where present. URLs and detailed reports should stay in `非公開/` unless the user asks for a public link index.
 
-`--embed-diagram-parts` uploads inspected `図解パーツ/Sxx.png` files into a Drive `図解パーツ` folder and inserts them as right-side supplemental visuals while keeping body text editable. Missing diagram files are warnings, not placeholders. `--make-diagram-images-readable-by-link` is required because the Slides API fetches inserted images by URL; use it only for public-safe generated diagram PNGs and keep raw API reports under `非公開/`.
+`--embed-diagram-parts` uploads lightweight-checked `図解パーツ/Sxx.png` files into a Drive `図解パーツ` folder and inserts them as dense center/right/lower reference visuals while keeping the template header, title, S番号, section/current-position text editable. Visually inspect only diagrams flagged by lightweight checks or explicit user request before export. For future course production this is the standard finished route; exporting without embedded diagrams is only a debugging/text-only review exception. Missing diagram files are warnings, not placeholders, and a deck with missing, sparse, or unembedded diagrams should not be treated as final. `--make-diagram-images-readable-by-link` is required because the Slides API fetches inserted images by URL; use it only for public-safe generated diagram PNGs and keep raw API reports under `非公開/`.
+
+Editable exports for future courses should preserve visible navigation: an agenda/overview slide near the beginning and section-start signpost slides for each major block. Diagram images should be wide and slightly vertically compact where possible, leaving room for editable title/current-position text instead of behaving like full-slide screenshots.
 
 `演習データ` の表計算は、回ごとに1つのGoogle Sheetsへまとめるのを標準とする。`--exercise-csv-as-sheets` を付けると、その回の `演習データ/` 内 CSV/TSV を1つのxlsxへ束ね（各CSV=1タブ）、ネイティブGoogle Sheets 1ファイルとしてアップロードする。CSVを1枚ずつ別スプレッドシートにしない。`.md` などCSV以外は個別ファイルのまま残す。既に旧方式（CSVごとの個別シートや生CSV）でアップロード済みのDriveを作り直すときは `--replace-exercise-sheets` を併用する。
 
@@ -384,6 +392,8 @@ python3 skills/gws-ai-training-slide-exporter/scripts/export_ai_training_slides_
 
 Useful options:
 
+- `--embed-diagram-parts`: required for finished editable/HTML-template exports. Uploads generated `図解パーツ/Sxx.png` and inserts them into the template.
+- `--allow-text-only-template-export`: debug-only exception. Allows a text-only editable template export without embedded diagrams; do not use for final decks.
 - `--root-folder-name "AI法人研修"`: default root folder name.
 - `--root-folder-id <drive-folder-id>`: use a known Drive folder instead of searching by name.
 - `--course-dir "講座/COURSE"` with `--all-sessions`: export every numbered session with slide images, scripts, slide outlines, and exercise data.
