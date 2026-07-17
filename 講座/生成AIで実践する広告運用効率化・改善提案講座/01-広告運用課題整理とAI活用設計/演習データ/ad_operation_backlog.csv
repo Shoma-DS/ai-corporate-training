@@ -1,0 +1,5 @@
+task_id,media,task,frequency,current_minutes,pain,ai_candidate,human_check
+AD-001,Google Ads,検索語句確認,週1回,45,除外判断が属人化,検索語句を分類,除外の妥当性
+AD-002,Meta Ads,広告文案作成,週2回,60,案出しに時間,コピー3案生成,個人属性表現
+AD-003,LINEヤフー,予算消化確認,週1回,30,月末に偏る,ペーシング表作成,増減額承認
+AD-004,GA4,月次報告,月1回,180,数字の転記が多い,要約下書き,差異と根拠

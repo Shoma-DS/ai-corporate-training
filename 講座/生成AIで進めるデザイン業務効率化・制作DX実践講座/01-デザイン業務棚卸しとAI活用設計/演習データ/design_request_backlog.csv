@@ -1,0 +1,5 @@
+request_id,department,asset_type,channel,frequency,current_minutes,main_issue,review_owner
+D-001,EC運用,SNS投稿画像,Instagram,週5本,45,サイズ展開と文言修正で手戻り,広報担当
+D-002,商品企画,商品説明画像,EC商品ページ,週20商品,20,素材探しと説明文統一に時間,商品企画リーダー
+D-003,店舗,店頭POP,A4印刷,月4枚,75,印刷サイズとWebサイズを別作成,店長
+D-004,営業,提案バナー,営業資料,月6本,60,ブランド色と表現確認が後回し,営業責任者

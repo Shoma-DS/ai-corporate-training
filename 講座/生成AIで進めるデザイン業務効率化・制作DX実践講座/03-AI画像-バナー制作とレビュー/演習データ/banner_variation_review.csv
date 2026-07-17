@@ -1,0 +1,4 @@
+variant_id,concept,appeal,readability,brand_fit,rights_risk,decision
+A,春らしい商品背景,高,中,中,要確認,修正して再確認
+B,商品を大きく見せる,中,高,高,低,採用候補
+C,セール感を強く出す,高,中,低,低,不採用

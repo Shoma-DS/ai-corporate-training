@@ -33,6 +33,20 @@ TOC_STRIP_Y = 384.0
 TOC_CHIP_H = 16.0
 TOC_STRIP_X = 26.0
 TOC_STRIP_RIGHT = 694.0
+# レイアウト標準（2026-07-07改訂・参照スライド p06001 実測値に準拠）:
+# ヘッダー行（講座名・回名・セクション名・Sxx）を1行に集約し、タイトルはヘッダー直下、
+# ヘッドラインは図解パーツ画像下部・目次ストリップ直上に「結論文」として配置する。
+# 図解パーツ画像自体のサイズ・位置（DIAGRAM_X/Y/W/H）は変更しない。
+# タイトル/ヘッドラインは図解パーツ画像の上に重ねて配置されるため、画像側の余白が
+# 不十分でも文字が確実に読めるよう、テキストの背後に不透明な白帯を敷く。
+HEADER_BG_X = 24.0
+HEADER_BG_Y = 6.0
+HEADER_BG_W = 672.0
+HEADER_BG_H = 60.0
+HEADLINE_BG_X = 24.0
+HEADLINE_BG_Y = 350.0
+HEADLINE_BG_W = 672.0
+HEADLINE_BG_H = 32.0
 BACKGROUND_IMAGE_RELPATH = Path("全体") / "素材" / "スライド背景ワイヤーフレーム.png"
 
 
@@ -116,7 +130,16 @@ def create_text_box(
     ]
 
 
-def create_line(object_id: str, page_id: str, *, x: float, y: float, w: float) -> list[dict[str, Any]]:
+def create_filled_rectangle(
+    object_id: str,
+    page_id: str,
+    *,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    color: dict[str, float],
+) -> list[dict[str, Any]]:
     return [
         {
             "createShape": {
@@ -126,7 +149,7 @@ def create_line(object_id: str, page_id: str, *, x: float, y: float, w: float) -
                     "pageObjectId": page_id,
                     "size": {
                         "width": {"magnitude": w, "unit": "PT"},
-                        "height": {"magnitude": 1.2, "unit": "PT"},
+                        "height": {"magnitude": h, "unit": "PT"},
                     },
                     "transform": {
                         "scaleX": 1,
@@ -142,9 +165,13 @@ def create_line(object_id: str, page_id: str, *, x: float, y: float, w: float) -
             "updateShapeProperties": {
                 "objectId": object_id,
                 "shapeProperties": {
-                    "shapeBackgroundFill": {"solidFill": {"color": {"rgbColor": TEAL}, "alpha": 1}}
+                    "shapeBackgroundFill": {"solidFill": {"color": {"rgbColor": color}, "alpha": 1}},
+                    "outline": {"propertyState": "NOT_RENDERED"},
                 },
-                "fields": "shapeBackgroundFill.solidFill.color,shapeBackgroundFill.solidFill.alpha",
+                "fields": (
+                    "shapeBackgroundFill.solidFill.color,shapeBackgroundFill.solidFill.alpha,"
+                    "outline.propertyState"
+                ),
             }
         },
     ]
@@ -342,6 +369,19 @@ def slide_requests(
             w=DIAGRAM_W,
             h=DIAGRAM_H,
         )
+    # ヘッダー行（講座名・回名・セクション名・Sxx）とタイトルは、図解パーツ画像の
+    # 上に重ねて配置される。画像側の余白が不十分でも文字を確実に読めるよう、
+    # 先に不透明な白帯を敷いてからテキストを描画する。図解画像自体のサイズ・
+    # 位置（DIAGRAM_X/Y/W/H）はここでは変更しない。
+    requests += create_filled_rectangle(
+        f"{prefix}_header_bg",
+        page_id,
+        x=HEADER_BG_X,
+        y=HEADER_BG_Y,
+        w=HEADER_BG_W,
+        h=HEADER_BG_H,
+        color=WHITE,
+    )
     requests += create_text_box(
         f"{prefix}_course",
         page_id,
@@ -357,8 +397,8 @@ def slide_requests(
         f"{prefix}_session",
         page_id,
         session_label,
-        x=26,
-        y=24,
+        x=198,
+        y=9.5,
         w=445,
         h=16,
         font_size=8.2,
@@ -381,47 +421,70 @@ def slide_requests(
         f"{prefix}_section",
         page_id,
         slide.section,
-        x=470,
-        y=31,
+        x=471,
+        y=15,
         w=218,
         h=17,
         font_size=7.4,
         color=GRAY,
     )
-    requests += create_line(f"{prefix}_line1", page_id, x=26, y=49, w=662)
     requests += create_text_box(
         f"{prefix}_title",
         page_id,
         slide.title,
-        x=31,
-        y=57,
+        x=27,
+        y=32,
         w=658,
         h=32,
         font_size=19,
         color=NAVY,
         bold=True,
     )
-    requests += create_text_box(
-        f"{prefix}_headline",
-        page_id,
-        slide.headline,
-        x=31,
-        y=89,
-        w=658,
-        h=30,
-        font_size=12.5,
-        color=TEAL,
-        bold=True,
-    )
-    if not diagram_url:
+    if diagram_url:
+        # ヘッドラインは図解パーツ画像下部・目次ストリップ直上に「結論文」として
+        # 重ねて配置する。同様に白帯を敷いてから描画する。
+        requests += create_filled_rectangle(
+            f"{prefix}_headline_bg",
+            page_id,
+            x=HEADLINE_BG_X,
+            y=HEADLINE_BG_Y,
+            w=HEADLINE_BG_W,
+            h=HEADLINE_BG_H,
+            color=WHITE,
+        )
+        requests += create_text_box(
+            f"{prefix}_headline",
+            page_id,
+            slide.headline,
+            x=51,
+            y=356,
+            w=617,
+            h=22,
+            font_size=12.5,
+            color=TEAL,
+            bold=True,
+        )
+    else:
+        requests += create_text_box(
+            f"{prefix}_headline",
+            page_id,
+            slide.headline,
+            x=31,
+            y=66,
+            w=658,
+            h=28,
+            font_size=12.5,
+            color=TEAL,
+            bold=True,
+        )
         requests += create_text_box(
             f"{prefix}_body",
             page_id,
             body,
             x=35,
-            y=124,
+            y=98,
             w=body_width,
-            h=252,
+            h=278,
             font_size=font_size,
             color=NAVY,
         )
@@ -657,7 +720,7 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
 
     course_dir = session_dir.parent
     session_no = SOURCE_BUILDER.session_no(session_dir)
-    session_title = SOURCE_BUILDER.SESSION_TITLES.get(session_no, session_dir.name.split("-", 1)[-1])
+    session_title = SOURCE_BUILDER.session_title_from_dir(session_dir)
     session_label = f"第{int(session_no)}回 {session_title}"
     deck_title = args.deck_title or session_dir.name
     slides, sections = SOURCE_BUILDER.build_slide_objects(session_dir)
@@ -715,7 +778,7 @@ def export_session(session_dir: Path, args: argparse.Namespace, root_folder: dic
                     page_id,
                     slide,
                     session_label,
-                    SOURCE_BUILDER.COURSE_TITLE,
+                    BASE.course_title(course_dir),
                     diagram_url=diagram_urls.get(slide.slide_id),
                     sections=sections,
                     background_url=background_url,

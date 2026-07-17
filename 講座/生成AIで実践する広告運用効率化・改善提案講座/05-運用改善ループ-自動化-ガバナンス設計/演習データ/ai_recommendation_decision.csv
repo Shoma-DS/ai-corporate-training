@@ -1,0 +1,4 @@
+recommendation_id,source,recommendation,decision,check
+R-001,Google,予算増額,保留,CV品質と月間上限
+R-002,Meta,Advantage+ creative適用,テスト,ブランドと表示崩れ
+R-003,AI要約,検索語句を除外,一部採用,LPとの関連性

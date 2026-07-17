@@ -4,12 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import html
+import json
+import mimetypes
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -19,6 +23,12 @@ HTML_NAME = "パンフレット.html"
 PDF_NAME = "パンフレット.pdf"
 LEGACY_MD_NAMES = ("パンフレット原稿.md", "パンフレット.md")
 PDF_CONVERTER = Path(__file__).resolve().with_name("html_to_pdf.py")
+LINK_INDEX_NAME = "Google_Driveリンク一覧.md"
+PRIVATE_UPLOAD_REPORT_DIR = ROOT / "非公開" / "pamphlet-drive-upload"
+
+
+class PamphletBuildError(RuntimeError):
+    pass
 
 
 def pamphlet_html_path(whole_dir: Path) -> Path:
@@ -67,6 +77,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--force-pdf", action="store_true", help="Regenerate PDF even when it is newer than HTML.")
     parser.add_argument("--browser", help="Browser executable for html_to_pdf.py.")
     parser.add_argument("--wait-ms", type=int, default=1000, help="Wait before printing PDF. Default: 1000.")
+    parser.add_argument(
+        "--upload-drive-root",
+        action="store_true",
+        help="Upload generated pamphlet HTML/PDF to the Google Drive course folder root.",
+    )
+    parser.add_argument(
+        "--drive-folder-id",
+        help="Google Drive course folder ID. If omitted, read 講座フォルダ from 全体/Google_Driveリンク一覧.md.",
+    )
+    parser.add_argument(
+        "--drive-link-index",
+        help="Specific Google_Driveリンク一覧.md path to read when resolving the course folder ID.",
+    )
+    parser.add_argument(
+        "--drive-report",
+        help="Private JSON report path for Drive upload results. Defaults to 非公開/pamphlet-drive-upload/.",
+    )
+    parser.add_argument("--dry-run-drive", action="store_true", help="Print/validate Drive upload actions without sending.")
     return parser.parse_args()
 
 
@@ -128,6 +156,212 @@ def needs_rebuild(source: Path, output: Path, *, force: bool) -> bool:
     if force or not output.exists():
         return True
     return source.stat().st_mtime >= output.stat().st_mtime
+
+
+def run_json(command: list[str], *, dry_run: bool = False) -> dict[str, Any]:
+    if dry_run:
+        print("$ " + " ".join(command))
+        return {}
+    proc = subprocess.run(command, text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise PamphletBuildError(
+            "Command failed:\n"
+            + " ".join(command)
+            + "\n\nSTDOUT:\n"
+            + proc.stdout
+            + "\nSTDERR:\n"
+            + proc.stderr
+        )
+    output = proc.stdout.strip()
+    if not output:
+        return {}
+    try:
+        return json.loads(output)
+    except json.JSONDecodeError as exc:
+        raise PamphletBuildError(f"Expected JSON from command: {' '.join(command)}\n{output}") from exc
+
+
+def gws(
+    *parts: str,
+    params: dict[str, Any] | None = None,
+    body: dict[str, Any] | None = None,
+    upload: Path | None = None,
+    upload_content_type: str | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    command = ["gws", *parts, "--format", "json"]
+    if params is not None:
+        command += ["--params", json.dumps(params, ensure_ascii=False)]
+    if body is not None:
+        command += ["--json", json.dumps(body, ensure_ascii=False)]
+    if upload is not None:
+        command += ["--upload", str(upload)]
+    if upload_content_type is not None:
+        command += ["--upload-content-type", upload_content_type]
+    return run_json(command, dry_run=dry_run)
+
+
+def drive_literal(value: str) -> str:
+    return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def upload_mime_type(path: Path) -> str:
+    explicit = {
+        ".html": "text/html",
+        ".htm": "text/html",
+        ".pdf": "application/pdf",
+        ".md": "text/markdown",
+        ".txt": "text/plain",
+        ".json": "application/json",
+    }
+    return explicit.get(path.suffix.lower()) or mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+
+
+def public_safe_path(path: Path) -> None:
+    if "非公開" in path.resolve().parts:
+        raise PamphletBuildError(f"Refusing to upload private file or folder: {path}")
+
+
+def relative_or_absolute(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT))
+    except ValueError:
+        return str(path.resolve())
+
+
+def extract_drive_folder_id(link_index: Path) -> str | None:
+    if not link_index.exists():
+        return None
+    for line in link_index.read_text(encoding="utf-8").splitlines():
+        if "講座フォルダ" not in line:
+            continue
+        match = re.search(r"https://drive\.google\.com/drive/folders/([A-Za-z0-9_-]+)", line)
+        if match:
+            return match.group(1)
+    text = link_index.read_text(encoding="utf-8")
+    match = re.search(r"講座フォルダ[\s\S]{0,200}?https://drive\.google\.com/drive/folders/([A-Za-z0-9_-]+)", text)
+    return match.group(1) if match else None
+
+
+def resolve_drive_folder_id(target: PamphletTarget, args: argparse.Namespace) -> str:
+    if args.drive_folder_id:
+        return args.drive_folder_id.strip()
+    link_index = resolve_path(args.drive_link_index) if args.drive_link_index else target.whole_dir / LINK_INDEX_NAME
+    folder_id = extract_drive_folder_id(link_index)
+    if folder_id:
+        return folder_id
+    raise PamphletBuildError(
+        "Drive folder ID not found. Pass --drive-folder-id or add 講座フォルダ to "
+        + relative_or_absolute(link_index)
+    )
+
+
+def find_existing_drive_file(name: str, parent_id: str, *, dry_run: bool) -> dict[str, Any] | None:
+    query = f"name = {drive_literal(name)} and {drive_literal(parent_id)} in parents and trashed = false"
+    result = gws(
+        "drive",
+        "files",
+        "list",
+        params={
+            "q": query,
+            "fields": "files(id,name,mimeType,webViewLink,modifiedTime)",
+            "pageSize": 10,
+            "supportsAllDrives": True,
+            "includeItemsFromAllDrives": True,
+        },
+        dry_run=dry_run,
+    )
+    files = result.get("files", [])
+    if dry_run:
+        return None
+    if not files:
+        return None
+    return {**files[0], "duplicateCount": len(files)}
+
+
+def upload_or_update_drive_file(path: Path, parent_id: str, *, dry_run: bool) -> dict[str, Any]:
+    public_safe_path(path)
+    existing = find_existing_drive_file(path.name, parent_id, dry_run=dry_run)
+    mime_type = upload_mime_type(path)
+    if existing:
+        drive_file = gws(
+            "drive",
+            "files",
+            "update",
+            params={
+                "fileId": existing["id"],
+                "fields": "id,name,mimeType,webViewLink,modifiedTime",
+                "supportsAllDrives": True,
+            },
+            body={"name": path.name},
+            upload=path,
+            upload_content_type=mime_type,
+            dry_run=dry_run,
+        )
+        action = "updated"
+        duplicate_count = existing.get("duplicateCount", 1)
+    else:
+        drive_file = gws(
+            "drive",
+            "files",
+            "create",
+            params={"fields": "id,name,mimeType,webViewLink,modifiedTime", "supportsAllDrives": True},
+            body={"name": path.name, "parents": [parent_id]},
+            upload=path,
+            upload_content_type=mime_type,
+            dry_run=dry_run,
+        )
+        action = "created"
+        duplicate_count = 0
+    if dry_run:
+        drive_file = {"id": f"DRYRUN-{path.stem}", "name": path.name, "mimeType": mime_type}
+    return {
+        "action": action,
+        "localPath": relative_or_absolute(path),
+        "mimeType": mime_type,
+        "driveFile": drive_file,
+        "duplicateCount": duplicate_count,
+    }
+
+
+def upload_pamphlet_to_drive(target: PamphletTarget, args: argparse.Namespace) -> dict[str, Any]:
+    folder_id = resolve_drive_folder_id(target, args)
+    files = [target.html_path]
+    warnings: list[str] = []
+    if target.pdf_path.exists():
+        files.append(target.pdf_path)
+    elif not args.no_pdf:
+        warnings.append(f"PDF missing, skipped upload: {relative_or_absolute(target.pdf_path)}")
+
+    uploads = []
+    for path in files:
+        if not path.exists():
+            warnings.append(f"File missing, skipped upload: {relative_or_absolute(path)}")
+            continue
+        uploads.append(upload_or_update_drive_file(path, folder_id, dry_run=args.dry_run_drive))
+
+    return {
+        "course": target.whole_dir.parent.name,
+        "wholeDir": relative_or_absolute(target.whole_dir),
+        "driveFolderId": folder_id,
+        "dryRun": bool(args.dry_run_drive),
+        "uploads": uploads,
+        "warnings": warnings,
+    }
+
+
+def write_drive_report(results: list[dict[str, Any]], args: argparse.Namespace) -> Path | None:
+    if not results:
+        return None
+    timestamp = dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).strftime("%Y%m%d-%H%M%S")
+    report_path = resolve_path(args.drive_report) if args.drive_report else PRIVATE_UPLOAD_REPORT_DIR / f"pamphlet-drive-upload-{timestamp}.json"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report = {
+        "generatedAt": dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).isoformat(),
+        "results": results,
+    }
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    return report_path
 
 
 def plain_heading(line: str) -> str:
@@ -560,9 +794,27 @@ def main() -> int:
         print("No pamphlet sources found.", file=sys.stderr)
         return 1
 
+    drive_results: list[dict[str, Any]] = []
     for target in targets:
         write_html_from_markdown(target, force=args.force_md)
         write_pdf(target, args)
+        if args.upload_drive_root:
+            drive_result = upload_pamphlet_to_drive(target, args)
+            drive_results.append(drive_result)
+            for upload in drive_result["uploads"]:
+                print(
+                    "Drive "
+                    + upload["action"]
+                    + " "
+                    + upload["localPath"]
+                    + " -> "
+                    + str(upload["driveFile"].get("id", ""))
+                )
+            for warning in drive_result["warnings"]:
+                print(f"warning: {warning}", file=sys.stderr)
+    report_path = write_drive_report(drive_results, args)
+    if report_path:
+        print(f"Drive report {relative_or_absolute(report_path)}")
     return 0
 
 

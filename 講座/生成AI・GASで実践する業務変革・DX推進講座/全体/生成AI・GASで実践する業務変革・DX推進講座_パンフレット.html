@@ -17,6 +17,7 @@
       --pale: #eaf4fb;
       --blue: #2a76a8;
       --navy: #123a5a;
+      --teal: #1f9f9a;
       --cyan: #2bbbd3;
       --orange: #f4a261;
       --soft-orange: #fff0e4;
@@ -70,87 +71,16 @@
       width: 100%;
       aspect-ratio: 5 / 2;
       border: 1px solid #cfdceb;
-      background:
-        linear-gradient(120deg, #f8fbff 0%, #eef7fb 56%, #123a5a 56%, #0e2c45 100%);
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 1.14fr .86fr;
-      gap: 14px;
-      padding: 18px 20px;
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .hero-kicker {
-      margin: 0 0 7px;
-      font-size: 9px;
-      font-weight: 800;
-      color: var(--blue);
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      color: #0f2842;
-      font-size: 23.5px;
-      line-height: 1.15;
-      letter-spacing: 0;
-    }
-
-    .hero-copy p {
-      font-size: 9.8px;
-      color: #294057;
-      margin-bottom: 9px;
-    }
-
-    .hero-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .hero-meta span {
-      border: 1px solid #b9d2e4;
       background: #ffffff;
-      color: var(--navy);
-      padding: 4px 7px;
-      font-size: 8.3px;
-      font-weight: 800;
+      margin-bottom: 16px;
+      overflow: hidden;
     }
 
-    .hero-map {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      align-content: center;
-    }
-
-    .hero-step {
-      min-height: 46px;
-      background: rgba(255, 255, 255, .96);
-      border-left: 4px solid var(--orange);
-      padding: 8px;
-      font-size: 8.1px;
-      font-weight: 800;
-      color: var(--navy);
-      box-shadow: 0 8px 20px rgba(6, 28, 47, .16);
-    }
-
-    .hero-step span {
+    .hero img {
       display: block;
-      margin-bottom: 2px;
-      color: #bf672d;
-      font-size: 7.5px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     h2 {
@@ -228,7 +158,7 @@
       width: 100%;
       border-collapse: collapse;
       margin: 8px 0 12px;
-      font-size: 8.8px;
+      font-size: 8.75px;
     }
 
     th {
@@ -354,6 +284,36 @@
       font-weight: 700;
     }
 
+    .dense-page {
+      padding-top: 13mm;
+    }
+
+    .dense-page h3 {
+      margin: 9px 0 4px;
+      font-size: 11.6px;
+    }
+
+    .dense-page h2 {
+      margin: 11px 0 5px;
+      font-size: 14.5px;
+    }
+
+    .dense-page table {
+      margin: 5px 0 8px;
+      font-size: 8.1px;
+      line-height: 1.42;
+    }
+
+    .dense-page th,
+    .dense-page td {
+      padding: 4px 5px;
+    }
+
+    .dense-page ul {
+      margin-bottom: 6px;
+      font-size: 9.1px;
+    }
+
     @media print {
       body {
         background: #fff;
@@ -371,50 +331,32 @@
 <body>
   <section class="page">
     <div class="hero">
-      <div class="hero-copy">
-        <p class="hero-kicker">eラーニング研修 / 業務変革・DX推進</p>
-        <h1>生成AI・GASで実践する<br>業務変革・DX推進講座</h1>
-        <p>業務課題整理からAs-Is/To-Be設計、要件定義、運用設計、KPI設計、改善提案までを一貫して扱う、実務アウトプット重視の講座です。</p>
-        <div class="hero-meta">
-          <span>全6回</span>
-          <span>標準学習時間 約12時間</span>
-          <span>要件定義・運用設計</span>
-          <span>導入提案書作成</span>
-        </div>
-      </div>
-      <div class="hero-map" aria-label="講座で扱う業務変革プロセス">
-        <div class="hero-step"><span>01</span>業務課題整理</div>
-        <div class="hero-step"><span>02</span>As-Is/To-Be設計</div>
-        <div class="hero-step"><span>03</span>要件定義</div>
-        <div class="hero-step"><span>04</span>AI/GAS実装設計</div>
-        <div class="hero-step"><span>05</span>ログ・例外処理</div>
-        <div class="hero-step"><span>06</span>KPI・改善提案</div>
-      </div>
+      <img src="パンフレット画像/表紙ヒーロー画像-20260709-30slide.png" alt="生成AI・GASで実践する業務変革・DX推進講座の表紙ビジュアル">
     </div>
 
-    <p class="lead">ツールの操作紹介ではなく、生成AI・GASを活用して業務変革を実践するための、課題整理、業務設計、自動化対象の切り分け、継続運用、改善提案までを学ぶ実践型講座です。</p>
+    <p class="lead">業務課題整理、フォーム・台帳設計、GAS自動化、Gemini/Gem活用、運用設計、KPI付き提案書作成までを6回でつなぐ、eラーニング型の実践講座です。</p>
 
-    <div class="tool-note">Google Workspace、GAS、Gemini/Gem、Meet文字起こしは、業務変革を進めるための手段として扱います。主役は、課題設定、業務フロー設計、要件定義、運用設計、継続改善です。</div>
+    <div class="tool-note">Google Workspace、GAS、Gemini/Gemは、業務変革を進めるための手段として扱います。主役は、課題設定、As-Is/To-Be設計、要件定義、運用設計、人の確認、継続改善です。</div>
 
     <h2>研修の目的</h2>
-    <p>中小企業でよく発生する、転記、集計、確認、受付管理、申請管理、日報回収、通知、期限管理、帳票作成、会議後のアクション整理などの反復業務を題材に、業務課題を整理し、生成AI・GASを組み込んだ改善策を自走して設計・提案できる人材を育成します。</p>
-    <p>単なる操作習得ではなく、業務フローの整理、データ項目の設計、自動化対象の切り分け、要件定義、Gem/Geminiによる分類・要約・返信案作成、GASによる処理設計、権限管理、ログ、例外対応、テスト、引き継ぎ、継続運用までを扱います。課金や管理者設定が必要な高度機能は必須演習から外し、利用環境に応じて実践できるAI活用を中心にします。</p>
+    <p>中小企業でよく発生する、転記、集計、確認、受付管理、申請管理、日報回収、通知、期限管理、会議後のアクション整理などの反復業務を題材に、生成AIとGASを業務フローへ組み込む力を育成します。</p>
+    <p>単なる操作習得ではなく、業務棚卸し、As-Is/To-Be設計、フォーム化対象の選定、台帳列定義、GASでの抽出・転記・ログ記録、Gem/Geminiによる分類・要約、AI出力レビュー、権限・保存・復旧手順、KPIと導入提案までを扱います。</p>
 
     <div class="two-col">
       <div class="box">
         <strong>対象者</strong>
         <ul>
           <li>中小企業の経営者、管理部門、営業事務、総務、経理、広報、現場管理者</li>
-          <li>現場の反復業務をDX改善テーマとして整理し、実装・運用まで進めたい方</li>
-          <li>生成AIやGASを、提案力向上と業務品質の安定に結びつけたい方</li>
+          <li>反復業務を整理し、AI/GAS活用の要件定義と運用設計まで進めたい方</li>
+          <li>属人化の解消、業務品質の安定、改善提案力の向上に取り組みたい方</li>
         </ul>
       </div>
       <div class="box">
         <strong>受講後にできること</strong>
         <ul>
-          <li>自社業務のAs-Is/To-Beを独力で整理し、自動化対象を切り分ける</li>
-          <li>入力、処理、出力、確認、保存、通知を含む業務フローを要件化する</li>
-          <li>ログ、例外処理、手動復旧、KPIを含めた導入提案を作成する</li>
+          <li>自社業務のAs-Is/To-Beを整理し、自動化候補を根拠つきで選定する</li>
+          <li>入力、処理、出力、確認、保存、通知、ログを含む業務フローを設計する</li>
+          <li>リスク、KPI、ロードマップを含む導入提案書として説明できる</li>
         </ul>
       </div>
     </div>
@@ -422,17 +364,17 @@
     <h2>研修の強み</h2>
     <div class="flow">
       <div>業務課題<br>整理</div>
-      <div>要件定義</div>
-      <div>データ・業務<br>フロー設計</div>
-      <div>AI/GAS<br>実装設計</div>
-      <div>運用設計</div>
+      <div>フォーム・台帳<br>設計</div>
+      <div>GAS<br>自動化</div>
+      <div>AI分類・要約<br>レビュー</div>
+      <div>運用・復旧<br>設計</div>
       <div>KPI・改善<br>提案</div>
     </div>
 
     <ul>
-      <li>中小企業の日常業務に近い題材で、業務課題から改善案、実装、運用、改善提案までを一連の流れで扱います。</li>
-      <li>Googleフォーム、スプレッドシート台帳、GAS、通知、帳票、Meet文字起こし整理は、To-Be業務フローを実現する部品として位置づけます。</li>
-      <li>利用できるAI機能と代替運用の両方を整理し、最終成果物として要件定義メモ、GASミニプロトタイプ、運用設計書、導入提案書を作成します。</li>
+      <li>6回すべてで成果物を作り、最終回では提案書骨子、KPI表、次アクションメモへ統合します。</li>
+      <li>フォーム、台帳、GAS、Gem/Geminiを単体で学ばず、入力から人の確認、ログ、改善まで一連の業務フローとして扱います。</li>
+      <li>課金や管理者設定に依存する高度機能は必須演習にせず、サンプルデータと代替手順で学習できる設計にしています。</li>
     </ul>
 
     <div class="footer">
@@ -455,53 +397,57 @@
       </tr>
       <tr>
         <td class="num">時間</td>
-        <td>6回、各120分、合計約12時間。2か月以内を目安に、実務演習と課題作成を組み合わせて進めます。</td>
+        <td>6回、各120分、合計約12時間。2か月以内を目安に、動画を一時停止しながら個人演習と成果物作成を進めます。</td>
       </tr>
       <tr>
         <td class="num">環境</td>
-        <td>検証用Googleアカウント、サンプルデータ、ダミー顧客情報を使用します。実在の顧客情報や社内固有情報は使いません。</td>
+        <td>検証用Googleアカウント、サンプルCSV、ダミー問い合わせ・日報・会議メモを使用します。実在の顧客情報、社員情報、社内固有資料は使いません。</td>
       </tr>
       <tr>
         <td class="num">成果物</td>
-        <td>業務棚卸しシート、As-Is/To-Be整理、要件定義メモ、業務データ設計、Gem設計書、Meet文字起こし活用メモ、GASミニプロトタイプ、運用設計書、リスクチェックリスト、KPI付き導入提案書。</td>
+        <td>業務棚卸しシート、As-Is/To-Be整理、改善候補選定表、フォーム設計表、管理台帳列定義、GASコード読み替えメモ、Gem設計書、AI出力レビュー表、運用設計書、リスクチェックリスト、提案書骨子、KPI表、次アクションメモ。</td>
       </tr>
     </table>
 
     <h2>よくある悩み・導入背景</h2>
     <div class="two-col">
       <div class="box">
-        <strong>業務の分断</strong>
-        <p>受付、管理、通知、保存、確認が個別作業のままで、業務フローとしてつながっていない。</p>
+        <strong>転記・集計の負担</strong>
+        <p>CSVやメール内容を目で確認し、Excelや台帳へ手入力しているため、少量でも毎月の作業時間が積み上がる。</p>
       </div>
       <div class="box">
-        <strong>属人化と確認漏れ</strong>
-        <p>担当者ごとの手作業に依存し、転記ミス、確認漏れ、対応遅れが起きやすい。</p>
+        <strong>入力形式のばらつき</strong>
+        <p>メール、電話、口頭、紙、Excelが混在し、後工程の集計、通知、AI分類、GAS処理に使いにくい。</p>
       </div>
       <div class="box">
-        <strong>フォーム活用の不足</strong>
-        <p>受付後の採番、通知、ステータス管理、保存、確認が手作業になっている。</p>
+        <strong>台帳が崩れる</strong>
+        <p>結合セル、空行、担当者ごとの列追加、自由記述の表記ゆれにより、関数・GAS・AIが正しく読めない。</p>
       </div>
       <div class="box">
-        <strong>改善が定着しない</strong>
-        <p>一度自動化しても、例外対応、担当者変更、ログ確認、改善会議まで設計できていない。</p>
+        <strong>自動化が定着しない</strong>
+        <p>作った後の権限、ログ、例外処理、手動復旧、後任者への引き継ぎまで設計できていない。</p>
       </div>
       <div class="box">
-        <strong>会議後の宿題が残る</strong>
-        <p>Meetの文字起こしや会議メモから、決定事項、担当者、期限、次回確認事項を台帳化したい。</p>
+        <strong>AI出力が不安</strong>
+        <p>分類や要約は便利でも、事実確認、機密情報、共有範囲、最終判断をどう運用するかが曖昧になる。</p>
+      </div>
+      <div class="box">
+        <strong>提案に落とせない</strong>
+        <p>試作はできても、KPI、リスク、ロードマップ、導入後の確認方法がなく、社内説明に進めない。</p>
       </div>
     </div>
 
     <div class="process-panel" aria-label="業務変革プロセス">
-      <strong>業務データ、通知、承認を、継続運用できる改善フローへ</strong>
+      <strong>今回のスライド構成に合わせた学習プロセス</strong>
       <div class="process-grid">
-        <div>課題と原因を<br>整理する</div>
-        <div>入力・処理・出力を<br>要件化する</div>
-        <div>AI/GASで扱う範囲を<br>切り分ける</div>
-        <div>人の確認工程を<br>設計する</div>
-        <div>ログ・例外処理を<br>組み込む</div>
-        <div>KPIと効果を<br>仮説化する</div>
-        <div>試行から本番化へ<br>段階化する</div>
-        <div>改善提案として<br>説明する</div>
+        <div>業務棚卸しと<br>改善候補選定</div>
+        <div>フォーム設計と<br>台帳列定義</div>
+        <div>GASで読む・選ぶ<br>書く・記録する</div>
+        <div>Gem/Geminiで<br>分類・要約する</div>
+        <div>AI/GAS/人の<br>責任を分ける</div>
+        <div>ログ・権限・復旧を<br>運用に組み込む</div>
+        <div>KPIと効果試算を<br>控えめに置く</div>
+        <div>提案書骨子と<br>次アクションにする</div>
       </div>
     </div>
 
@@ -509,10 +455,10 @@
     <ul class="checklist">
       <li>要求された業務改善作業を独力で整理・遂行できる</li>
       <li>対象業務の課題、原因、改善目的を説明できる</li>
-      <li>As-Is/To-Be、要件、対象データ、権限、更新頻度を整理できる</li>
-      <li>AI/GASで自動化する処理と人が確認する処理を切り分けられる</li>
-      <li>ログ、例外処理、エラー通知、手動復旧方法を設計できる</li>
-      <li>KPIと導入ステップを含む改善提案を作成できる</li>
+      <li>フォーム・台帳・GAS・AI・人の役割を切り分けられる</li>
+      <li>入力元、出力先、ログ、確認者、復旧手順を設計できる</li>
+      <li>AI出力を事実・推測・要確認・利用不可に分けてレビューできる</li>
+      <li>KPI、リスク、ロードマップを含む導入提案を作成できる</li>
     </ul>
 
     <div class="footer">
@@ -536,39 +482,39 @@
       <tbody>
         <tr>
           <td class="num">1</td>
-          <td>業務課題整理とAs-Is/To-Be設計</td>
-          <td>中小企業のDX課題、反復業務の棚卸し、AI/GASで置き換える範囲、As-Is/To-Be。</td>
-          <td>業務棚卸しシート、AI/GAS活用候補リスト</td>
+          <td>業務DXの基礎とGoogle Workspace活用設計</td>
+          <td>中小企業のDX動向、手作業の累積コスト、業務分類、As-Is/To-Be、優先順位マトリクス。</td>
+          <td>業務棚卸しシート、As-Is/To-Be整理、改善候補選定表</td>
         </tr>
         <tr>
           <td class="num">2</td>
-          <td>業務データ基盤と受付・台帳設計</td>
-          <td>受付、申請、日報のデータ項目、入力ルール、管理台帳、権限、保存設計。</td>
-          <td>受付フォーム、管理台帳、データ項目定義</td>
+          <td>業務データ基盤の設計</td>
+          <td>フォーム化対象ケース、設問設計、回答シートと管理台帳、入力規則、条件付き書式、権限・保存設計。</td>
+          <td>フォーム設計表、管理台帳列定義、台帳品質チェック、権限・保存設計メモ</td>
         </tr>
         <tr>
           <td class="num">3</td>
-          <td>GASによる業務プロセス自動化設計</td>
-          <td>業務ルールに基づく行取得、条件抽出、転記、集計、重複チェック、ログ設計。</td>
-          <td>スプレッドシート自動処理スクリプト</td>
+          <td>GASによる業務プロセス自動化</td>
+          <td>GASの位置づけ、JavaScript最小限、SpreadsheetApp、抽出・転記・集計・重複チェック、ログ、カスタムメニュー。</td>
+          <td>GASコード読み替えメモ、未対応行抽出・転記・ログ追記のミニプロトタイプ</td>
         </tr>
         <tr>
           <td class="num">4</td>
-          <td>生成AIを組み込んだ分類・要約・確認フロー設計</td>
-          <td>Gem設計、問い合わせ分類、返信案、日報要約、資料要約、GASコード読解、AI出力レビュー。</td>
-          <td>Gem設計書、Meet文字起こし活用メモ、AI活用プロンプト</td>
+          <td>Gem/Geminiを使った文書作成・分類・要約</td>
+          <td>AIの役割分担、情報管理、Gem設計7項目、問い合わせ分類、日報・Meet要約、Drive/Docs資料要約、AI出力レビュー。</td>
+          <td>Gem設計書、業務用プロンプト、AI出力レビュー表</td>
         </tr>
         <tr>
           <td class="num">5</td>
-          <td>AI/GAS活用の要件定義・運用設計</td>
-          <td>入力元、出力先、通知、帳票、AI活用範囲、例外処理、AI入力禁止、権限、ログ、復旧手順。</td>
-          <td>要件定義メモ、運用設計書、リスクチェックリスト</td>
+          <td>AI/GAS自動化の要件定義・運用設計</td>
+          <td>要件定義6項目、非対象範囲、責任分界点、方式選定、権限・制限、ログ、テストケース、復旧手順。</td>
+          <td>運用設計書、方式選定マトリクス、リスクチェックリスト</td>
         </tr>
         <tr>
           <td class="num">6</td>
-          <td>DX推進に向けたKPI設計・導入提案</td>
-          <td>KPI、削減時間試算、業務フロー、運用体制、導入ロードマップ、改善サイクル。</td>
-          <td>AI/GASミニプロトタイプ、導入提案書</td>
+          <td>AI業務効率化プロジェクト提案書の作成</td>
+          <td>ユースケース整理、プロトタイプ構成、KPI、効果試算、リスク、運用体制、ロードマップ、自己レビュー。</td>
+          <td>提案書骨子、KPI表、効果試算、次アクションメモ</td>
         </tr>
       </tbody>
     </table>
@@ -576,41 +522,37 @@
     <h2>演習テーマ例</h2>
     <div class="two-col">
       <div class="box">
-        <strong>問い合わせ管理</strong>
-        <p>問い合わせを一元管理し、生成AIで分類案と返信案を作り、人が確認して台帳へ戻す。</p>
+        <strong>業務棚卸し</strong>
+        <p>転記・集計・通知・確認漏れを棚卸しし、改善候補をA/B/Cで分類する。</p>
       </div>
       <div class="box">
-        <strong>反復処理の自動化</strong>
-        <p>CSV貼り付けデータを整形し、重複を検出し、未対応行だけ抽出する業務ルールを設計する。</p>
+        <strong>フォーム・台帳設計</strong>
+        <p>問い合わせや申請を1行1件で受け、管理台帳の基本列・ログ列・入力規則を設計する。</p>
       </div>
       <div class="box">
-        <strong>週次レポート</strong>
-        <p>日報や作業報告を部署別・担当者別・週別に集計し、生成AIで要約下書きを作る。</p>
+        <strong>GAS処理の読み替え</strong>
+        <p>シート名、列名、抽出条件、出力先、ログを自分の業務条件へ置き換える。</p>
       </div>
       <div class="box">
-        <strong>期限リマインド</strong>
-        <p>期限が近い対応項目を抽出し、通知、確認、再実行、手動復旧の運用を設計する。</p>
+        <strong>AI分類・要約</strong>
+        <p>問い合わせ、日報、Meet文字起こし、資料要約を、人の確認列を挟んで業務に戻す。</p>
       </div>
       <div class="box">
-        <strong>資料・議事録要約</strong>
-        <p>ダミー議事録や報告書から決定事項、確認事項、次アクションを抽出する。</p>
+        <strong>運用設計</strong>
+        <p>権限、保存場所、実行者、エラー時の復旧、代替運用を1枚の設計書にまとめる。</p>
       </div>
       <div class="box">
-        <strong>Meet文字起こし整理</strong>
-        <p>文字起こしDocsまたは配布テキストから、決定事項、宿題、担当者、期限を抽出し台帳へ戻す。</p>
-      </div>
-      <div class="box">
-        <strong>顧客フォロー</strong>
-        <p>架空フォロー台帳から次回提案、返信案、Calendar登録候補を作る。</p>
+        <strong>導入提案</strong>
+        <p>課題、To-Be、プロトタイプ、KPI、リスク、ロードマップを提案書骨子に整理する。</p>
       </div>
     </div>
 
     <h2>最終成果物</h2>
     <div class="kpi">
-      <div><b>Prototype</b><span>AI/GASミニプロトタイプ</span></div>
+      <div><b>Design</b><span>業務棚卸し、As-Is/To-Be、フォーム・台帳設計</span></div>
+      <div><b>Prototype</b><span>GASミニプロトタイプとGem/Gemini活用設計</span></div>
       <div><b>Operation</b><span>ログ・権限・復旧を含む運用設計書</span></div>
-      <div><b>Risk</b><span>AI入力禁止と通知・権限のチェックリスト</span></div>
-      <div><b>Proposal</b><span>KPIとロードマップを含む導入提案書</span></div>
+      <div><b>Proposal</b><span>KPIとロードマップを含む提案書骨子</span></div>
     </div>
 
     <div class="footer">
@@ -622,34 +564,36 @@
   <section class="page">
     <h2 class="section-title">3. 詳細カリキュラム</h2>
 
-    <h3>第1回: 業務課題整理とAs-Is/To-Be設計</h3>
+    <h3>第1回: 業務DXの基礎とGoogle Workspace活用設計</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>中小企業の業務DX</td><td>反復業務から始める小さなDX、今回扱う範囲と扱わない範囲</td><td class="time">20分</td></tr>
-      <tr><td>業務課題の可視化</td><td>Excel的な手作業、転記、集計、確認漏れ、属人化の洗い出し</td><td class="time">30分</td></tr>
-      <tr><td>As-Is/To-Be設計</td><td>現状業務フロー、理想業務フロー、関数・GAS・AI・人の確認の切り分け</td><td class="time">30分</td></tr>
-      <tr><td>改善候補の選定</td><td>効果、頻度、難易度、リスクで優先順位をつける</td><td class="time">20分</td></tr>
-      <tr><td>演習</td><td>自社または共通ケースの業務棚卸しシートを作る</td><td class="time">20分</td></tr>
+      <tr><td>オープニングと目的</td><td>3つの成果物、扱う業務範囲、自動化と人の確認を分ける判断軸</td><td class="time">15分</td></tr>
+      <tr><td>中小企業の業務DX動向</td><td>小さなDX、業務フロー整理とIT基盤の両輪、Gemini活用事例から見る成功条件</td><td class="time">15分</td></tr>
+      <tr><td>業務課題の可視化</td><td>Excel的な手作業、CSV整形観察、業務6分類、AI/GASに渡す前の情報管理</td><td class="time">30分</td></tr>
+      <tr><td>As-Is/To-Be設計</td><td>現状フローを5〜8ステップで言語化し、続けられる改善後の流れを描く</td><td class="time">30分</td></tr>
+      <tr><td>自動化候補の選定</td><td>自動化に向く業務、慎重に扱う業務、優先順位マトリクス、KPI仮置き</td><td class="time">20分</td></tr>
+      <tr><td>演習レビュー</td><td>講師記入例との自己レビュー、次回に持ち込む改善候補と台帳準備</td><td class="time">10分</td></tr>
     </table>
 
-    <h3>第2回: 業務データ基盤と受付・台帳設計</h3>
+    <h3>第2回: 業務データ基盤の設計</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>受付業務の全体像</td><td>問い合わせ、申請、アンケート、日報をフォーム化する考え方</td><td class="time">20分</td></tr>
-      <tr><td>Sheets設計</td><td>受付番号、ステータス、担当者、期限、更新日時、入力規則、集計項目</td><td class="time">30分</td></tr>
-      <tr><td>Forms/Gmail連携</td><td>受付フォーム、回答先シート、確認メール、担当者通知の整理</td><td class="time">25分</td></tr>
-      <tr><td>Drive設計</td><td>フォルダ構成、命名規則、テンプレート、権限管理</td><td class="time">25分</td></tr>
-      <tr><td>演習</td><td>受付・管理シートと通知設計メモを作る</td><td class="time">20分</td></tr>
+      <tr><td>導入とケース選定</td><td>第1回のA候補からフォーム化対象を1つ選び、フォーム・台帳・GASの役割を分ける</td><td class="time">15分</td></tr>
+      <tr><td>Googleフォーム設計</td><td>入力の入口、1設問1情報、自由記述の扱い、設問タイプ、回答先Sheetsの設定</td><td class="time">30分</td></tr>
+      <tr><td>回答シートと管理台帳</td><td>回答原本と処理用台帳の2層構造、基本列、ログ列、ID、ステータス、担当者、期限</td><td class="time">30分</td></tr>
+      <tr><td>台帳の品質管理</td><td>1行1件、1列1項目、マスタシート、入力規則、条件付き書式、集計式</td><td class="time">25分</td></tr>
+      <tr><td>権限・保存設計と演習</td><td>Drive保存場所、命名規則、共同編集の注意、GASで扱いやすい台帳の自己レビュー</td><td class="time">20分</td></tr>
     </table>
 
-    <h3>第3回: GASによる業務プロセス自動化設計</h3>
+    <h3>第3回: GASによる業務プロセス自動化</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>GASの基礎</td><td>Apps Scriptの役割、エディタ、実行、承認、ログ</td><td class="time">20分</td></tr>
-      <tr><td>Sheets自動化</td><td>データ取得、条件抽出、転記、集計、重複チェック、ステータス更新</td><td class="time">35分</td></tr>
-      <tr><td>カスタムメニュー</td><td>現場担当者が押せる実行ボタン、手動再実行</td><td class="time">20分</td></tr>
-      <tr><td>例外処理</td><td>空欄、重複、対象行なし、ログ、エラー通知</td><td class="time">25分</td></tr>
-      <tr><td>演習</td><td>未対応行抽出と転記のミニスクリプトを作る</td><td class="time">20分</td></tr>
+      <tr><td>導入とGASの位置づけ</td><td>GAS・Gemini・人の役割分担、業務選定と台帳設計から実装へつなげる考え方</td><td class="time">15分</td></tr>
+      <tr><td>JavaScript最小限</td><td>設定、取得、条件、出力、ログの読み順、ヘッダー名、日付・文字列・空欄の扱い</td><td class="time">20分</td></tr>
+      <tr><td>SpreadsheetApp基礎</td><td>スプレッドシート、シート、範囲、値の階層、まとめて読み書きする設計</td><td class="time">25分</td></tr>
+      <tr><td>Excel的処理の自動化</td><td>抽出条件、転記、集計、重複チェック、ステータス更新、ログ追記、戻れる設計</td><td class="time">35分</td></tr>
+      <tr><td>メニュー・エラー・権限</td><td>カスタムメニュー、try/catch、ログ見える化、正常系・異常系・権限の確認</td><td class="time">15分</td></tr>
+      <tr><td>演習とレビュー</td><td>シート名・列名・条件・出力先・ログを自分の業務へ読み替える</td><td class="time">10分</td></tr>
     </table>
 
     <div class="footer">
@@ -658,38 +602,41 @@
     </div>
   </section>
 
-  <section class="page">
+  <section class="page dense-page">
     <h2 class="section-title">4. 詳細カリキュラム</h2>
 
-    <h3>第4回: 生成AIを組み込んだ分類・要約・確認フロー設計</h3>
+    <h3>第4回: Gem/Geminiを使った文書作成・分類・要約</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>AI活用の位置づけ</td><td>GASは処理、生成AIは分類・要約・下書き、人は確認</td><td class="time">15分</td></tr>
-      <tr><td>資料・会議情報の整理</td><td>メール、資料、予定、Meet文字起こしの検索・要約・整理と代替手順</td><td class="time">20分</td></tr>
-      <tr><td>Gem設計</td><td>目的、役割、入力、出力形式、禁止事項、判断基準、参照範囲</td><td class="time">20分</td></tr>
-      <tr><td>業務ユースケース</td><td>問い合わせ分類、返信案、日報要約、資料要約、Meet文字起こし整理、GASコード読解</td><td class="time">25分</td></tr>
-      <tr><td>AI出力レビュー</td><td>事実、推測、要確認、利用不可、修正メモ</td><td class="time">20分</td></tr>
-      <tr><td>演習</td><td>業務用Gem設計書とAI活用プロンプトを作る</td><td class="time">20分</td></tr>
+      <tr><td>導入と役割分担</td><td>GASが処理、Gemini/Gemが分類・要約、人が確定判断を担う設計、情報管理の前提</td><td class="time">20分</td></tr>
+      <tr><td>Gemini/Gemの使いどころ</td><td>GeminiとGemの使い分け、Workspace連携と貼り付け運用、共有範囲と更新責任</td><td class="time">20分</td></tr>
+      <tr><td>Gem設計の型</td><td>目的、役割、入力、出力形式、禁止事項、判断基準、レビュー観点を持つ設計書</td><td class="time">25分</td></tr>
+      <tr><td>業務別ユースケース</td><td>問い合わせ分類、日報要約、Meet文字起こし要約、資料要約、GASコード読解</td><td class="time">25分</td></tr>
+      <tr><td>AI出力レビューと運用</td><td>事実、推測、要確認、利用不可の4分類、履歴・フィードバック・更新サイクル</td><td class="time">15分</td></tr>
+      <tr><td>演習とまとめ</td><td>Gem設計書、業務用プロンプト、AI出力レビュー表を作り、第5回の運用設計へ接続する</td><td class="time">15分</td></tr>
     </table>
 
-    <h3>第5回: AI/GAS活用の要件定義・運用設計</h3>
+    <h3>第5回: AI/GAS自動化の要件定義・運用設計</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>要件定義</td><td>対象業務、利用者、入力元、出力先、GAS処理、AI処理、利用できる機能と代替手順</td><td class="time">30分</td></tr>
-      <tr><td>フォーム通知・帳票</td><td>受付番号、確認メール、担当者通知、Drive保存、Docs差し込み</td><td class="time">25分</td></tr>
-      <tr><td>運用設計</td><td>AI入力禁止、ログ、出力レビュー、Meet文字起こし不可時の代替、エラー通知、手動復旧</td><td class="time">30分</td></tr>
-      <tr><td>制限とリスク</td><td>GASの割り当て制限、大量処理、送信上限、停止時の対応</td><td class="time">20分</td></tr>
-      <tr><td>演習</td><td>要件定義メモとリスクチェックリストを作る</td><td class="time">15分</td></tr>
+      <tr><td>導入と危機感</td><td>作って終わりで止まる理由、最悪ケース、運用設計書、定着の3原則</td><td class="time">15分</td></tr>
+      <tr><td>要件定義の分解</td><td>対象業務、利用者、入力元、出力先、GAS処理、AI処理、非対象範囲、承認条件</td><td class="time">30分</td></tr>
+      <tr><td>自動化方式の選定</td><td>手動実行、時間トリガー、フォーム送信トリガー、Gem/Gemini導入判断、方式選定マトリクス</td><td class="time">25分</td></tr>
+      <tr><td>権限・制限・情報管理</td><td>AI入力禁止、匿名化、共有範囲、Drive保存場所、GAS制限と導入時の公式確認</td><td class="time">20分</td></tr>
+      <tr><td>ログ・テスト・復旧</td><td>ログ設計、通知、空欄・重複・権限ミス・AI誤分類のテスト、手動復旧手順</td><td class="time">20分</td></tr>
+      <tr><td>演習と次回接続</td><td>運用設計書とリスクチェックリストを作り、第6回の提案書へ転用する</td><td class="time">10分</td></tr>
     </table>
 
-    <h3>第6回: DX推進に向けたKPI設計・導入提案</h3>
+    <h3>第6回: AI業務効率化プロジェクト提案書の作成</h3>
     <table>
       <tr><th>大項目</th><th>小項目</th><th class="time">時間</th></tr>
-      <tr><td>提案書の構成</td><td>背景、課題、対象業務、To-Be、AI/GAS活用構成、運用体制</td><td class="time">20分</td></tr>
-      <tr><td>KPIと効果試算</td><td>削減時間、対応速度、ミス削減、品質安定、費用対効果</td><td class="time">25分</td></tr>
-      <tr><td>ロードマップ</td><td>試行、本番化、教育、運用、改善の段階設計</td><td class="time">25分</td></tr>
-      <tr><td>発表・レビュー</td><td>作業風景、ミニプロトタイプ、運用設計、リスク、導入効果の説明</td><td class="time">40分</td></tr>
-      <tr><td>振り返り</td><td>自社導入に向けた次のアクション整理</td><td class="time">10分</td></tr>
+      <tr><td>提案書の考え方</td><td>提案書を成果物紹介ではなく、導入判断の材料として設計する</td><td class="time">15分</td></tr>
+      <tr><td>課題整理とユースケース選定</td><td>誰のどの業務を何のために改善するか、課題3点、As-Is/To-BeとGap</td><td class="time">20分</td></tr>
+      <tr><td>プロトタイプと技術構成</td><td>完成品ではなく判断材料としてのプロトタイプ、入力・処理・出力・確認の構成表</td><td class="time">20分</td></tr>
+      <tr><td>KPIと効果試算</td><td>導入後に測るKPI、控えめな効果試算、測定項目、仮数値、確認時期</td><td class="time">20分</td></tr>
+      <tr><td>リスク・運用・ロードマップ</td><td>情報管理、誤分類、権限、停止、属人化、運用体制、小さく試して広げる3段階</td><td class="time">25分</td></tr>
+      <tr><td>提案書骨子と自己レビュー</td><td>8セクションの提案書骨子、KPI表、次アクションメモ、自己レビュー8観点</td><td class="time">15分</td></tr>
+      <tr><td>講座後の実践計画</td><td>6回分の成果物をつなぎ、小さな試行から現場展開までの次アクションへ移す</td><td class="time">5分</td></tr>
     </table>
 
     <h2>注意事項</h2>
@@ -697,8 +644,9 @@
       <li>顧客情報、社員情報、契約情報などは演習で扱わず、ダミーデータまたは匿名化データを使います。</li>
       <li>Gemini/Gem、GeminiのGoogle Workspace連携、Meet文字起こしは、利用環境に応じて説明できる業務AI活用として扱い、課金や管理者設定が必要な高度機能は必須演習にしません。</li>
       <li>Gemini連携やMeet文字起こしが使えない場合も、Sheets、Forms、GAS、Gemへの貼り付け、配布文字起こしテキスト、ダミーデータで同じ業務フローを再現します。</li>
-      <li>GASには実行時間やサービス利用回数などの制限があるため、大量処理や基幹業務の本番利用は別途設計・検証が必要です。</li>
-      <li>通知や帳票作成を自動化する場合も、重要な送信・承認には人の確認工程を入れます。</li>
+      <li>GASには実行時間、送信数、サービス利用回数、権限・スコープなどの制限があるため、導入時は最新の公式情報と社内ルールを確認します。</li>
+      <li>通知や帳票作成、AI分類を自動化する場合も、重要な送信・承認・確定判断には人の確認工程を入れます。</li>
+      <li>本パンフレットには価格、申込先、助成率、申請期限など変わり得る情報を固定していません。提出・公開時は最新情報を確認してください。</li>
     </ul>
 
     <div class="footer">

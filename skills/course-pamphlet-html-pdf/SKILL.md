@@ -25,6 +25,8 @@ This is a downstream helper. For course creation, start from `skills/corporate-t
 - Public-facing learner outcome headings should be learner-centered, such as `本講座受講後の到達点`, not screening-centered labels such as `レベル3相当の評価観点`.
 - Curriculum tables must total the stated session duration. In the standard six-session format, each session should total 120 minutes and the course should total about 12 hours.
 - Do not write private company materials, actual prices, contact details, Canva URLs, Drive URLs, credentials, or customer-specific notes into public HTML/PDF outputs.
+- When the user asks for Drive delivery, upload both `<講座名>_パンフレット.html` and `<講座名>_パンフレット.pdf` to the Google Drive course folder root with `--upload-drive-root`. The script resolves the course folder ID from `全体/Google_Driveリンク一覧.md` line `講座フォルダ`; use `--drive-folder-id` only when that index is missing or stale.
+- Drive upload updates an existing same-name file in that course root instead of creating another duplicate. Upload reports, Drive file IDs, and API response details are written under `非公開/pamphlet-drive-upload/` by default. Do not add pamphlet Drive URLs to public files unless the user explicitly asks for a shareable link index update.
 
 ## Commands
 
@@ -39,6 +41,25 @@ Build one course:
 ```bash
 python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py \
   --course-dir '講座/COURSE'
+```
+
+Build one course and upload the refreshed HTML/PDF to the Google Drive course folder root:
+
+```bash
+python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py \
+  --course-dir '講座/COURSE' \
+  --force-pdf \
+  --upload-drive-root
+```
+
+If `全体/Google_Driveリンク一覧.md` is not available or the course folder changed, pass the folder explicitly:
+
+```bash
+python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py \
+  --course-dir '講座/COURSE' \
+  --force-pdf \
+  --upload-drive-root \
+  --drive-folder-id 'GOOGLE_DRIVE_COURSE_FOLDER_ID'
 ```
 
 Force migration from legacy Markdown to HTML and regenerate PDF:
@@ -68,7 +89,8 @@ After generation:
 5. For submission artifacts, read the PDF as a reviewer would and confirm the course purpose, target learners, delivery/LMS management, curriculum, exercises, outputs, and precautions are understandable without scripts.
 6. Run `git diff --check`.
 7. Run `python3 scripts/validate_local_skills.py` if skill files changed.
-8. Before commit or push, confirm no `非公開/`, source PDFs, `.DS_Store`, credentials, real contact details, or private URLs are staged.
+8. If `--upload-drive-root` was used, confirm the private report under `非公開/pamphlet-drive-upload/` lists both HTML and PDF as `created` or `updated`, and that no duplicate same-name pamphlet files were intentionally created.
+9. Before commit or push, confirm no `非公開/`, source PDFs, `.DS_Store`, credentials, real contact details, or private URLs are staged.
 
 ## Notes
 

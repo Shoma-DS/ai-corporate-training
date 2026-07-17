@@ -1,0 +1,4 @@
+week,issue,signal,ai_suggestion,human_decision,reason
+W1,CPA急騰,検索語句に広い流入,除外候補を追加,一部採用,CV品質を確認後
+W2,Meta CTR低下,同じ素材の表示増,新素材3案を作成,採用,ブランド基準内
+W3,予算消化過多,月末見込み超過,日予算を抑制,承認待ち,責任者確認が必要

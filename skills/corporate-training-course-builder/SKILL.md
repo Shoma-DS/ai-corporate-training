@@ -19,7 +19,7 @@ Use this skill as the single production entrypoint for course creation. Other lo
 
 - Production source of truth: this skill and `references/session-production-workflow.md`.
 - Export helper: `skills/gws-ai-training-slide-exporter/SKILL.md` is used only after local materials and either `スライド画像/Sxx.png` for image-first decks or `Googleスライド編集用アウトライン.md` plus optional `図解パーツ/Sxx.png` for editable Google Slides decks exist, for Google Slides, Google Drive, PPTX, and Canva-ready bundles.
-- Pamphlet helper: `skills/course-pamphlet-html-pdf/SKILL.md` is used when course-level pamphlet content must be authored, migrated from legacy Markdown, or converted to client-ready PDF.
+- Pamphlet helper: `skills/course-pamphlet-html-pdf/SKILL.md` is used when course-level pamphlet content must be authored, migrated from legacy Markdown, converted to client-ready PDF, or uploaded to the Google Drive course folder root.
 - Workflow planning helper: `skills/codex-dynamic-workflows/SKILL.md` is used only when a task is large enough to require explicit packets, approvals, or reusable orchestration notes.
 - Image generation helper: the system `imagegen` skill is used for final bitmap slide images and supplemental diagram parts. In this repository, image generation means Codex App Server / GPT image 2 through the `imagegen` skill; if the user writes `imagen`, treat it as this same `imagegen` skill path. Do not use or request `OPENAI_API_KEY`, OpenAI API CLI fallback, one-off SDK scripts, or API-key checks for normal course image generation unless the user explicitly asks for API/CLI mode. If image files are not found where expected, troubleshoot the Codex App Server / `imagegen` save path and file movement, not an API-key fallback. This does not replace this course workflow.
 - If a user gives a broad creation request, do not jump directly to an export, Canva, browser, or subagent helper. First run this course workflow, then invoke helpers only at the matching phase.
@@ -114,6 +114,49 @@ For the current `isometric-corporate-clean` style, keep the visual direction cle
 ## Dense Slide Image Standard
 
 All future slide images and editable-template diagram/reference images in this repository must match the recent S02 "導入判断キャンバス" and S04 "DXは大きなシステム導入だけではない" samples as the minimum visual and information-density benchmark. This applies to every course, not only Google Workspace/GAS.
+
+### Fixed Layout Wireframe Standard (2026-07-08 revision, default for all courses)
+
+Full-raster one-image-per-slide generation (`画像生成プロンプト.md` → `スライド画像/Sxx.png`) is the default course-image workflow. Every single-slide generation call must attach the reference layout image at `skills/corporate-training-course-builder/references/assets/講座スライドレイアウトワイヤフレーム.png` as an actual image input to the generator (not only described in text), so every slide across every course reproduces the same band layout, proportions, and rule weights. This replaced an earlier attempt at unreferenced full-raster generation, which drifted in layout from slide to slide; attaching the reference image measurably fixed that drift (verified 2026-07-08 on 中小企業AIエージェント導入・定着化実践講座 session 1, S01).
+
+The wireframe defines six fixed zones on every slide:
+
+- Top-left band: 講座タイトル (course title).
+- Top-right band: スライド番号 / 全体の枚数 (e.g. `S04 / 28`).
+- Full-width bordered bar under the header: スライド見出し (slide title, bold).
+- Large central area: 図解 (the dense content — tables, cards, process flow, checklist; this is where the 3-8 content blocks from the Dense Slide Image Standard go).
+- Bottom bar above the TOC strip: 今回のまとめ (a left label plus a right-side So What / conclusion / next-action sentence — this is the slide's headline).
+- Bottom-most strip: 目次見出し chips, one per session chapter, current chapter filled/highlighted, others white with a thin border. Chip labels must be rendered as plain text only — never add a decoration character (e.g. a star) to mark the current chip; highlighting must come from fill color only, per the current-chip instruction in the generated prompt.
+
+Use `scripts/rebuild_gws_high_density_image_prompts.py --course-dir <course> [--session NN]` to (re)build `画像生成プロンプト.md` from `スライド案.md` in this format; it already embeds the wireframe path and per-slide zone text (title/number/headline/TOC chips/current chip) into every slide's prompt block. Deliver with `skills/gws-ai-training-slide-exporter/scripts/export_full_raster_slides_per_image_to_gws.py --session-dir <session> --replace-existing-decks ...` (uploads each `スライド画像/Sxx.png` individually and places one full-bleed image per Slides page), not the editable-template exporter, unless a reviewer specifically needs Google Slides-editable text (see `references/editable-google-slides-workflow.md` for that narrower case). Prefer the per-image exporter over the older `export_ai_training_slides_to_gws.py` (which bundles all slides into one PPTX and uploads it in a single large request) — on unstable networks the single large upload fails repeatedly with TLS/connection errors, while per-image uploads (a few MB each) succeed and can resume (already-uploaded files are skipped on retry).
+
+### Chapter Divider Hero Standard (2026-07-08, mandatory for 章見出し/現在位置 slides)
+
+章見出し/現在位置 (chapter-divider / TOC-transition) slides do **not** use the Fixed Layout Wireframe Standard above. They use a distinct, deliberately sparse full-bleed "hero" layout so the chapter change is felt, not just read. `scripts/rebuild_gws_high_density_image_prompts.py` already detects divider slides (title contains `章見出し` or `現在位置`) and emits a separate hero prompt (`build_hero_prompt`) instead of the wireframe prompt — no code changes are needed to use this, just regenerate `画像生成プロンプト.md`.
+
+The hero image drops the reference-wireframe attachment (no course-title/S-number header band, no TOC strip, no bordered title bar) and instead:
+
+- Shows the current chapter's number and name at roughly half the canvas height, the dominant element of the slide (e.g. a giant "1" plus "オープニングと本日の目的").
+- Adds a small progress marker near it (`1 / 6`).
+- Shows the next chapter name small, in a corner, with a subtle "NEXT →" cue; shows the previous chapter (if any) even smaller or omits it.
+- Keeps the course title and Sxx number tiny in a corner, not as a header band.
+- Uses navy/teal geometric accents (diagonal bands, large ghost numerals) for visual drama, not information density — no tables, cards, checklists, or industry examples on these slides.
+
+This reversed an earlier version where divider slides reused the same dense wireframe as content slides with only the diagram-zone content simplified; the user found that insufficiently dramatic and asked for the whole slide converted to a full-bleed hero (confirmed 2026-07-08 on GAS course sessions 1–2, e.g. session 1 S04).
+
+### Export-Method Consistency And Legacy Artifact Cleanup (2026-07-15, mandatory)
+
+A session's slide-generation method (Fixed Layout Wireframe Standard full-raster vs. the narrower editable-google-slides-workflow) can change over the life of a course. When it does, fixing local files is not the completion criterion — the delivered Google Slides deck must match. This rule exists because a real incident happened: GAS course sessions 1-6 were locally rebuilt to full-raster (30 images each, no missing chapter dividers) on 2026-07-08~13, but the Drive decks the client was actually reviewing were never re-exported and stayed on the old editable-template export (`export_editable_ai_training_slides_to_gws.py`), which overlays a white band and text boxes on top of the diagram image. The client saw overlapping/hidden text and missing chapter-divider slides that had already been fixed locally weeks earlier, because the fix never reached Drive (confirmed 2026-07-15).
+
+- When a session's generation method changes (e.g., editable-template → full-raster retrofit), re-export the Drive deck with the current method's exporter (`export_full_raster_slides_per_image_to_gws.py ... --replace-existing-decks` for the full-raster path) in the same work session as the local rebuild. Do not report the fix as done until the Drive deck itself has been confirmed re-exported — a local-only fix is incomplete.
+- Once a session is fully on the Fixed Layout Wireframe Standard, delete that session's leftover `Googleスライド編集用アウトライン.md`, `図解パーツ生成プロンプト.md`, and `図解パーツ/` (even if empty). Leaving these files around after the session no longer uses them reads as ambiguous about which method is current and invites drift back to the wrong exporter.
+- Never let a slide end up with both a full-bleed generated image and a separately placed Google Slides text box for the same title/heading/TOC content — that combination is exactly the "leftover text box placed after the fact" defect. If any slide needs an editable text box, the whole slide must be on the editable-template path (`references/editable-google-slides-workflow.md`), not a full-raster image with a box on top.
+- Chapter-divider (章見出し/現在位置) slides must exist for every chapter shown in the session's TOC strip, not just the first and last. A session with `n/m` numbering must have all of `1/m` through `m/m` generated and exported — partial divider sets (e.g., only chapter 1 and the final chapter) are incomplete even if the total slide count target (e.g., "30 slides") was met by dropping the missing dividers.
+
+Verification for this rule (add to the Completion Checklist and run before telling the client a fix is done):
+- For each session, check whether `Googleスライド編集用アウトライン.md` / `図解パーツ生成プロンプト.md` / `図解パーツ/` exist; if the session is on full-raster, these must not exist.
+- Compare the Drive deck's actual page count (`gws slides presentations get`) against local `スライド画像/` file count; a mismatch means Drive was not re-exported after the last local rebuild.
+- Extract every `章見出し/現在位置` slide title across the session's `スライド案.md`/`画像生成プロンプト.md`, confirm the `n/m` sequence has no gaps, and confirm the exported Drive deck has the same count.
 
 A production-ready slide image normally includes:
 
@@ -237,7 +280,7 @@ Good differentiation examples:
 13. Use the `imagegen` skill and its rules for raster slide images. Save final images in the target session's `スライド画像/Sxx.png`.
     - For generated training slide images, use Codex App Server / GPT image 2 through the `imagegen` skill as a complete bitmap image. Do not create SVG, HTML, CSS, canvas, browser screenshots, or local conversion outputs as slide-image intermediates.
     - Run lightweight checks on all generated images against the Dense Slide Image Standard, and visually inspect only images flagged by those checks or specifically requested by the user. If an inspected image is too sparse, has wrong Japanese text, contains placeholders, loses the exercise/output/risk block, or looks like a blank template, mark it rejected and regenerate the whole image.
-14. For course-level pamphlets, create or update `全体/<講座名>_パンフレット.html` as the source of truth and generate `全体/<講座名>_パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration and HTML-to-PDF conversion. Do not create new pamphlets as Markdown-first deliverables.
+14. For course-level pamphlets, create or update `全体/<講座名>_パンフレット.html` as the source of truth and generate `全体/<講座名>_パンフレット.pdf` before delivery. Use `skills/course-pamphlet-html-pdf/SKILL.md` for legacy Markdown migration, HTML-to-PDF conversion, and Drive-root upload when requested. Do not create new pamphlets as Markdown-first deliverables.
 15. Verify text accuracy, slide count, per-session time totals, theme-specific differentiation, asset paths, selected template usage, pamphlet HTML/PDF existence, public-safety constraints, and that scripts/slides/handouts agree.
     - For submission-facing materials, review the pamphlet and slides without reading `講師台本.md`. If the course content is not understandable from those two artifacts alone, revise the slides/pamphlet before delivery.
 
@@ -336,10 +379,16 @@ Course pamphlets are client-facing submission artifacts, so they must be availab
 - When a generated raster header image is used, inspect the saved image and the regenerated PDF visually enough to confirm that the header image appears, the Japanese title/subtitle are readable, and no placeholder, fake logo, stale course name, or mojibake remains.
 - Search the final HTML/PDF text for stale public-facing delivery words such as `オンラインワークショップ`, `ハイブリッド`, and stale screening labels such as `レベル3相当の評価観点`.
 - Existing `パンフレット原稿.md` or `パンフレット.md` files are legacy migration sources. If their content changes, run the pamphlet helper to regenerate HTML and PDF.
+- When the user asks for Drive delivery, run the pamphlet helper with `--upload-drive-root` after PDF generation. It reads `全体/Google_Driveリンク一覧.md` to find the `講座フォルダ`, uploads both HTML and PDF to that Drive course-folder root, updates same-name files instead of creating duplicates, and stores response details in `非公開/pamphlet-drive-upload/`.
 - Standard build command:
 
 ```bash
 python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py --course-dir '講座/COURSE'
+```
+- Standard build-and-Drive-upload command:
+
+```bash
+python3 skills/course-pamphlet-html-pdf/scripts/build_pamphlets.py --course-dir '講座/COURSE' --force-pdf --upload-drive-root
 ```
 - Do not put prices, application contacts, customer-specific notes, private URLs, Canva URLs, Drive URLs, credentials, or unpublished internal details into public pamphlet HTML/PDF.
 
@@ -516,3 +565,6 @@ Before finishing, confirm:
 - スライド切替タイムライン表が末尾に整理されているか
 - 作業風景タイムライン表（番号・タイトル・⏱ 時間・操作概要）が末尾にあるか
 - 有料プラン・管理者設定が必要な機能を「必須演習」にしていないか
+- 各回に方式2(編集可能テンプレート方式)由来の `Googleスライド編集用アウトライン.md`・`図解パーツ生成プロンプト.md`・`図解パーツ/` が残っていないか(方式1へ全面移行済みの回の場合)
+- Drive上のGoogle Slidesの実ページ数(`gws slides presentations get`)がローカル`スライド画像/`枚数と一致しているか。ローカルだけ直してDriveが未反映のまま「対応完了」にしていないか
+- 各回の「章見出し/現在位置」スライドが `1/m` から `m/m` まで欠番なく揃っているか(目次の途中だけ省略されていないか)、Drive上のデッキにも同じ枚数が反映されているか

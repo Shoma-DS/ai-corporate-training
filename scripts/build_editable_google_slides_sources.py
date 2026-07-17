@@ -17,14 +17,9 @@ from pathlib import Path
 COURSE_DIR = Path("講座/生成AI・GASで実践する業務変革・DX推進講座")
 COURSE_TITLE = "生成AI・GASで実践する業務変革・DX推進講座"
 
-SESSION_TITLES = {
-    "01": "業務DXの基礎とGoogle Workspace活用設計",
-    "02": "業務データ基盤の設計",
-    "03": "GASによる業務プロセス自動化",
-    "04": "Gem/Geminiを使った文書作成・分類・要約",
-    "05": "AI/GAS自動化の要件定義・運用設計",
-    "06": "AI業務効率化プロジェクト提案書の作成",
-}
+
+def session_title_from_dir(session_dir: Path) -> str:
+    return session_dir.name.split("-", 1)[-1]
 
 
 @dataclass
@@ -198,7 +193,7 @@ def build_slide_objects(session_dir: Path) -> tuple[list[Slide], list[SectionRan
 
 def write_editable_outline(session_dir: Path, slides: list[Slide], sections: list[SectionRange]) -> None:
     no = session_no(session_dir)
-    session_title = SESSION_TITLES.get(no, session_dir.name.split("-", 1)[-1])
+    session_title = session_title_from_dir(session_dir)
     generated_at = dt.datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
     lines = [
         f"# 第{int(no)}回 Google Slides編集用アウトライン",
@@ -416,7 +411,7 @@ def diagram_source_text(slide: Slide, max_chars: int = 3000) -> str:
 
 def write_diagram_prompts(session_dir: Path, slides: list[Slide], sections: list[SectionRange]) -> None:
     no = session_no(session_dir)
-    session_title = SESSION_TITLES.get(no, session_dir.name.split("-", 1)[-1])
+    session_title = session_title_from_dir(session_dir)
     generated_at = dt.datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
     lines = [
         f"# 第{int(no)}回 図解パーツ生成プロンプト",
@@ -569,7 +564,7 @@ def write_course_report(session_results: list[tuple[Path, list[Slide], list[Sect
     ]
     for session_dir, slides, sections, warnings in session_results:
         no = session_no(session_dir)
-        session_title = SESSION_TITLES.get(no, session_dir.name.split("-", 1)[-1])
+        session_title = session_title_from_dir(session_dir)
         files = "`Googleスライド編集用アウトライン.md`, `図解パーツ生成プロンプト.md`"
         warning_text = "<br>".join(warnings) if warnings else "なし"
         lines.append(f"| {int(no)} | {session_title} | {len(slides)} | {len(sections)} | {files} | {warning_text} |")
@@ -590,13 +585,26 @@ def write_course_report(session_results: list[tuple[Path, list[Slide], list[Sect
 
 
 def main() -> None:
+    global COURSE_DIR, COURSE_TITLE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--session",
         default=None,
         help="対象セッション番号（例: 01）。省略時は全セッションを再生成する。",
     )
+    parser.add_argument(
+        "--course-dir",
+        default=str(COURSE_DIR),
+        help="対象講座ディレクトリ（例: 講座/中小企業AIエージェント導入・定着化実践講座）。省略時はGAS講座。",
+    )
+    parser.add_argument(
+        "--course-title",
+        default=None,
+        help="講座名。省略時は --course-dir のフォルダ名から補完する。",
+    )
     args = parser.parse_args()
+    COURSE_DIR = Path(args.course_dir)
+    COURSE_TITLE = args.course_title or COURSE_DIR.name
     if not COURSE_DIR.is_dir():
         raise SystemExit(f"Missing course dir: {COURSE_DIR}")
     session_results: list[tuple[Path, list[Slide], list[SectionRange], list[str]]] = []

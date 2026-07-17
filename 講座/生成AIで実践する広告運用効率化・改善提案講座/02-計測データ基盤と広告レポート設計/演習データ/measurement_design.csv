@@ -1,0 +1,5 @@
+event_name,business_meaning,tool,use_for_bidding,privacy_note
+page_view_lp,LP到達,GA4,いいえ,個人情報なし
+add_to_cart,購入意向,GA4,補助指標,Cookie同意を確認
+purchase,購入,Google Ads/GA4,はい,拡張CVは社内承認後
+lead_submit,問い合わせ,Google Ads/GA4,はい,顧客情報は最小化
