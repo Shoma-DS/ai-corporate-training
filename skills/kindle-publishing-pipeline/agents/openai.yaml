@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kindle Publishing Pipeline"
+  short_description: "KDP向け原稿・表紙・提出準備を組み立てる"
+  default_prompt: "Use $kindle-publishing-pipeline to create a KDP-ready book project from my manuscript idea."
