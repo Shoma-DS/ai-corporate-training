@@ -1,0 +1,4 @@
+interface:
+  display_name: "研修アイデア管理"
+  short_description: "講座ネタを分類してGitHub Projectへ登録"
+  default_prompt: "Use $training-idea-project-manager to classify this training idea and add it to the GitHub Project."
