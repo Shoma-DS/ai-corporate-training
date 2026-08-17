@@ -1,0 +1,4 @@
+interface:
+  display_name: "事業展開等リスキリング講座制作"
+  short_description: "職務直結型の講義用スライドと制度対応パンフレットを制作"
+  default_prompt: "Use $business-expansion-reskilling-builder to create a role-specific reskilling course with lecture-friendly slides and a compliant pamphlet."

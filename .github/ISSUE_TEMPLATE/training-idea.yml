@@ -1,0 +1,57 @@
+name: 研修アイデア
+description: 公開可能な講座案・教材ネタ・制度対応を登録します
+title: "[研修アイデア] "
+labels:
+  - "種別:講座案"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このIssueは公開されます。顧客名、価格、個人情報、申請情報、Drive/Canvaリンク、社内資料は記載しないでください。
+  - type: dropdown
+    id: scheme
+    attributes:
+      label: 制度区分
+      options:
+        - 事業展開等リスキリング
+        - 従来の助成金講座
+        - 制度共通
+        - 未判定
+    validations:
+      required: true
+  - type: dropdown
+    id: idea_type
+    attributes:
+      label: アイデア種別
+      options:
+        - 新規講座
+        - 既存講座改善
+        - 教材ネタ
+        - 制度対応
+        - 調査
+    validations:
+      required: true
+  - type: input
+    id: job
+    attributes:
+      label: 対象職務
+      placeholder: 例：法人営業担当者
+    validations:
+      required: true
+  - type: textarea
+    id: direct_task
+    attributes:
+      label: 直接業務と成果物
+      description: 何を入力し、何を作り、誰が確認するかを書いてください。
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: アイデア本文
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 公開可能な根拠URL・確認日
