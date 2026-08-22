@@ -24391,5 +24391,26 @@ window.PROMPT_TIMELINE_EVENTS = [
     "tags": [],
     "timestamp": "2026-08-22T00:03:21.165188Z",
     "timestamp_jst": "2026-08-22T09:03:21+09:00"
+  },
+  {
+    "actions": [],
+    "actor": "agent",
+    "id": "20260822T050206Z-80851600",
+    "kind": "prompt",
+    "meta": {
+      "cwd": "/home/user/ai-corporate-training",
+      "hook_event_name": "UserPromptSubmit",
+      "session_id": "cccaec49-b13b-5434-a14b-9ee0c5d98f13",
+      "transcript_path": "/root/.claude/projects/-home-user-ai-corporate-training/cccaec49-b13b-5434-a14b-9ee0c5d98f13.jsonl"
+    },
+    "parent_id": "",
+    "prompt_original": "# スライド画像 完成チェック・自動生成タスク",
+    "prompt_preview": "# スライド画像 完成チェック・自動生成タスク",
+    "repo_label": "ai-corporate-training",
+    "source": "claude-user-prompt",
+    "summary": "",
+    "tags": [],
+    "timestamp": "2026-08-22T05:02:06.161511Z",
+    "timestamp_jst": "2026-08-22T14:02:06+09:00"
   }
 ];
