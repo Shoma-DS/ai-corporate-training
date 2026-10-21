@@ -1,3 +1,6 @@
+# 図解エリアの組み方（100型・構造別の選び方）は レイアウトカタログ.yml を参照する。
+layout_catalog: スライド/テンプレート/レイアウトカタログ.yml
+
 templates:
   - id: isometric-corporate-clean
     name: Isometric Corporate Clean

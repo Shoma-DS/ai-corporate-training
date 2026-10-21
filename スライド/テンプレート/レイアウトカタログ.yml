@@ -1,0 +1,170 @@
+# スライド図解エリアのレイアウトカタログ（100型）
+#
+# 使い方:
+#   1. スライド案を書く前に、各スライドの「言いたいことの構造（message_structure）」を決める。
+#   2. structure_guide から候補レイアウトを引き、slots を埋められるものを1つ（主）選ぶ。
+#      密度が足りないときだけ、補助レイアウトを1つ足す（主+補助の最大2つ）。
+#   3. スライド案に `**レイアウト:** L027 横棒ランキング型（+ L050 注釈付きグラフ型）` のように記録する。
+#   4. 画像生成プロンプトは scripts/rebuild_gws_high_density_image_prompts.py がこのファイルを読み、
+#      レイアウト名・用途・slots・pattern を図解エリアの構成指示として埋め込む。
+#
+# 前提:
+#   - 画風は常に isometric-corporate-clean（スライド/テンプレート/カタログ.yml）。このカタログは画風ではなく
+#     「固定ワイヤーフレームの図解エリア内の組み方」だけを決める。ヘッダー帯・見出し帯・今回のまとめ帯・
+#     目次ストリップは変えない。章見出し/現在位置スライドはヒーロー表示のまま（このカタログ対象外）。
+#   - pattern は カタログ.yml の diagram_patterns の id。スライド案の `**図解パターン:**` にはこれを書く。
+#   - 原典は第三者の参考図版（非公開/参考資料/AI資料レイアウト100選/、Git管理外）。ここには型名と用途を
+#     抽象化して記録しており、図版そのものは public repo に置かない。
+
+version: 1
+source_reference: 非公開/参考資料/AI資料レイアウト100選/  # ローカルのみ。無い環境ではこのYAMLだけで運用できる
+
+message_structures:
+  conclusion-evidence:
+    name: 結論と根拠（ピラミッド）
+    question: 「なぜそう言えるのか」に答えるスライドか
+    verify_device: 結論の横に、根拠の数字・出所・内訳を置いて見出しを確かめられるようにする
+  segmentation:
+    name: 切り口（分類）
+    question: 同じ対象を、業種・規模・工程などの軸で分けて見せるスライドか
+    verify_device: 分類軸を明記し、全項目を同じ軸で並べる（順位・構成比・マトリクス）
+  difference:
+    name: 差分（比較）
+    question: 前後・案同士・現状と理想の違いを見せるスライドか
+    verify_device: 両者を同じ尺度で並べ、差（何時間減・何pt改善など）を式つきで残す
+  cause-effect:
+    name: 原因と結果（因果）
+    question: 条件を変えると結果がどう変わるかを示すスライドか
+    verify_device: 前提・式・試算値を画面に出す。相関しか無いデータで因果を言い切らない
+  gap-solution:
+    name: 不足と打ち手（問題解決）
+    question: 課題・不足に対して何を打つかを示すスライドか
+    verify_device: 不足→打ち手→埋まる分/残る分を対応づけて見せる
+  sequence:
+    name: 流れと時間（順序）
+    question: 手順・工程・時系列・ロードマップを示すスライドか
+    verify_device: 順番・担当・期限・現在地（いまの線）を明示する
+  navigation:
+    name: 導入・案内・締め
+    question: 表紙・目次・定義・まとめ・質疑など、講座の進行を案内するスライドか
+    verify_device: 学習者が「いまどこで、次に何を作るか」を読み取れるようにする
+
+# 構造ごとの第一候補（左ほど汎用）。研修スライドで迷ったらここから選ぶ。
+structure_guide:
+  conclusion-evidence: [L002, L079, L025, L007, L019, L087, L050, L065]
+  segmentation: [L027, L031, L032, L030, L008, L012, L036, L045, L068, L088]
+  difference: [L009, L003, L077, L044, L043, L023, L010, L029, L047]
+  cause-effect: [L091, L038, L040, L066, L067, L034, L064, L065]
+  gap-solution: [L076, L077, L022, L024, L074, L092, L078, L059]
+  sequence: [L006, L083, L005, L051, L052, L053, L055, L057, L071, L072]
+  navigation: [L001, L013, L014, L020, L021, L012, L095, L097, L098]
+
+# fit: training=研修スライドでそのまま使える / limited=条件付き / avoid=原則使わない（理由を note に記載）
+layouts:
+  # ── 1/4 構成・要点・比較（001-025）
+  - {id: L001, name: タイトルスライド, group: 構成・要点・比較, structure: navigation, pattern: scene-environment, purpose: 表紙でテーマと期待感を伝える, slots: [講座名, 回タイトル, 一言の到達点, 成果物予告カード], fit: training}
+  - {id: L002, name: 1メッセージ型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: data-insight, purpose: 1枚1論点で主張を強く見せる, slots: [大きな数字か一文, 補足1行, 根拠カード2-3枚], fit: limited, note: 単独では疎になるため根拠カードか補助レイアウトを必ず足す}
+  - {id: L003, name: 2カラム比較型, group: 構成・要点・比較, structure: difference, pattern: comparison-contrast, purpose: 2つの案を並べて違いを見せる, slots: [A見出し, B見出し, 同じ観点の対応行3-5], fit: training}
+  - {id: L004, name: 3ポイント並列型, group: 構成・要点・比較, structure: segmentation, pattern: module-block, purpose: 要点を3つに分けて整理する, slots: [番号付きカード3枚, 各カードの具体例], fit: training}
+  - {id: L005, name: タイムライン型, group: 構成・要点・比較, structure: sequence, pattern: roadmap-timeline, purpose: 出来事を時系列で並べる, slots: [時点4-6, 各時点の出来事], fit: training}
+  - {id: L006, name: フロー型, group: 構成・要点・比較, structure: sequence, pattern: process-flow, purpose: 手順を進む順番で示す, slots: [ステップ3-5, 入力/処理/出力/確認], fit: training}
+  - {id: L007, name: ピラミッド型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: hierarchy-pyramid, purpose: 結論と根拠の階層を示す, slots: [結論, 理由・根拠, 詳細・データ], fit: training}
+  - {id: L008, name: マトリクス型, group: 構成・要点・比較, structure: segmentation, pattern: matrix-classification, purpose: 2つの軸で位置づけを示す, slots: [縦軸名, 横軸名, 4象限ラベルと該当例], fit: training}
+  - {id: L009, name: Before／After型, group: 構成・要点・比較, structure: difference, pattern: before-after-transformation, purpose: 改善前後の変化を見せる, slots: [Before状態, After状態, 変化量と算出式], fit: training}
+  - {id: L010, name: KPIダッシュボード型, group: 構成・要点・比較, structure: difference, pattern: data-insight, purpose: 主要な数値をひと目で見せる, slots: [KPIカード3-4, 増減, 測り方], fit: training}
+  - {id: L011, name: 事例紹介カード型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: module-block, purpose: 課題・施策・成果をまとめる, slots: [架空企業名と業種, 課題, 施策, 成果数値], fit: training, note: 事例は架空または公開事例のみ。実在顧客名は入れない}
+  - {id: L012, name: まとめ型, group: 構成・要点・比較, structure: navigation, pattern: checklist-confirmation, purpose: 要点と次の行動を締めくくる, slots: [要点3つ, 次の行動の帯], fit: training}
+  - {id: L013, name: 目次型, group: 構成・要点・比較, structure: navigation, pattern: roadmap-timeline, purpose: 全体の構成と読む順を示す, slots: [章番号と章名, 時間配分, 各章の成果物], fit: training}
+  - {id: L014, name: セクション扉型, group: 構成・要点・比較, structure: navigation, pattern: scene-environment, purpose: 章の切り替えを印象づける, slots: [章番号, 章名, 次の一手], fit: limited, note: 章見出し/現在位置スライドは既存のヒーロー表示ルールを優先する}
+  - {id: L015, name: 左図右文型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: data-insight, purpose: 図と説明を隣に配置する, slots: [主役の図（幅6割）, 右の説明3点], fit: training}
+  - {id: L016, name: 全面写真＋帯型, group: 構成・要点・比較, structure: navigation, pattern: scene-environment, purpose: 背景を広く使い言葉を重ねる, slots: [背景シーン, 一言], fit: avoid, note: 固定ワイヤーフレームと密度基準に合わない。パンフレット表紙など限定用途のみ}
+  - {id: L017, name: 問いかけ型, group: 構成・要点・比較, structure: navigation, pattern: scene-environment, purpose: 問いを大きく置き関心を引く, slots: [問い, 問いの背景, 本章で答える項目], fit: limited, note: 導入用。問いの下に答えの予告カードを置いて疎にしない}
+  - {id: L018, name: 引用強調型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: module-block, purpose: 重要な発言を主役にする, slots: [引用文, 発言者の立場（匿名）, 示唆], fit: limited, note: 実在人物の発言は出典確認済みのものだけ}
+  - {id: L019, name: 数字インパクト型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: data-insight, purpose: 伝えたい数字を大きく見せる, slots: [大きな数字1つ, 何の数字か, 算出式, 前提], fit: training}
+  - {id: L020, name: 定義カード型, group: 構成・要点・比較, structure: navigation, pattern: module-block, purpose: 言葉の意味と具体例を示す, slots: [用語, 定義, 業務での具体例], fit: training}
+  - {id: L021, name: 用語対照表型, group: 構成・要点・比較, structure: navigation, pattern: matrix-classification, purpose: 用語と意味を対応させる, slots: [用語/意味/例 の表3-6行], fit: training}
+  - {id: L022, name: メリット・注意点型, group: 構成・要点・比較, structure: gap-solution, pattern: governance-risk, purpose: 利点と留意点をセットで示す, slots: [メリット3, 注意点3, 対策], fit: training}
+  - {id: L023, name: 選択肢比較表型, group: 構成・要点・比較, structure: difference, pattern: comparison-contrast, purpose: 同じ基準で複数案を比較する, slots: [評価項目3-5, 案2-4, ◎○△], fit: training}
+  - {id: L024, name: 推奨案強調型, group: 構成・要点・比較, structure: gap-solution, pattern: funnel-selection, purpose: 選ぶ理由と推奨案を目立たせる, slots: [案2-3, 推奨案, 選定理由], fit: training}
+  - {id: L025, name: エグゼクティブ要約型, group: 構成・要点・比較, structure: conclusion-evidence, pattern: hierarchy-pyramid, purpose: 結論・根拠・判断を先に示す, slots: [結論, 根拠2-3, 判断事項], fit: training}
+
+  # ── 2/4 データ・分析・グラフ（026-050）
+  - {id: L026, name: 縦棒グラフ型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 項目ごとの大きさを比較する, slots: [図表タイトル（何を・いつ・単位）, 項目と値, 主役の棒], fit: training}
+  - {id: L027, name: 横棒ランキング型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 多い順に並べて順位を示す, slots: [図表タイトル, 項目と値（降順）, 主役の項目], fit: training}
+  - {id: L028, name: 折れ線推移型, group: データ・分析・グラフ, structure: sequence, pattern: data-insight, purpose: 時間による増減を見せる, slots: [期間, 値, 変化点], fit: training}
+  - {id: L029, name: 積み上げ棒型, group: データ・分析・グラフ, structure: difference, pattern: data-insight, purpose: 合計と内訳の変化を見せる, slots: [期間, 内訳系列2-3, 合計], fit: training}
+  - {id: L030, name: 100%積み上げ型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 比率の違いに絞って比較する, slots: [対象, 構成比], fit: training}
+  - {id: L031, name: 円グラフ型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 全体に占める割合を示す, slots: [3-5区分と割合], fit: training}
+  - {id: L032, name: ドーナツ内訳型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 中央に合計、周囲に内訳を置く, slots: [合計, 内訳3-5], fit: training}
+  - {id: L033, name: 面グラフ型, group: データ・分析・グラフ, structure: sequence, pattern: data-insight, purpose: 時系列の量と広がりを見せる, slots: [期間, 累積値], fit: training}
+  - {id: L034, name: 散布図型, group: データ・分析・グラフ, structure: cause-effect, pattern: data-insight, purpose: 2つの数値の関係を探る, slots: [X軸, Y軸, 点群, 相関の注記], fit: limited, note: 相関は因果ではないと明記する}
+  - {id: L035, name: バブルチャート型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 大きさも使い3指標を比較する, slots: [X/Y/面積の3指標, 対象4-6], fit: limited, note: 研修では読み取り負荷が高い。指標の凡例を必ず書く}
+  - {id: L036, name: ヒートマップ型, group: データ・分析・グラフ, structure: segmentation, pattern: matrix-classification, purpose: 濃淡で数値の偏りを見せる, slots: [行, 列, 濃淡の凡例], fit: training}
+  - {id: L037, name: レーダーチャート型, group: データ・分析・グラフ, structure: difference, pattern: comparison-contrast, purpose: 複数の評価軸を同時に比べる, slots: [評価軸5, 案2], fit: training}
+  - {id: L038, name: ウォーターフォール型, group: データ・分析・グラフ, structure: cause-effect, pattern: data-insight, purpose: 増減の積み重ねで結果を示す, slots: [起点, 増減要因, 終点], fit: training}
+  - {id: L039, name: ファネル型, group: データ・分析・グラフ, structure: sequence, pattern: funnel-selection, purpose: 段階ごとの残存数を見せる, slots: [段階3-5, 人数, 歩留まり], fit: training}
+  - {id: L040, name: パレート図型, group: データ・分析・グラフ, structure: cause-effect, pattern: data-insight, purpose: 主要因と累積比率を見せる, slots: [要因（降順）, 件数, 累積比率], fit: training}
+  - {id: L041, name: 箱ひげ図型, group: データ・分析・グラフ, structure: difference, pattern: data-insight, purpose: 中央値とばらつきを比較する, slots: [グループ, 分布], fit: limited, note: 初学者向けには読み方の注記を添える}
+  - {id: L042, name: ヒストグラム型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 数値が多い範囲を見つける, slots: [階級, 度数], fit: training}
+  - {id: L043, name: スロープグラフ型, group: データ・分析・グラフ, structure: difference, pattern: comparison-contrast, purpose: 2時点の値や順位の変化を示す, slots: [2時点, 対象3-6], fit: training}
+  - {id: L044, name: ダンベル比較型, group: データ・分析・グラフ, structure: difference, pattern: before-after-transformation, purpose: 2つの値の差を項目別に示す, slots: [項目, 前値, 後値, 差], fit: training}
+  - {id: L045, name: スモールマルチプル型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 同じ尺度の小図を並べる, slots: [区分4-6, 共通尺度], fit: training}
+  - {id: L046, name: スパークライン表型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 数値の一覧に小さな推移を添える, slots: [項目, 現在値, 前期比, 推移], fit: training}
+  - {id: L047, name: 目標・実績型, group: データ・分析・グラフ, structure: difference, pattern: data-insight, purpose: 目標と実績の差を見せる, slots: [指標, 目標, 実績, 達成率], fit: training}
+  - {id: L048, name: コホート分析型, group: データ・分析・グラフ, structure: sequence, pattern: matrix-classification, purpose: 開始時期別の継続率を追う, slots: [開始月, 経過期間, 継続率], fit: limited, note: 定着化・利用率の講座で使う}
+  - {id: L049, name: 地図分布型, group: データ・分析・グラフ, structure: segmentation, pattern: data-insight, purpose: 地域ごとの違いを地図に重ねる, slots: [地域, 値], fit: limited, note: 地図形状の正確さに注意。必要時のみ}
+  - {id: L050, name: 注釈付きグラフ型, group: データ・分析・グラフ, structure: conclusion-evidence, pattern: data-insight, purpose: 変化点に理由を添える, slots: [推移グラフ, 変化点の注釈1-2], fit: training}
+
+  # ── 3/4 計画・業務・構造（051-075）
+  - {id: L051, name: ロードマップ型, group: 計画・業務・構造, structure: sequence, pattern: roadmap-timeline, purpose: 期間ごとの到達像を共有する, slots: [期間（四半期など）, 系列2-3, 到達像], fit: training}
+  - {id: L052, name: ガントチャート型, group: 計画・業務・構造, structure: sequence, pattern: roadmap-timeline, purpose: 作業期間と重なりを管理する, slots: [作業4-6, 期間], fit: training}
+  - {id: L053, name: マイルストーン型, group: 計画・業務・構造, structure: sequence, pattern: roadmap-timeline, purpose: 重要な節目と期限を示す, slots: [節目3-4, 期日, 判定基準], fit: training}
+  - {id: L054, name: カンバン型, group: 計画・業務・構造, structure: sequence, pattern: process-flow, purpose: 作業を進捗の列で分ける, slots: [未着手/進行中/完了, カード], fit: training}
+  - {id: L055, name: スイムレーン型, group: 計画・業務・構造, structure: sequence, pattern: process-flow, purpose: 担当者ごとの手順を分ける, slots: [担当レーン2-4, 手順, 受け渡し], fit: training}
+  - {id: L056, name: 意思決定ツリー型, group: 計画・業務・構造, structure: gap-solution, pattern: funnel-selection, purpose: 条件ごとの選択を枝分かれさせる, slots: [判定条件, はい/いいえ, 行き先], fit: training}
+  - {id: L057, name: 循環サイクル型, group: 計画・業務・構造, structure: sequence, pattern: continuous-operation-loop, purpose: 繰り返す改善の流れを示す, slots: [段階4, 各段階の作業], fit: training}
+  - {id: L058, name: 分岐・合流型, group: 計画・業務・構造, structure: sequence, pattern: process-flow, purpose: 並行作業と合流点を見せる, slots: [開始, 並行作業2-4, 合流点], fit: training}
+  - {id: L059, name: チェックリスト型, group: 計画・業務・構造, structure: gap-solution, pattern: checklist-confirmation, purpose: 必要な確認項目を漏れなく並べる, slots: [確認項目4-8, 確認者], fit: training}
+  - {id: L060, name: RACI責任分担型, group: 計画・業務・構造, structure: segmentation, pattern: matrix-classification, purpose: 実行・最終責任・協議・共有を分ける, slots: [作業, 役割, R/A/C/I], fit: training}
+  - {id: L061, name: 組織図型, group: 計画・業務・構造, structure: segmentation, pattern: hierarchy-pyramid, purpose: 役職と指揮系統を示す, slots: [役割名（個人名なし）, 階層], fit: limited, note: 実在組織や個人名は入れない}
+  - {id: L062, name: システム構成型, group: 計画・業務・構造, structure: segmentation, pattern: structure-layer, purpose: 構成要素と接続関係を示す, slots: [利用者, 画面, API, データ層], fit: training}
+  - {id: L063, name: ハブ＆スポーク型, group: 計画・業務・構造, structure: segmentation, pattern: network-relationship, purpose: 中心と周辺の関係を示す, slots: [中心, 周辺4-6, 関係], fit: training}
+  - {id: L064, name: 入出力モデル型, group: 計画・業務・構造, structure: cause-effect, pattern: process-flow, purpose: 入力から出力への変換を示す, slots: [INPUT, PROCESS, OUTPUT, 人の確認], fit: training}
+  - {id: L065, name: ロジックツリー型, group: 計画・業務・構造, structure: cause-effect, pattern: hierarchy-pyramid, purpose: 問題を要素に分解して考える, slots: [上位指標, 分解2段, 末端の打ち手], fit: training}
+  - {id: L066, name: フィッシュボーン型, group: 計画・業務・構造, structure: cause-effect, pattern: network-relationship, purpose: 結果に影響する原因を整理する, slots: [結果, 原因カテゴリ4, 具体原因], fit: training}
+  - {id: L067, name: 因果ループ型, group: 計画・業務・構造, structure: cause-effect, pattern: continuous-operation-loop, purpose: 増減が連鎖する関係を示す, slots: [要素3-4, 正負の矢印, 前提条件], fit: limited, note: 前提条件を注記する}
+  - {id: L068, name: ベン図型, group: 計画・業務・構造, structure: segmentation, pattern: matrix-classification, purpose: 共通部分と固有部分を示す, slots: [集合2-3, 重なりの意味], fit: training}
+  - {id: L069, name: レイヤー構造型, group: 計画・業務・構造, structure: segmentation, pattern: structure-layer, purpose: 積み重なる役割の層を示す, slots: [層3-5, 各層の役割], fit: training}
+  - {id: L070, name: 価値連鎖型, group: 計画・業務・構造, structure: sequence, pattern: process-flow, purpose: 価値を生む活動をつなぐ, slots: [主活動4-6, 支援活動], fit: training}
+  - {id: L071, name: サービスブループリント型, group: 計画・業務・構造, structure: sequence, pattern: process-flow, purpose: 顧客接点と裏側の業務を示す, slots: [顧客行動, 接点, 裏側処理, 支援システム], fit: training}
+  - {id: L072, name: カスタマージャーニー型, group: 計画・業務・構造, structure: sequence, pattern: persona-audience, purpose: 顧客の行動と感情を追う, slots: [段階4-5, 行動, 感情曲線, 接点], fit: training}
+  - {id: L073, name: ステークホルダー型, group: 計画・業務・構造, structure: segmentation, pattern: network-relationship, purpose: 関係者とのつながりを整理する, slots: [中心チーム, 関係者4-6, 距離], fit: training}
+  - {id: L074, name: リスク登録簿型, group: 計画・業務・構造, structure: gap-solution, pattern: governance-risk, purpose: リスク・影響・対策を一覧にする, slots: [リスク, 影響度, 対策, 担当役割], fit: training}
+  - {id: L075, name: 依存関係ネットワーク型, group: 計画・業務・構造, structure: sequence, pattern: network-relationship, purpose: 作業の前後関係を網で示す, slots: [作業ノード, 依存矢印, 重要経路], fit: limited}
+
+  # ── 4/4 提案・事例・次の行動（076-100）
+  - {id: L076, name: 課題・原因・解決型, group: 提案・事例・次の行動, structure: gap-solution, pattern: process-flow, purpose: 課題から打ち手まで筋道を示す, slots: [課題, 原因, 解決策, 効果], fit: training}
+  - {id: L077, name: 現状・理想・差分型, group: 提案・事例・次の行動, structure: gap-solution, pattern: before-after-transformation, purpose: 目指す姿と埋める差を示す, slots: [現状（As-Is）, 理想（To-Be）, 埋める差, 手段], fit: training}
+  - {id: L078, name: 仮説・検証・学び型, group: 提案・事例・次の行動, structure: gap-solution, pattern: continuous-operation-loop, purpose: 試したことと得た学びを示す, slots: [仮説, 検証方法, 結果数値, 学び], fit: training}
+  - {id: L079, name: 主張・根拠・示唆型, group: 提案・事例・次の行動, structure: conclusion-evidence, pattern: hierarchy-pyramid, purpose: 根拠から意味と結論を導く, slots: [主張, 根拠グラフ, 示唆], fit: training}
+  - {id: L080, name: ストーリーボード型, group: 提案・事例・次の行動, structure: sequence, pattern: scene-environment, purpose: 場面の展開をコマで伝える, slots: [コマ3-4, 各コマの一言], fit: training}
+  - {id: L081, name: 画像ギャラリー型, group: 提案・事例・次の行動, structure: segmentation, pattern: module-block, purpose: 複数の見本を一覧で見せる, slots: [見本3-6, ラベル], fit: limited, note: 実在の制作物は権利確認済みのものだけ}
+  - {id: L082, name: スクリーン注釈型, group: 提案・事例・次の行動, structure: sequence, pattern: scene-environment, purpose: 画面の注目箇所を指し示す, slots: [実スクリーンショット, 注釈番号, 操作説明], fit: training, note: 画面は実スクリーンショット参照時のみ。架空UIを描かせない}
+  - {id: L083, name: 操作手順型, group: 提案・事例・次の行動, structure: sequence, pattern: process-flow, purpose: 操作画面と手順を対応させる, slots: [手順番号, 画面, 操作], fit: training, note: 画面は実スクリーンショット参照時のみ}
+  - {id: L084, name: 製品分解図型, group: 提案・事例・次の行動, structure: segmentation, pattern: structure-layer, purpose: 部品と組み立て関係を見せる, slots: [層/部品3-5, 名称], fit: limited}
+  - {id: L085, name: ペルソナ型, group: 提案・事例・次の行動, structure: navigation, pattern: persona-audience, purpose: 代表的な利用者像を共有する, slots: [架空人物の役割, 目的, 悩み, 期待], fit: training}
+  - {id: L086, name: インタビュー抜粋型, group: 提案・事例・次の行動, structure: conclusion-evidence, pattern: persona-audience, purpose: 複数の発言から共通点を拾う, slots: [発言3（匿名・架空）, 共通点], fit: training}
+  - {id: L087, name: 顧客の声＋成果型, group: 提案・事例・次の行動, structure: conclusion-evidence, pattern: data-insight, purpose: 発言に成果の数字を添える, slots: [発言（架空）, 成果数値], fit: training}
+  - {id: L088, name: ケース横断比較型, group: 提案・事例・次の行動, structure: segmentation, pattern: comparison-contrast, purpose: 複数事例の成功条件を比べる, slots: [事例3, 施策, 成果, 共通点の帯], fit: training}
+  - {id: L089, name: 価格プラン型, group: 提案・事例・次の行動, structure: difference, pattern: comparison-contrast, purpose: 料金と含まれる内容を比較する, slots: [プラン, 含まれる機能], fit: avoid, note: 公開資料に価格は入れない。ツールのプラン差は「無料/有料/管理者設定」の区分だけで示す}
+  - {id: L090, name: コスト内訳型, group: 提案・事例・次の行動, structure: segmentation, pattern: data-insight, purpose: 費目と合計額を明確にする, slots: [費目, 金額（架空・試算）, 合計], fit: limited, note: 架空の試算であることを明記する}
+  - {id: L091, name: ROI試算型, group: 提案・事例・次の行動, structure: cause-effect, pattern: data-insight, purpose: 投資額と便益の関係を示す, slots: [便益, 費用, ROI, 算出式, 前提], fit: training, note: 「試算」と書き、式と前提を画面に出す}
+  - {id: L092, name: 優先順位リスト型, group: 提案・事例・次の行動, structure: gap-solution, pattern: checklist-confirmation, purpose: 取り組む順番を明確にする, slots: [優先1-3, 理由], fit: training}
+  - {id: L093, name: リソース配分型, group: 提案・事例・次の行動, structure: segmentation, pattern: data-insight, purpose: 人や時間の割り当てを見せる, slots: [総量, 配分先, 割合], fit: training}
+  - {id: L094, name: 合意事項・未決事項型, group: 提案・事例・次の行動, structure: gap-solution, pattern: checklist-confirmation, purpose: 決まったことと残る論点を分ける, slots: [合意事項, 未決事項, 決める期限], fit: training}
+  - {id: L095, name: アクション一覧型, group: 提案・事例・次の行動, structure: navigation, pattern: checklist-confirmation, purpose: 誰が・何を・いつまでかを示す, slots: [対応すること, 担当役割, 期限], fit: training}
+  - {id: L096, name: 決裁依頼型, group: 提案・事例・次の行動, structure: gap-solution, pattern: governance-risk, purpose: 承認してほしい内容を明示する, slots: [依頼事項, 予算（架空）, 期間, 範囲, 判断期限], fit: training}
+  - {id: L097, name: FAQ型, group: 提案・事例・次の行動, structure: navigation, pattern: checklist-confirmation, purpose: 想定される疑問に先回りする, slots: [Q&A 2-4組], fit: training}
+  - {id: L098, name: 出典・参考資料型, group: 提案・事例・次の行動, structure: navigation, pattern: checklist-confirmation, purpose: 根拠の所在を確認できるようにする, slots: [出典名, 発行元, 時点], fit: training}
+  - {id: L099, name: Q&A型, group: 提案・事例・次の行動, structure: navigation, pattern: scene-environment, purpose: 質疑の時間へ自然につなぐ, slots: [問いかけ], fit: avoid, note: 録画講座ではライブ質疑をしない。FAQ型か自己レビューに置き換える}
+  - {id: L100, name: 問い合わせ・次の一歩型, group: 提案・事例・次の行動, structure: navigation, pattern: process-flow, purpose: 連絡先と行動の入口を示す, slots: [次の一歩, 持ち帰る成果物], fit: limited, note: 連絡先は入れない。「次回までにやること」「持ち帰る成果物」に置き換える}

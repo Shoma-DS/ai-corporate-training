@@ -133,6 +133,48 @@ def extract_content(block: str) -> str:
     return truncate("\n".join(lines), 1700)
 
 
+LAYOUT_CATALOG = ROOT / "スライド" / "テンプレート" / "レイアウトカタログ.yml"
+
+# 図解エリア内の組み方をデータ可視化の規律で揃える（原典: レイアウトカタログ.yml の前提と同じ方針）。
+LAYOUT_DISCIPLINE = "主役は主役色（ネイビーまたはティール）1色、比べる相手は同系の薄い段階色、それ以外は灰色にする。大きな数字は1枚に1つまで。グラフや表には「何を・いつ・単位」の図表タイトルを付け、判断はまとめ帯に書く。差や比は算出式を添え、試算は「試算」と明記する。出所がある数字は図解エリア下部に小さく出所を書く。図も表もエリアいっぱいに配置し、下に空白の帯を残さない。"
+
+
+def load_layout_catalog() -> dict[str, dict[str, str]]:
+    # PyYAML に依存しないよう、1レイアウト1行のフローマッピングだけを読む。
+    if not LAYOUT_CATALOG.exists():
+        return {}
+    catalog: dict[str, dict[str, str]] = {}
+    for line in LAYOUT_CATALOG.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"\s*- \{id: (L\d{3}),(.*)\}\s*$", line)
+        if not m:
+            continue
+        body = m.group(2)
+        entry: dict[str, str] = {"id": m.group(1)}
+        slots = re.search(r"slots: \[([^\]]*)\]", body)
+        entry["slots"] = slots.group(1).strip() if slots else ""
+        body = re.sub(r"slots: \[[^\]]*\],?", "", body)
+        for key in ("name", "structure", "pattern", "purpose", "fit", "note"):
+            km = re.search(rf"{key}: ([^,]+?)(?:,\s*\w+:|$)", body)
+            if km:
+                entry[key] = km.group(1).strip()
+        catalog[entry["id"]] = entry
+    return catalog
+
+
+def describe_layouts(field: str, catalog: dict[str, dict[str, str]]) -> str:
+    ids = re.findall(r"L\d{3}", field)
+    parts: list[str] = []
+    for role, layout_id in zip(("主レイアウト", "補助レイアウト"), ids[:2]):
+        entry = catalog.get(layout_id)
+        if not entry:
+            continue
+        text = f"{role}「{entry.get('name', '')}」({layout_id}): {entry.get('purpose', '')}。入れる要素: {entry.get('slots', '')}"
+        if entry.get("note"):
+            text += f"。注意: {entry['note']}"
+        parts.append(text)
+    return " / ".join(parts)
+
+
 def infer_layout(title: str, content: str, pattern: str) -> str:
     source = f"{title}\n{content}\n{pattern}"
     if "章見出し" in title or "現在位置" in title:
@@ -156,6 +198,7 @@ def build_prompt_file(session_dir: Path, course_title: str) -> str:
     plan_title, allocation = extract_plan_meta(text)
     slides = split_slides(text)
     total = len(slides)
+    layout_catalog = load_layout_catalog()
     sections = SOURCE_BUILDER.parse_sections(text)
     toc_labels = SOURCE_BUILDER.parse_toc_strip_labels(text)
     for idx, section in enumerate(sections, start=1):
@@ -231,7 +274,11 @@ def build_prompt_file(session_dir: Path, course_title: str) -> str:
         pattern = extract_field(block, "図解パターン")
         screenshot = extract_field(block, "スクリーンショット") or "なし"
         content = extract_content(block)
-        layout = infer_layout(title, content, pattern)
+        layout_field = extract_field(block, "レイアウト")
+        layout = describe_layouts(layout_field, layout_catalog) or infer_layout(title, content, pattern)
+        free_layout = extract_field(block, "推奨レイアウト")
+        if free_layout:
+            layout = f"{layout} 配置メモ: {free_layout}"
         section = section_for(no_int)
         toc_desc = ""
         current_chip_label = ""
@@ -291,6 +338,7 @@ def build_prompt_file(session_dir: Path, course_title: str) -> str:
             f"- 目次見出しストリップでハイライト（塗りつぶし）するチップ: {current_chip_label or 'なし'}",
             f"- 図解パターン: `{pattern or 'high-density-structured-slide'}`",
             f"- 参照素材・スクリーンショット: {screenshot}",
+            f"- レイアウト（レイアウトカタログ.yml）: {layout_field or '未指定（推定）'}",
             f"- 推奨レイアウト（図解エリア内）: {layout}",
             "- 審査向け密度: タイトルだけ、抽象アイコンだけ、短いラベルだけで終わらせない。本文ブロックを、読める表・カード・フロー・チェックリストとして図解エリア内に配置する。",
             "- 図解エリアに必ず入れる内容:",
@@ -312,6 +360,7 @@ def build_prompt_file(session_dir: Path, course_title: str) -> str:
             f"目次見出しストリップのチップ文字（左から順にこの文字列だけを表示、記号や★などの装飾は一切付け加えない）: {toc_desc or '章区分なし'}",
             f"目次見出しストリップで塗りつぶしてハイライトするチップはこれだけ（チップの文字自体は変えない）: {current_chip_label or 'なし'}",
             f"図解エリアの推奨構成: {layout}",
+            LAYOUT_DISCIPLINE,
             "図解エリアには、以下のSOURCE TEXTを、読める表・カード・プロセス・チェックリストとして密に配置する。文言を勝手に変えたり、無関係な主張を足したりしない。",
             "--- SOURCE TEXT START ---",
             content,

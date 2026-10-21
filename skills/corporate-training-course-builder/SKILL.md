@@ -111,6 +111,27 @@ Before creating or revising `画像生成プロンプト.md` or `スライド画
 4. Apply its style tags, palette, diagram patterns, screenshot/logo rules, and default slide mapping.
 5. Record the selected template ID and diagram pattern in `画像生成プロンプト.md` for each slide.
 
+### Layout Catalog And Message-Structure Selection
+
+The template fixes the visual style; `スライド/テンプレート/レイアウトカタログ.yml` fixes **how the 図解 area is composed**. It lists 100 layout types (L001-L100: 構成・要点・比較 / データ・分析・グラフ / 計画・業務・構造 / 提案・事例・次の行動), each with purpose, required slots, the matching `diagram_patterns` id, and a `fit` flag. The original reference images are kept locally in `非公開/参考資料/AI資料レイアウト100選/` (third-party material, Git-ignored); the YAML alone is enough to operate. Layouts are chosen by structure, not by taste:
+
+1. Write every slide's headline first and read them top to bottom. The headlines alone must tell the session's story (全体像 → 根拠 → 打ち手/演習 → 成果物). Fix the order before choosing layouts.
+2. Classify each headline into one `message_structures` key: 結論と根拠 / 切り口 / 差分 / 原因と結果 / 不足と打ち手 / 流れと時間 (plus `navigation` for 表紙・目次・定義・まとめ).
+3. Pick one primary layout from `structure_guide` whose `slots` the slide plan can actually fill. Add at most one secondary layout only when needed to reach the Dense Slide Image Standard (e.g. `L027 横棒ランキング型 + L050 注釈付きグラフ型`). Do not combine three or more.
+4. The chosen layout must let the learner verify the headline on the slide itself: evidence numbers/source beside a conclusion, the same scale on both sides of a comparison, the formula and assumptions beside an estimate, the gap visibly filled by each countermeasure, the order/owner/deadline in a flow. Do not add a visual that is unrelated to the headline.
+5. Record it in `スライド案.md` as `**レイアウト:** L0xx 型名` next to `**図解パターン:**` (use the layout's `pattern`). `scripts/rebuild_gws_high_density_image_prompts.py` reads this field and injects the layout's purpose, slots, and notes into the 図解-area instruction; without it the script falls back to keyword inference.
+6. Respect `fit`: `avoid` layouts (全面写真＋帯, 価格プラン, Q&A) conflict with the wireframe, public-safety, or the recorded-video format and are replaced as their `note` says; `limited` layouts need the caveat in `note`. Chapter-divider slides keep the hero rule and are outside the catalog. Within a session, vary layouts so consecutive slides do not all become card grids.
+
+Data and evidence discipline (applies whenever a slide shows numbers or charts):
+
+- Keep a 数字台帳 for slides with numbers (項目・値・時点・出所・母集団) in the slide plan or course-level `全体/調査/`. Put no number on a slide that is not in the ledger. Fictional business cases are labeled 架空/例, estimates are labeled 試算 with the formula and assumptions visible, and correlation-only data is never stated as cause.
+- Chart/table titles state 何を・いつ・単位 only; the judgment goes in the headline. Show the source at the bottom of the 図解 area.
+- One main color (navy or teal) for the subject, lighter tints for comparisons, gray for the rest; at most one large hero number per slide; one warning/accent color used sparingly across the deck.
+- Headlines are complete sentences that carry fact + judgment, ideally one line (about 36 Japanese characters or less). Avoid `A。B` two-step headlines, `〜は3つ` enumerations, and noun-ending titles, and do not end every slide with the same sentence ending (e.g. all `〜べきだ`).
+- Fill the 図解 area; no empty band under the content, no overlaps, no text too small to read when projected.
+
+Interactive HTML decks (click-to-drill evidence panels, sliders, auto-demo) are not the default deliverable here because the review-facing output is raster slides. Build one only when the user explicitly asks, and then still use one operation per slide chosen by the same message structure.
+
 Within one session, keep the same template ID and visual style across `スライド案.md`, `講師台本.md`, `画像生成プロンプト.md`, and all generated `スライド画像/Sxx.png` by default. Mix templates only when the user explicitly asks for it.
 
 For the current `isometric-corporate-clean` style, keep the visual direction clean, white-background, navy/teal, card-based, corporate, isometric, and screenshot/logo-compatible. Service logos and UI screens remain real referenced assets, not prompt-invented drawings.
@@ -270,7 +291,7 @@ Good differentiation examples:
    - If the user asks to turn exercise data into Google スプレッドシート/ドキュメント, "gws で演習用シートを作って", or "演習データを Drive に上げて", read `references/exercise-data-to-gws-workflow.md` and use `scripts/build_exercise_gws_docs.py`. One session uses one exercise spreadsheet with one tab per CSV; worksheet-type files (`.md`/`.txt`) become Google Docs; all created files go inside that session's Drive `演習データ` folder. Always run `--dry-run` and get user approval before the live run, since this creates Drive files (external send).
 6. Choose the slide style template from `スライド/テンプレート/カタログ.yml` and read the selected template before writing slide plans or image prompts.
 7. Expand the session to fit the intended duration. For a 120-minute session, use enough slides for clear pacing, usually around 35-45 slides when demos and exercises are included.
-8. Create or revise `スライド案.md` with slide numbers, titles, purpose, selected template ID, visual/material type, diagram pattern, demo/screenshot needs, and exercise timing.
+8. Create or revise `スライド案.md` with slide numbers, titles, purpose, selected template ID, visual/material type, diagram pattern, `**レイアウト:**` ID from `スライド/テンプレート/レイアウトカタログ.yml`, demo/screenshot needs, and exercise timing. Write all headlines first, then choose layouts by message structure as in **Layout Catalog And Message-Structure Selection**.
    - Follow the **Subsidy Review Submission Principle**. Slides must be understandable without instructor comments and must show enough content for a reviewer to understand what the course teaches and what learners do.
    - Each submission-facing slide should have a conclusion-style headline, enough body text to identify the learning content, and a visible structure such as process, comparison, checklist, table, issue-to-solution flow, or output map. Avoid sparse mood slides and bullet-only lists.
    - For high-density rebuilds, every slide should normally include `**ヘッドライン:**`, 3-6 meaningful content blocks, a selected template ID, a diagram/material pattern, and a screenshot/source instruction when useful. Add industry-specific examples, Before/After, numeric sense, output names, review points, and exercise steps. Do not copy a reference course's topics, chapter order, or examples.
@@ -550,6 +571,9 @@ Before finishing, confirm:
 - `画像生成プロンプト.md` records the selected slide template ID and uses a diagram pattern from `スライド/テンプレート/カタログ.yml` or the selected `source_file`.
 - `画像生成プロンプト.md` and generated images satisfy the Dense Slide Image Standard; blank templates, sparse mood images, and text-to-be-added-later prompts do not pass. Lightweight checks are recorded for all generated images, and only flagged S番号 are escalated to visual inspection.
 - One session uses one template ID and one visual style across prompts and generated images, unless the user explicitly requested mixed templates.
+- 章見出し以外の各スライドに `**レイアウト:**`（レイアウトカタログ.yml の L番号、主1つ＋補助最大1つ）があり、見出しの構造（結論と根拠/切り口/差分/原因と結果/不足と打ち手/流れと時間/案内）に合っているか。`fit: avoid` の型が使われていないか。
+- 見出しだけを縦に読んで話がつながるか。見出しの文末が全スライドで同じになっていないか。
+- 数字のあるスライドは数字台帳にある値だけを使い、試算には式と前提、図表タイトルには「何を・いつ・単位」、図解エリア下部には出所があるか。
 - `スライド画像/` contains all required images, and those images were generated by Codex App Server / GPT image 2 / `imagegen` or are approved official screenshots/assets. Locally rendered placeholders do not satisfy this check.
 - Asset references point to repository-level `素材/ロゴ/`, course-level `全体/調査/`, or session-local `スクリーンショット/`, `演習データ/`, and `配布資料/`.
 - Source memos exist for current facts and official assets.

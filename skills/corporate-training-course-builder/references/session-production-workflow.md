@@ -49,6 +49,8 @@ Use this checklist when turning a session request into complete materials.
   - A visible structure such as comparison, process, checklist, Before/After, issue -> action -> effect, output map, or rubric.
   - 3-6 meaningful blocks when the slide is explanatory or submission-facing.
   - `**図解パターン:**` or another material/pattern marker.
+  - `**レイアウト:**` with one primary (and at most one secondary) layout ID from `スライド/テンプレート/レイアウトカタログ.yml`, chosen from the headline's message structure. Chapter-divider slides are exempt.
+  - For slides with numbers, values that exist in the session's 数字台帳 (項目・値・時点・出所・母集団), a 何を・いつ・単位 chart title, and a visible source; estimates labeled 試算 with formula.
   - `**テンプレートID:**`.
   - `**スクリーンショット:**` or `なし`, with source/capture condition when useful.
 - Exercise and demo slides must identify the file/data to open, the learner action, the output, the review/self-check criteria, and the next-session or final-output connection.
